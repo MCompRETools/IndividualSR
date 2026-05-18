@@ -1,6 +1,6 @@
 # ==========================================================
-# MODERN SIDEBAR UI DESIGN
-# Similar to provided screenshot
+# ISR GENERATION ASSISTANT
+# FULL FIXED MODERN UI
 # ==========================================================
 
 import streamlit as st
@@ -26,9 +26,12 @@ st.markdown("""
 GLOBAL
 ===================================================== */
 
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
 .stApp {
     background-color: #f5f7fb;
-    font-family: 'Inter', sans-serif;
 }
 
 /* =====================================================
@@ -36,6 +39,7 @@ SIDEBAR
 ===================================================== */
 
 section[data-testid="stSidebar"] {
+
     background: linear-gradient(
         180deg,
         #03122e 0%,
@@ -45,28 +49,23 @@ section[data-testid="stSidebar"] {
     width: 270px !important;
 }
 
-/* Remove default padding */
-section[data-testid="stSidebar"] > div {
-    padding-top: 1rem;
-}
-
-/* Sidebar text */
 section[data-testid="stSidebar"] * {
     color: white;
 }
 
 /* =====================================================
-LOGO AREA
+LOGO
 ===================================================== */
 
 .sidebar-logo {
 
     display: flex;
+
     align-items: center;
 
     gap: 14px;
 
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 }
 
 .logo-circle {
@@ -79,43 +78,42 @@ LOGO AREA
     background: white;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    color: #03122e;
-
-    font-size: 22px;
-    font-weight: bold;
+    font-size: 24px;
 }
 
 .logo-title {
 
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 24px;
 
-    line-height: 1.2;
+    font-weight: 700;
 }
 
 .logo-subtitle {
 
+    color: #b6c2d9;
+
     font-size: 14px;
-    color: #c6d0e1;
 }
 
 /* =====================================================
 NAVIGATION
 ===================================================== */
 
-.nav-section-title {
+.nav-section {
 
-    color: #9caecf;
+    margin-top: 20px;
+
+    margin-bottom: 12px;
+
+    color: #9ba8c4;
 
     font-size: 12px;
 
     letter-spacing: 1px;
-
-    margin-top: 10px;
-    margin-bottom: 14px;
 
     text-transform: uppercase;
 }
@@ -126,26 +124,22 @@ NAVIGATION
 
     align-items: center;
 
-    gap: 14px;
+    gap: 12px;
 
     padding: 14px 16px;
 
     border-radius: 14px;
 
-    margin-bottom: 8px;
-
-    cursor: pointer;
+    margin-bottom: 10px;
 
     transition: 0.2s;
 }
 
-/* Hover */
 .nav-item:hover {
 
     background: rgba(255,255,255,0.08);
 }
 
-/* Active */
 .nav-active {
 
     background: linear-gradient(
@@ -158,21 +152,20 @@ NAVIGATION
         0px 4px 14px rgba(37,99,235,0.35);
 }
 
-/* Icon */
 .nav-icon {
 
     font-size: 20px;
 }
 
-/* Text */
 .nav-text {
 
     font-size: 16px;
+
     font-weight: 500;
 }
 
 /* =====================================================
-BOTTOM METRIC CARD
+BOTTOM CARD
 ===================================================== */
 
 .sidebar-card {
@@ -181,75 +174,42 @@ BOTTOM METRIC CARD
 
     background: rgba(255,255,255,0.05);
 
-    border: 1px solid rgba(255,255,255,0.08);
-
     border-radius: 18px;
 
     padding: 22px;
+
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
 .metric-title {
 
-    color: #c6d0e1;
+    color: #c8d3ea;
 
     font-size: 14px;
 }
 
 .metric-value {
 
-    font-size: 42px;
+    font-size: 40px;
 
     font-weight: 700;
 
-    margin-top: 8px;
+    margin-top: 6px;
 
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .divider {
 
-    border-top: 1px solid rgba(255,255,255,0.12);
+    border-top: 1px solid rgba(255,255,255,0.1);
 
     margin-top: 16px;
+
     margin-bottom: 16px;
 }
 
 /* =====================================================
-HEADER BUTTONS
-===================================================== */
-
-.top-btn {
-
-    border: 1px solid #dce3f0;
-
-    border-radius: 12px;
-
-    padding: 10px 18px;
-
-    background: white;
-
-    font-weight: 500;
-}
-
-/* =====================================================
-CARDS
-===================================================== */
-
-.main-card {
-
-    background: white;
-
-    border-radius: 18px;
-
-    padding: 22px;
-
-    border: 1px solid #e6e9f0;
-
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.04);
-}
-
-/* =====================================================
-TITLES
+PAGE TITLES
 ===================================================== */
 
 .page-title {
@@ -265,9 +225,146 @@ TITLES
 
     color: #64748b;
 
-    font-size: 16px;
-
     margin-top: -10px;
+
+    font-size: 16px;
+}
+
+/* =====================================================
+CARDS
+===================================================== */
+
+.main-card {
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    border: 1px solid #e4e9f2;
+
+    box-shadow:
+        0px 2px 8px rgba(0,0,0,0.04);
+}
+
+/* =====================================================
+METRICS
+===================================================== */
+
+.metric-icon {
+
+    font-size: 38px;
+
+    margin-bottom: 12px;
+}
+
+.metric-heading {
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.metric-number {
+
+    font-size: 42px;
+
+    font-weight: 700;
+
+    margin-top: 10px;
+}
+
+/* =====================================================
+BUTTONS
+===================================================== */
+
+.stButton > button {
+
+    border-radius: 12px;
+
+    padding: 10px 16px;
+
+    border: 1px solid #dce3f0;
+
+    background: white;
+
+    font-weight: 500;
+}
+
+/* =====================================================
+CONCERN ITEMS
+===================================================== */
+
+.concern-item {
+
+    padding: 18px;
+
+    border-radius: 14px;
+
+    border: 1px solid #e4e9f2;
+
+    margin-bottom: 12px;
+}
+
+.concern-item:hover {
+
+    border: 1px solid #2563eb;
+}
+
+/* =====================================================
+ISR BLOCKS
+===================================================== */
+
+.isr-block {
+
+    background: #f8fffb;
+
+    border: 1px solid #d7f0df;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    margin-bottom: 18px;
+}
+
+.tag {
+
+    display: inline-block;
+
+    background: #dcfce7;
+
+    color: #166534;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    margin-right: 6px;
+
+    margin-top: 6px;
+
+    font-size: 13px;
+}
+
+.nfr-tag {
+
+    display: inline-block;
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    margin-right: 6px;
+
+    margin-top: 6px;
+
+    font-size: 13px;
 }
 
 </style>
@@ -306,16 +403,18 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     # ------------------------------------------------------
-    # NAVIGATION
+    # NAVIGATION TITLE
     # ------------------------------------------------------
 
     st.markdown("""
-    <div class="nav-section-title">
+    <div class="nav-section">
     Navigation
     </div>
     """, unsafe_allow_html=True)
 
-    # ACTIVE ITEM
+    # ------------------------------------------------------
+    # ACTIVE NAV ITEM
+    # ------------------------------------------------------
 
     st.markdown("""
     <div class="nav-item nav-active">
@@ -331,7 +430,9 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+    # ------------------------------------------------------
     # OTHER ITEMS
+    # ------------------------------------------------------
 
     nav_items = [
 
@@ -344,7 +445,7 @@ with st.sidebar:
         ("ℹ️", "About")
     ]
 
-    for icon, text in nav_items:
+    for icon, label in nav_items:
 
         st.markdown(f"""
         <div class="nav-item">
@@ -354,14 +455,14 @@ with st.sidebar:
             </div>
 
             <div class="nav-text">
-            {text}
+            {label}
             </div>
 
         </div>
         """, unsafe_allow_html=True)
 
     # ------------------------------------------------------
-    # BOTTOM CARD
+    # SIDEBAR METRIC CARD
     # ------------------------------------------------------
 
     st.markdown("""
@@ -389,12 +490,8 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ==========================================================
-# MAIN PAGE
-# ==========================================================
-
-# ----------------------------------------------------------
 # HEADER
-# ----------------------------------------------------------
+# ==========================================================
 
 left, right = st.columns([4,2])
 
@@ -412,15 +509,15 @@ with left:
 
 with right:
 
-    c1, c2, c3 = st.columns(3)
+    b1, b2, b3 = st.columns(3)
 
-    with c1:
+    with b1:
         st.button("⬇ Export JSON")
 
-    with c2:
+    with b2:
         st.button("⬇ Export CSV")
 
-    with c3:
+    with b3:
         st.button("🌙")
 
 st.markdown("<br>", unsafe_allow_html=True)
@@ -448,25 +545,15 @@ for col, metric in zip([m1,m2,m3,m4], metrics):
         st.markdown(f"""
         <div class="main-card">
 
-            <div style="
-                font-size:38px;
-                margin-bottom:12px;
-            ">
+            <div class="metric-icon">
             {icon}
             </div>
 
-            <div style="
-                color:#64748b;
-                font-size:14px;
-            ">
+            <div class="metric-heading">
             {title}
             </div>
 
-            <div style="
-                font-size:42px;
-                font-weight:700;
-                margin-top:10px;
-            ">
+            <div class="metric-number">
             {value}
             </div>
 
@@ -476,10 +563,14 @@ for col, metric in zip([m1,m2,m3,m4], metrics):
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================================
-# SAMPLE CONTENT
+# MAIN CONTENT
 # ==========================================================
 
 left_panel, right_panel = st.columns([1.2, 2])
+
+# ==========================================================
+# CONCERNS PANEL
+# ==========================================================
 
 with left_panel:
 
@@ -492,26 +583,36 @@ with left_panel:
 
         <hr>
 
-        <h4>
-        1. Cognitive overload and increased stress...
-        </h4>
+        <div class="concern-item">
 
-        <p>
-        Health, Achievement, Benevolence
-        </p>
+            <h4>
+            1. Cognitive overload and increased stress...
+            </h4>
 
-        <hr>
+            <p>
+            Health, Achievement, Benevolence
+            </p>
 
-        <h4>
-        2. Privacy risks and loss of trust...
-        </h4>
+        </div>
 
-        <p>
-        Security, Privacy, Trust
-        </p>
+        <div class="concern-item">
+
+            <h4>
+            2. Privacy risks and loss of trust...
+            </h4>
+
+            <p>
+            Security, Privacy, Trust
+            </p>
+
+        </div>
 
     </div>
     """, unsafe_allow_html=True)
+
+# ==========================================================
+# ISR PANEL
+# ==========================================================
 
 with right_panel:
 
@@ -524,26 +625,89 @@ with right_panel:
 
         <hr>
 
-        <h4>
-        ISR-1
-        </h4>
+        <div class="isr-block">
 
-        <p>
-        The system shall provide configurable display modes
-        that allow healthcare professionals to filter and
-        prioritize patient information.
-        </p>
+            <h4>
+            ISR-1
+            </h4>
 
-        <hr>
+            <p>
+            The system shall provide configurable display
+            modes allowing healthcare professionals to
+            filter and prioritize patient information.
+            </p>
 
-        <h4>
-        ISR-2
-        </h4>
+            <br>
 
-        <p>
-        The system shall provide adaptive summarization
-        mechanisms to reduce cognitive overload.
-        </p>
+            <b>Targeted Human Values</b>
+
+            <br>
+
+            <span class="tag">Health</span>
+            <span class="tag">Achievement</span>
+            <span class="tag">Benevolence</span>
+
+            <br><br>
+
+            <b>Supported NFRs</b>
+
+            <br>
+
+            <span class="nfr-tag">Usability</span>
+            <span class="nfr-tag">Efficiency</span>
+            <span class="nfr-tag">User Control</span>
+
+            <br><br>
+
+            <b>Reasoning</b>
+
+            <p>
+            Reducing information overload minimizes stress
+            and improves decision-making efficiency.
+            </p>
+
+        </div>
+
+        <div class="isr-block">
+
+            <h4>
+            ISR-2
+            </h4>
+
+            <p>
+            The system shall provide adaptive
+            summarization mechanisms to reduce
+            cognitive overload.
+            </p>
+
+            <br>
+
+            <b>Targeted Human Values</b>
+
+            <br>
+
+            <span class="tag">Health</span>
+            <span class="tag">Achievement</span>
+
+            <br><br>
+
+            <b>Supported NFRs</b>
+
+            <br>
+
+            <span class="nfr-tag">Usability</span>
+            <span class="nfr-tag">Reliability</span>
+
+            <br><br>
+
+            <b>Reasoning</b>
+
+            <p>
+            Adaptive summarization surfaces only
+            relevant insights and reduces stress.
+            </p>
+
+        </div>
 
     </div>
     """, unsafe_allow_html=True)
