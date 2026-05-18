@@ -2,7 +2,7 @@
 # ISR GENERATION ASSISTANT
 # Multi-Page Interactive Streamlit Application
 # ==========================================================
-
+pip install pymupdf
 import os
 import fitz
 import streamlit as st
