@@ -59,7 +59,7 @@ section[data-testid="stSidebar"] * {
 }
 
 .sub-title {
-    color: #64748b;
+    color: 	#06b6d4;
 }
 
 .card {
