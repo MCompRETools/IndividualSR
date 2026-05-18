@@ -7,7 +7,7 @@ import os
 import fitz
 import streamlit as st
 import pandas as pd
-
+from streamlit_option_menu import option_menu
 # ==========================================================
 # PAGE CONFIG
 # ==========================================================
@@ -81,25 +81,56 @@ textarea {
 # SIDEBAR
 # ==========================================================
 
+
 with st.sidebar:
 
-    st.markdown("# 🧠 ISR Generation Assistant")
+    selected = option_menu(
+        menu_title="Navigation",
 
-    st.markdown("### Individual Sustainability Requirements")
-
-    st.markdown("---")
-
-    selected_page = st.radio(
-        "Navigation",
-        [
+        options=[
             "Dashboard",
             "System Scope",
             "Sustainability Knowledge",
             "Generate Concerns",
             "Produce ISR"
-        ]
-    )
+        ],
 
+        icons=[
+            "speedometer2",
+            "file-earmark-text",
+            "book",
+            "lightbulb",
+            "gear"
+        ],
+
+        menu_icon="cast",
+
+        default_index=0,
+
+        styles={
+            "container": {
+                "padding": "5!important",
+                "background-color": "#021024"
+            },
+
+            "icon": {
+                "color": "white",
+                "font-size": "18px"
+            },
+
+            "nav-link": {
+                "font-size": "16px",
+                "text-align": "left",
+                "margin":"4px",
+                "--hover-color": "#1d4ed8",
+                "border-radius": "12px",
+            },
+
+            "nav-link-selected": {
+                "background-color": "#2563eb",
+            },
+        }
+    )
 # ==========================================================
 # HEADER
 # ==========================================================
