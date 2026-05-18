@@ -1,8 +1,10 @@
 # ==========================================================
-# ISR GENERATION ASSISTANT DASHBOARD
-# Streamlit UI similar to provided design
+# ISR GENERATION ASSISTANT
+# Multi-Page Interactive Streamlit Application
 # ==========================================================
 
+import os
+import fitz
 import streamlit as st
 import pandas as pd
 
@@ -18,33 +20,30 @@ st.set_page_config(
 )
 
 # ==========================================================
+# FILE PATHS
+# ==========================================================
+
+UPDATED_KNOWLEDGE_FILE = "updatedSRknowledge.txt"
+
+# ==========================================================
 # CUSTOM CSS
 # ==========================================================
 
 st.markdown("""
 <style>
 
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-
-/* Main background */
 .stApp {
     background-color: #f5f7fb;
 }
 
-/* Sidebar */
 section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #03122e 0%, #021024 100%);
-    color: white;
 }
 
-/* Sidebar text */
 section[data-testid="stSidebar"] * {
     color: white;
 }
 
-/* Cards */
 .metric-card {
     background: white;
     padding: 22px;
@@ -53,65 +52,6 @@ section[data-testid="stSidebar"] * {
     border: 1px solid #e6e9f0;
 }
 
-.metric-title {
-    color: #5d6785;
-    font-size: 15px;
-    margin-bottom: 10px;
-}
-
-.metric-value {
-    font-size: 40px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-/* Concern card */
-.concern-card {
-    background: white;
-    padding: 18px;
-    border-radius: 14px;
-    border: 1px solid #dce3f0;
-    margin-bottom: 14px;
-    transition: 0.2s;
-}
-
-.concern-card:hover {
-    border: 1px solid #2563eb;
-    box-shadow: 0px 4px 14px rgba(37,99,235,0.15);
-}
-
-/* ISR cards */
-.isr-card {
-    background: #f8fffb;
-    border: 1px solid #d8f0df;
-    padding: 20px;
-    border-radius: 14px;
-    margin-bottom: 18px;
-}
-
-.tag {
-    display: inline-block;
-    background: #dcfce7;
-    color: #166534;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-right: 6px;
-    margin-top: 5px;
-    font-size: 13px;
-}
-
-.nfr-tag {
-    display: inline-block;
-    background: #dbeafe;
-    color: #1d4ed8;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-right: 6px;
-    margin-top: 5px;
-    font-size: 13px;
-}
-
-/* Header */
 .main-title {
     font-size: 36px;
     font-weight: 800;
@@ -120,23 +60,18 @@ section[data-testid="stSidebar"] * {
 
 .sub-title {
     color: #64748b;
-    margin-top: -10px;
-    margin-bottom: 20px;
 }
 
-/* Search */
-.search-box input {
-    border-radius: 12px !important;
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #dce3f0;
+    margin-bottom: 15px;
 }
 
-/* Buttons */
-.stButton>button {
-    border-radius: 10px;
-    border: none;
-    background: #2563eb;
-    color: white;
-    font-weight: 600;
-    padding: 10px 16px;
+textarea {
+    font-size: 15px !important;
 }
 
 </style>
@@ -154,41 +89,16 @@ with st.sidebar:
 
     st.markdown("---")
 
-    st.markdown("## Navigation")
-
-    st.markdown("🏠 Dashboard")
-    st.markdown("📋 Concerns & ISRs")
-    st.markdown("📄 System Scope")
-    st.markdown("📚 Sustainability Knowledge")
-    st.markdown("📊 Analytics")
-    st.markdown("⚙️ Settings")
-
-    st.markdown("---")
-
-    st.markdown("## Upload Files")
-
-    uploaded_csv = st.file_uploader(
-        "Upload Concern CSV",
-        type=["csv"]
+    selected_page = st.radio(
+        "Navigation",
+        [
+            "Dashboard",
+            "System Scope",
+            "Sustainability Knowledge",
+            "Generate Concerns",
+            "Produce ISR"
+        ]
     )
-
-    uploaded_scope = st.file_uploader(
-        "Upload System Scope",
-        type=["txt"]
-    )
-
-    uploaded_summary = st.file_uploader(
-        "Upload Sustainability Summary",
-        type=["txt"]
-    )
-
-    st.markdown("---")
-
-    st.markdown("## Actions")
-
-    st.button("Generate ISRs")
-
-    st.button("Export JSON")
 
 # ==========================================================
 # HEADER
@@ -196,184 +106,278 @@ with st.sidebar:
 
 st.markdown("""
 <div class="main-title">
-Concerns to ISR Generation
+ISR Generation Framework
 </div>
 
 <div class="sub-title">
-Transform sustainability concerns into actionable Individual Sustainability Requirements
+Interactive Sustainability-aware Requirements Engineering Platform
 </div>
 """, unsafe_allow_html=True)
-
-# ==========================================================
-# SAMPLE DATA
-# ==========================================================
-
-sample_data = [
-    {
-        "Concern":
-        "Cognitive overload and increased stress for healthcare professionals from managing large patient datasets.",
-        "Values":
-        ["Health", "Achievement", "Benevolence"],
-        "NFRs":
-        ["Usability", "User Control", "Efficiency"],
-        "ISR":
-        "The system shall provide configurable display modes allowing healthcare professionals to filter and prioritize patient information based on urgency.",
-        "Reasoning":
-        "Reducing information overload minimizes stress and improves decision-making efficiency."
-    },
-
-    {
-        "Concern":
-        "Over-reliance on AI leading to deskilling of healthcare professionals.",
-        "Values":
-        ["Achievement", "Autonomy"],
-        "NFRs":
-        ["Transparency", "Reliability"],
-        "ISR":
-        "The system shall require human validation for AI-generated clinical recommendations in high-risk scenarios.",
-        "Reasoning":
-        "Human review prevents blind trust in AI outputs and preserves professional judgment."
-    }
-]
-
-# ==========================================================
-# METRICS
-# ==========================================================
-
-m1, m2, m3, m4 = st.columns(4)
-
-with m1:
-    st.markdown("""
-    <div class="metric-card">
-        <div class="metric-title">Total Concerns</div>
-        <div class="metric-value">12</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m2:
-    st.markdown("""
-    <div class="metric-card">
-        <div class="metric-title">Total Questions</div>
-        <div class="metric-value">24</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m3:
-    st.markdown("""
-    <div class="metric-card">
-        <div class="metric-title">NFR Categories</div>
-        <div class="metric-value">6</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m4:
-    st.markdown("""
-    <div class="metric-card">
-        <div class="metric-title">Generated ISRs</div>
-        <div class="metric-value">21</div>
-    </div>
-    """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================================
-# FILTERS
+# DASHBOARD
 # ==========================================================
 
-f1, f2, f3 = st.columns([2,1,1])
+if selected_page == "Dashboard":
 
-with f1:
-    search = st.text_input(
-        "Search concerns..."
-    )
+    st.markdown("## Dashboard")
 
-with f2:
-    st.selectbox(
-        "Filter by NFR",
-        ["All", "Usability", "Safety", "Reliability"]
-    )
+    c1, c2, c3, c4 = st.columns(4)
 
-with f3:
-    st.selectbox(
-        "Filter by Human Value",
-        ["All", "Health", "Autonomy", "Achievement"]
-    )
-
-# ==========================================================
-# MAIN PANELS
-# ==========================================================
-
-left, right = st.columns([1.1, 1.9])
-
-# ==========================================================
-# LEFT PANEL - CONCERNS
-# ==========================================================
-
-with left:
-
-    st.markdown("## Concerns List")
-
-    for idx, item in enumerate(sample_data):
-
-        st.markdown(f"""
-        <div class="concern-card">
-
-        <h4>{idx+1}. {item['Concern']}</h4>
-
-        <div style="margin-top:10px;">
-        {" ".join([f'<span class="tag">{v}</span>' for v in item['Values']])}
+    with c1:
+        st.markdown("""
+        <div class="metric-card">
+            <h4>Total Concerns</h4>
+            <h1>12</h1>
         </div>
+        """, unsafe_allow_html=True)
 
+    with c2:
+        st.markdown("""
+        <div class="metric-card">
+            <h4>Total ISRs</h4>
+            <h1>21</h1>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c3:
+        st.markdown("""
+        <div class="metric-card">
+            <h4>Human Values</h4>
+            <h1>9</h1>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c4:
+        st.markdown("""
+        <div class="metric-card">
+            <h4>NFR Categories</h4>
+            <h1>6</h1>
         </div>
         """, unsafe_allow_html=True)
 
 # ==========================================================
-# RIGHT PANEL - GENERATED ISR
+# SYSTEM SCOPE PAGE
 # ==========================================================
 
-with right:
+elif selected_page == "System Scope":
 
-    st.markdown("## Generated ISRs")
+    st.markdown("## System Scope")
 
-    for idx, item in enumerate(sample_data):
+    uploaded_scope = st.file_uploader(
+        "Upload System Scope Document",
+        type=["txt"]
+    )
 
-        st.markdown(f"""
-        <div class="isr-card">
+    if uploaded_scope:
 
-        <h4>ISR-{idx+1}</h4>
+        scope_text = uploaded_scope.read().decode("utf-8")
 
-        <p style="font-size:16px;">
-        {item['ISR']}
-        </p>
+        edited_scope = st.text_area(
+            "Edit System Scope",
+            value=scope_text,
+            height=500
+        )
 
-        <hr>
+        if st.button("Save System Scope"):
 
-        <b>Targeted Human Values</b><br>
-        {" ".join([f'<span class="tag">{v}</span>' for v in item['Values']])}
+            with open(
+                "saved_system_scope.txt",
+                "w",
+                encoding="utf-8"
+            ) as f:
 
-        <br><br>
+                f.write(edited_scope)
 
-        <b>Supported NFRs</b><br>
-        {" ".join([f'<span class="nfr-tag">{n}</span>' for n in item['NFRs']])}
-
-        <br><br>
-
-        <b>Reasoning</b><br>
-        <p>
-        {item['Reasoning']}
-        </p>
-
-        </div>
-        """, unsafe_allow_html=True)
+            st.success("System scope saved.")
 
 # ==========================================================
-# FOOTER
+# SUSTAINABILITY KNOWLEDGE PAGE
 # ==========================================================
 
-st.markdown("---")
+elif selected_page == "Sustainability Knowledge":
 
-st.markdown("""
-<center>
-ISR Generation Assistant • Individual Sustainability Requirements Framework
-</center>
-""", unsafe_allow_html=True)
+    st.markdown("## Sustainability Knowledge")
+
+    uploaded_pdf = st.file_uploader(
+        "Upload Sustainability Knowledge PDF",
+        type=["pdf"]
+    )
+
+    extracted_text = ""
+
+    # ------------------------------------------------------
+    # LOAD UPDATED FILE IF EXISTS
+    # ------------------------------------------------------
+
+    if os.path.exists(UPDATED_KNOWLEDGE_FILE):
+
+        with open(
+            UPDATED_KNOWLEDGE_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            extracted_text = f.read()
+
+    # ------------------------------------------------------
+    # OTHERWISE LOAD PDF
+    # ------------------------------------------------------
+
+    elif uploaded_pdf:
+
+        pdf_doc = fitz.open(
+            stream=uploaded_pdf.read(),
+            filetype="pdf"
+        )
+
+        for page in pdf_doc:
+
+            extracted_text += page.get_text()
+
+    # ------------------------------------------------------
+    # DISPLAY EDITABLE TEXT
+    # ------------------------------------------------------
+
+    if extracted_text:
+
+        edited_knowledge = st.text_area(
+            "Edit Sustainability Knowledge",
+            value=extracted_text,
+            height=600
+        )
+
+        if st.button("Save Sustainability Knowledge"):
+
+            with open(
+                UPDATED_KNOWLEDGE_FILE,
+                "w",
+                encoding="utf-8"
+            ) as f:
+
+                f.write(edited_knowledge)
+
+            st.success(
+                "Updated sustainability knowledge saved."
+            )
+
+# ==========================================================
+# GENERATE CONCERNS PAGE
+# ==========================================================
+
+elif selected_page == "Generate Concerns":
+
+    st.markdown("## Generate Sustainability Concerns")
+
+    gemini_key = st.text_input(
+        "Enter Gemini API Key",
+        type="password"
+    )
+
+    concern_scope = st.text_area(
+        "Enter System Scope",
+        height=250
+    )
+
+    if st.button("Generate Concerns"):
+
+        if not gemini_key:
+
+            st.error("Please enter Gemini API Key.")
+
+        else:
+
+            st.success("Generating concerns...")
+
+            # ----------------------------------------------
+            # PLACEHOLDER RESPONSE
+            # Replace with Gemini API call
+            # ----------------------------------------------
+
+            generated_response = """
+1. Cognitive overload among healthcare professionals
+2. Over-reliance on AI-generated recommendations
+3. Reduced patient autonomy due to opaque consent handling
+4. Privacy risks from sensitive biometric data collection
+"""
+
+            st.markdown("### Generated Concerns")
+
+            st.text_area(
+                "Model Response",
+                value=generated_response,
+                height=300
+            )
+
+# ==========================================================
+# PRODUCE ISR PAGE
+# ==========================================================
+
+elif selected_page == "Produce ISR":
+
+    st.markdown("## Produce Individual Sustainability Requirements")
+
+    uploaded_concern_csv = st.file_uploader(
+        "Upload Concern CSV",
+        type=["csv"]
+    )
+
+    if uploaded_concern_csv:
+
+        df = pd.read_csv(uploaded_concern_csv)
+
+        st.success("Concern CSV Loaded")
+
+        selected_concern = st.selectbox(
+            "Select Concern",
+            df["Concern"]
+        )
+
+        row = df[df["Concern"] == selected_concern].iloc[0]
+
+        st.markdown("### Concern")
+
+        st.info(row["Concern"])
+
+        st.markdown("### Human Values")
+
+        st.write(row["Targeted Human Values"])
+
+        st.markdown("### Question")
+
+        st.warning(row["Question"])
+
+        st.markdown("### NFR Properties")
+
+        st.write(row["System Properties"])
+
+        st.markdown("### Analysis")
+
+        st.write(row["Analysis or Reasoning"])
+
+        if st.button("Generate ISR"):
+
+            generated_isr = """
+{
+  "requirement_id": "ISR-1",
+  "requirement": "The system shall provide configurable patient information prioritization mechanisms to reduce cognitive overload among healthcare professionals.",
+  "targeted_values": [
+      "Health",
+      "Achievement"
+  ],
+  "supported_nfrs": [
+      "Usability",
+      "Efficiency"
+  ],
+  "reasoning": "Reducing information overload improves usability and reduces stress."
+}
+"""
+
+            st.markdown("## Generated ISR")
+
+            st.code(
+                generated_isr,
+                language="json"
+            )
