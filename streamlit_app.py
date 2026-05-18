@@ -41,7 +41,7 @@ section[data-testid="stSidebar"] {
 }
 
 section[data-testid="stSidebar"] * {
-    color: white;
+    color: #06b6d4;
 }
 
 .metric-card {
@@ -107,30 +107,83 @@ with st.sidebar:
 
         default_index=0,
 
-        styles={
-            "container": {
-                "padding": "5!important",
-                "background-color": "#021024"
-            },
+       styles={
 
-            "icon": {
-                "color": "white",
-                "font-size": "18px"
-            },
+    # --------------------------------------------------
+    # MAIN CONTAINER
+    # --------------------------------------------------
 
-            "nav-link": {
-                "font-size": "16px",
-                "text-align": "left",
-                "margin":"4px",
-                "--hover-color": "#1d4ed8",
-                "border-radius": "12px",
-            },
+        "container": {
+    
+            "padding": "8px",
+    
+            "background-color": "#021024",
+    
+            "border-radius": "18px",
+        },
 
-            "nav-link-selected": {
-                "background-color": "#2563eb",
-            },
-        }
-    )
+    # --------------------------------------------------
+    # ICON STYLING
+    # --------------------------------------------------
+
+        "icon": {
+    
+            "color": "#06b6d4",
+    
+            "font-size": "22px",
+        },
+
+    # --------------------------------------------------
+    # NAVIGATION ITEM
+    # --------------------------------------------------
+
+        "nav-link": {
+    
+            "font-size": "20px",
+    
+            "font-weight": "500",
+    
+            "text-align": "left",
+    
+            "margin": "8px",
+    
+            "padding": "14px 18px",
+    
+            "border-radius": "16px",
+    
+            "color": "#06b6d4",
+    
+            "--hover-color": "#082f49",
+    
+        },
+
+    # --------------------------------------------------
+    # ACTIVE NAVIGATION ITEM
+    # --------------------------------------------------
+
+        "nav-link-selected": {
+    
+            "background-color": "#2563eb",
+    
+            "color": "white",
+    
+            "font-weight": "700",
+        },
+
+    # --------------------------------------------------
+    # MENU TITLE
+    # --------------------------------------------------
+
+        "menu-title": {
+    
+            "color": "#06b6d4",
+    
+            "font-size": "30px",
+    
+            "font-weight": "700",
+        },
+    }
+)
 # ==========================================================
 # HEADER
 # ==========================================================
