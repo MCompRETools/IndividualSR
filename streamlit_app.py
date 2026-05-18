@@ -37,7 +37,7 @@ st.markdown("""
 }
 
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #06b6d4 0%, #021024 100%);
+    background: linear-gradient(180deg, #021024 0%, #021024 100%);
 }
 
 section[data-testid="stSidebar"] * {
