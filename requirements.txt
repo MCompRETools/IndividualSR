@@ -2,3 +2,6 @@ streamlit
 pymupdf 
 pandas
 streamlit_option_menu
+PyPDF2 
+openai 
+google-generativeai
