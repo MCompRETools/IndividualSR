@@ -33,7 +33,7 @@ st.markdown("""
 <style>
 
 .stApp {
-    background-color: #f5f7fb;
+    background-color: 	#06b6d4;
 }
 
 section[data-testid="stSidebar"] {
