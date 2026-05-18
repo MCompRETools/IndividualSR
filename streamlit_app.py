@@ -8,6 +8,7 @@ import fitz
 import streamlit as st
 import pandas as pd
 from streamlit_option_menu import option_menu
+
 # ==========================================================
 # PAGE CONFIG
 # ==========================================================
@@ -349,69 +350,7 @@ elif selected_page == "System Scope":
 
 elif selected_page == "Sustainability Knowledge":
 
-    st.markdown("## Sustainability Knowledge")
-
-    uploaded_pdf = st.file_uploader(
-        "Upload Sustainability Knowledge PDF",
-        type=["pdf"]
-    )
-
-    extracted_text = ""
-
-    # ------------------------------------------------------
-    # LOAD UPDATED FILE IF EXISTS
-    # ------------------------------------------------------
-
-    if os.path.exists(UPDATED_KNOWLEDGE_FILE):
-
-        with open(
-            UPDATED_KNOWLEDGE_FILE,
-            "r",
-            encoding="utf-8"
-        ) as f:
-
-            extracted_text = f.read()
-
-    # ------------------------------------------------------
-    # OTHERWISE LOAD PDF
-    # ------------------------------------------------------
-
-    elif uploaded_pdf:
-
-        pdf_doc = fitz.open(
-            stream=uploaded_pdf.read(),
-            filetype="pdf"
-        )
-
-        for page in pdf_doc:
-
-            extracted_text += page.get_text()
-
-    # ------------------------------------------------------
-    # DISPLAY EDITABLE TEXT
-    # ------------------------------------------------------
-
-    if extracted_text:
-
-        edited_knowledge = st.text_area(
-            "Edit Sustainability Knowledge",
-            value=extracted_text,
-            height=600
-        )
-
-        if st.button("Save Sustainability Knowledge"):
-
-            with open(
-                UPDATED_KNOWLEDGE_FILE,
-                "w",
-                encoding="utf-8"
-            ) as f:
-
-                f.write(edited_knowledge)
-
-            st.success(
-                "Updated sustainability knowledge saved."
-            )
+    import susknowledge
 
 # ==========================================================
 # GENERATE CONCERNS PAGE
