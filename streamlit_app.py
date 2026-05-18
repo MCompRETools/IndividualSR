@@ -162,36 +162,102 @@ if selected_page == "Dashboard":
 # SYSTEM SCOPE PAGE
 # ==========================================================
 
+# ==========================================================
+# SYSTEM SCOPE PAGE
+# ==========================================================
+
 elif selected_page == "System Scope":
 
     st.markdown("## System Scope")
+
+    SYSTEM_SCOPE_FILE = "saved_system_scope.txt"
+
+    # ------------------------------------------------------
+    # INITIALIZE SESSION STATE
+    # ------------------------------------------------------
+
+    if "system_scope_text" not in st.session_state:
+        st.session_state.system_scope_text = ""
+
+    # ------------------------------------------------------
+    # LOAD EXISTING SAVED FILE
+    # ------------------------------------------------------
+
+    if (
+        st.session_state.system_scope_text == ""
+        and os.path.exists(SYSTEM_SCOPE_FILE)
+    ):
+
+        with open(
+            SYSTEM_SCOPE_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            st.session_state.system_scope_text = f.read()
+
+    # ------------------------------------------------------
+    # FILE UPLOAD
+    # ------------------------------------------------------
 
     uploaded_scope = st.file_uploader(
         "Upload System Scope Document",
         type=["txt"]
     )
 
-    if uploaded_scope:
+    # ------------------------------------------------------
+    # LOAD UPLOADED FILE
+    # ------------------------------------------------------
 
-        scope_text = uploaded_scope.read().decode("utf-8")
+    if uploaded_scope is not None:
 
-        edited_scope = st.text_area(
-            "Edit System Scope",
-            value=scope_text,
-            height=500
+        uploaded_text = uploaded_scope.read().decode("utf-8")
+
+        st.session_state.system_scope_text = uploaded_text
+
+    # ------------------------------------------------------
+    # DISPLAY EDITABLE AREA
+    # ------------------------------------------------------
+
+    edited_scope = st.text_area(
+        "Edit System Scope",
+        value=st.session_state.system_scope_text,
+        height=600
+    )
+
+    # ------------------------------------------------------
+    # UPDATE SESSION STATE LIVE
+    # ------------------------------------------------------
+
+    st.session_state.system_scope_text = edited_scope
+
+    # ------------------------------------------------------
+    # SAVE BUTTON
+    # ------------------------------------------------------
+
+    if st.button("Save System Scope"):
+
+        with open(
+            SYSTEM_SCOPE_FILE,
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            f.write(edited_scope)
+
+        st.success(
+            "System scope saved successfully."
         )
 
-        if st.button("Save System Scope"):
+    # ------------------------------------------------------
+    # SHOW SAVE STATUS
+    # ------------------------------------------------------
 
-            with open(
-                "saved_system_scope.txt",
-                "w",
-                encoding="utf-8"
-            ) as f:
+    if os.path.exists(SYSTEM_SCOPE_FILE):
 
-                f.write(edited_scope)
-
-            st.success("System scope saved.")
+        st.info(
+            f"Current persisted file: {SYSTEM_SCOPE_FILE}"
+        )
 
 # ==========================================================
 # SUSTAINABILITY KNOWLEDGE PAGE
