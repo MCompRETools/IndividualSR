@@ -84,7 +84,7 @@ textarea {
 
 with st.sidebar:
 
-    selected = option_menu(
+    selected_page = option_menu(
         menu_title="Navigation",
 
         options=[
