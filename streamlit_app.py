@@ -1068,7 +1068,22 @@ elif selected_page == "Sustainability Knowledge":
                     edited_text,
                     REVISED_FILE
                 )
-
+                # ------------------------------------------
+                        # GITHUB SAVE
+                        # ------------------------------------------
+                        
+                        github_success = save_to_github(
+                        
+                            file_content=edited_text,
+                        
+                            repo_name="MCompRETools/IndividualSR",
+                        
+                            file_path="revised.txt",
+                        
+                            github_token=st.secrets["GITHUB_TOKEN"],
+                        
+                            commit_message="Update revised sustainability knowledge"
+                        )
                 st.session_state[
                     "knowledge_text"
                 ] = edited_text
@@ -1227,22 +1242,7 @@ elif selected_page == "Sustainability Knowledge":
                         )
 
 
-                        # ------------------------------------------
-                        # GITHUB SAVE
-                        # ------------------------------------------
                         
-                        github_success = save_to_github(
-                        
-                            file_content=edited_text,
-                        
-                            repo_name="MCompRETools/IndividualSR",
-                        
-                            file_path="revised.txt",
-                        
-                            github_token=st.secrets["GITHUB_TOKEN"],
-                        
-                            commit_message="Update revised sustainability knowledge"
-                        )
                         if "workflow_state" in st.session_state:
 
                             st.session_state.workflow_state[
