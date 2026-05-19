@@ -377,7 +377,7 @@ with right:
                         st.session_state.workflow_state[
                             "knowledge"
                         ] = "failed"
-                        st.error(str(e))
+                    st.error(str(e))
 
 # ==========================================================
 # LOAD EXISTING SUMMARY
