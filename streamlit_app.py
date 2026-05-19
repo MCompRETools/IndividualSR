@@ -72,37 +72,41 @@ def workflow_step(title, completed):
     </div>
     """
 
-st.markdown(f"""
+    workflow_html = f"""
+    <div style="
+        display:flex;
+        gap:18px;
+        margin-top:20px;
+        margin-bottom:35px;
+    ">
 
-<div style="
-    display:flex;
-    gap:18px;
-    margin-top:20px;
-    margin-bottom:35px;
-">
+    {workflow_step(
+        "System Scope Elicitation",
+        st.session_state.scope_uploaded
+    )}
 
-{workflow_step(
-    "System Scope Elicitation",
-    st.session_state.scope_uploaded
-)}
+    {workflow_step(
+        "Knowledge Summarization",
+        st.session_state.knowledge_summarized
+    )}
 
-{workflow_step(
-    "Knowledge Summarization",
-    st.session_state.knowledge_summarized
-)}
+    {workflow_step(
+        "Generate Sustainability Concerns",
+        st.session_state.concerns_generated
+    )}
 
-{workflow_step(
-    "Generate Sustainability Concerns",
-    st.session_state.concerns_generated
-)}
-
-{workflow_step(
-    "Produce ISR",
-    st.session_state.isr_generated
-)}
+    {workflow_step(
+        "Produce ISR",
+        st.session_state.isr_generated
+    )}
 
 </div>
+"""
 
+st.markdown(
+    workflow_html,
+    unsafe_allow_html=True
+)
 """, unsafe_allow_html=True)
 # ==========================================================
 # FILE PATHS
