@@ -475,24 +475,8 @@ elif selected_page == "System Scope":
 # ==========================================================
 
 elif selected_page == "Sustainability Knowledge":
+    import susknowledge
 
-    st.markdown("""
-    <div class='content-card'>
-    <h2>Sustainability Knowledge</h2>
-    </div>
-    """, unsafe_allow_html=True)
-
-    knowledge = st.text_area(
-        "Knowledge Content",
-        value="Sustainability knowledge appears here...",
-        height=500
-    )
-
-    if st.button("Generate Summary"):
-
-        st.session_state.knowledge_summarized = True
-
-        st.success("Knowledge summarized.")
 
 # ==========================================================
 # GENERATE CONCERNS
