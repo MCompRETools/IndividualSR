@@ -1050,7 +1050,9 @@ elif selected_page == "Sustainability Knowledge":
 
             key="knowledge_text_area",
 
-            height=700
+            height=700,
+
+            width= 300
         )
 
         # --------------------------------------------------
