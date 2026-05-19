@@ -290,6 +290,38 @@ Individual Sustainability Requirements
 """, unsafe_allow_html=True)
 
 # ==========================================================
+# TOP ACTION BAR
+# ==========================================================
+
+top_col1, top_col2 = st.columns([8, 1])
+
+with top_col2:
+
+    if st.button("🔄 Reset Workflow"):
+
+        st.session_state.workflow_state = {
+
+            "scope": "pending",
+
+            "knowledge": "pending",
+
+            "concerns": "pending",
+
+            "isr": "pending"
+        }
+
+        # ---------------------------------------------
+        # OPTIONAL: remove saved files
+        # ---------------------------------------------
+
+        if os.path.exists("saved_scope.txt"):
+            os.remove("saved_scope.txt")
+
+        if os.path.exists("revised.txt"):
+            os.remove("revised.txt")
+
+        st.rerun()
+# ==========================================================
 # CALCULATE PROGRESS
 # ==========================================================
 
