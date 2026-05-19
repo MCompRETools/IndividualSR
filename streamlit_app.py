@@ -460,7 +460,7 @@ elif selected_page == "Generate Concerns":
         else:
 
             st.success("Generating concerns...")
-
+            st.session_state.concerns_generated = True
             # ----------------------------------------------
             # PLACEHOLDER RESPONSE
             # Replace with Gemini API call
@@ -526,7 +526,7 @@ elif selected_page == "Produce ISR":
         st.markdown("### Analysis")
 
         st.write(row["Analysis or Reasoning"])
-
+        st.session_state.isr_generated = True
         if st.button("Generate ISR"):
 
             generated_isr = """
