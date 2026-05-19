@@ -17,6 +17,9 @@ st.set_page_config(
 if "scope_uploaded" not in st.session_state:
     st.session_state.scope_uploaded = False
 
+if "scope_saved" not in st.session_state:
+    st.session_state.scope_saved = False
+
 if "knowledge_summarized" not in st.session_state:
     st.session_state.knowledge_summarized = False
 
@@ -223,6 +226,7 @@ import streamlit.components.v1 as components
 
 steps = [
     ("System Scope", st.session_state.scope_uploaded),
+    ("System Scope", st.session_state.scope_saved),
     ("Knowledge Summary", st.session_state.knowledge_summarized),
     ("Generate Concerns", st.session_state.concerns_generated),
     ("Produce ISR", st.session_state.isr_generated)
@@ -424,7 +428,9 @@ if selected_page == "Dashboard":
             <h1>6</h1>
         </div>
         """, unsafe_allow_html=True)
-
+# ==========================================================
+# SYSTEM SCOPE PAGE
+# ==========================================================
 elif selected_page == "System Scope":
 
     st.markdown("""
@@ -443,7 +449,6 @@ elif selected_page == "System Scope":
     if uploaded_file is not None:
 
         scope_text = uploaded_file.read().decode("utf-8")
-
         st.session_state.scope_uploaded = True
 
     edited_scope = st.text_area(
@@ -463,6 +468,8 @@ elif selected_page == "System Scope":
             f.write(edited_scope)
 
         st.success("System scope saved.")
+        st.session_state.scope_saved = True
+
 
 # ==========================================================
 # SUSTAINABILITY KNOWLEDGE
