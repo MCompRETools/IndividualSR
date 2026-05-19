@@ -377,6 +377,11 @@ components.html(
     height=180,
     scrolling=False
 )
+# ==========================================================
+# PAGE NAVIGATION
+# ==========================================================
+
+selected_page = st.session_state.selected_page
 
 # ==========================================================
 # DASHBOARD
