@@ -118,20 +118,32 @@ UPDATED_KNOWLEDGE_FILE = "updatedSRknowledge.txt"
 # CUSTOM CSS
 # ==========================================================
 
-CUSTOM_CSS = r"""
+CUSTOM_CSS = """
 <style>
 
 .stApp {
     background-color: #e0e7ff;
 }
 
+/* =====================================================
+SIDEBAR
+===================================================== */
+
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #021024 0%, #021024 100%);
+    background-color: #021024;
 }
 
+/* =====================================================
+SIDEBAR TEXT
+===================================================== */
+
 section[data-testid="stSidebar"] * {
-    color: #06b6d4;
+    color: #06b6d4 !important;
 }
+
+/* =====================================================
+METRIC CARDS
+===================================================== */
 
 .metric-card {
     background: white;
@@ -141,15 +153,27 @@ section[data-testid="stSidebar"] * {
     border: 1px solid #e6e9f0;
 }
 
+/* =====================================================
+MAIN TITLE
+===================================================== */
+
 .main-title {
     font-size: 36px;
     font-weight: 800;
     color: #0f172a;
 }
 
+/* =====================================================
+SUB TITLE
+===================================================== */
+
 .sub-title {
     color: #06b6d4;
 }
+
+/* =====================================================
+CONTENT CARDS
+===================================================== */
 
 .card {
     background: white;
@@ -158,6 +182,10 @@ section[data-testid="stSidebar"] * {
     border: 1px solid #dce3f0;
     margin-bottom: 15px;
 }
+
+/* =====================================================
+TEXTAREA
+===================================================== */
 
 textarea {
     font-size: 15px !important;
