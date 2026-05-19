@@ -1052,7 +1052,7 @@ elif selected_page == "Sustainability Knowledge":
 
             height=700,
 
-            width= 300
+            width= 550
         )
 
         # --------------------------------------------------
