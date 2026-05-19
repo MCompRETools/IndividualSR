@@ -215,22 +215,21 @@ Individual Sustainability Requirements
 """, unsafe_allow_html=True)
 
 # ==========================================================
-# ENTERPRISE WORKFLOW PROGRESS TRACKER
-# FULL REVISED VERSION
+# ENTERPRISE RESPONSIVE WORKFLOW PROGRESS BAR
+# REVISED VERSION
 # ==========================================================
 
 import streamlit as st
 import streamlit.components.v1 as components
 
 # ==========================================================
-# INITIALIZE SESSION STATE
+# SESSION STATE INITIALIZATION
 # ==========================================================
 
 if "workflow_state" not in st.session_state:
 
     st.session_state.workflow_state = {
 
-        # possible values:
         # pending
         # uploaded
         # saved
@@ -282,6 +281,17 @@ STEP_CONFIG = {
 }
 
 # ==========================================================
+# STEP ORDER
+# ==========================================================
+
+STEP_ORDER = [
+    "scope",
+    "knowledge",
+    "concerns",
+    "isr"
+]
+
+# ==========================================================
 # STATE COLORS
 # ==========================================================
 
@@ -299,25 +309,6 @@ STATE_COLORS = {
 }
 
 # ==========================================================
-# STEP ORDER
-# ==========================================================
-
-STEP_ORDER = [
-    "scope",
-    "knowledge",
-    "concerns",
-    "isr"
-]
-
-# ==========================================================
-# UPDATE WORKFLOW STATE
-# ==========================================================
-
-def update_workflow_state(step_name, state):
-
-    st.session_state.workflow_state[step_name] = state
-
-# ==========================================================
 # CALCULATE PROGRESS %
 # ==========================================================
 
@@ -330,7 +321,7 @@ def calculate_progress():
         state = st.session_state.workflow_state[step]
 
         # ---------------------------------------------
-        # Partial completion
+        # PARTIAL COMPLETION
         # ---------------------------------------------
 
         if state == "uploaded":
@@ -338,7 +329,7 @@ def calculate_progress():
             score += 0.5
 
         # ---------------------------------------------
-        # Full completion
+        # FULL COMPLETION
         # ---------------------------------------------
 
         elif state == "saved":
@@ -352,223 +343,281 @@ def calculate_progress():
     return progress_percent
 
 # ==========================================================
-# RENDER PROGRESS BAR
+# BUILD HTML
 # ==========================================================
 
-def render_workflow():
+progress_html = """
+<style>
 
-    progress_percent = calculate_progress()
+.progress-container {
 
-    html = """
+    width: 100%;
 
-    <style>
+    margin-top: 10px;
 
-    .workflow-container {
+    margin-bottom: 40px;
+}
 
-        width: 100%;
+.progressbar {
 
-        margin-top: 20px;
+    display: flex;
 
-        margin-bottom: 40px;
+    justify-content: space-between;
 
-        padding-left: 10px;
+    position: relative;
 
-        padding-right: 10px;
-    }
+    margin: 50px 0;
 
-    .workflow-bar {
+    padding: 0;
+}
 
-        display: flex;
+.progressbar::before {
 
-        justify-content: space-between;
+    content: '';
 
-        position: relative;
+    position: absolute;
 
-        margin-top: 60px;
-    }
+    top: 28px;
 
-    .workflow-bar::before {
+    left: 0;
 
-        content: '';
+    width: 100%;
 
-        position: absolute;
+    height: 10px;
 
-        top: 28px;
+    background: #d1d5db;
 
-        left: 0;
+    z-index: 0;
 
-        width: 100%;
+    border-radius: 20px;
+}
 
-        height: 10px;
+.progress-step {
 
-        background: #d1d5db;
+    position: relative;
 
-        border-radius: 20px;
+    text-align: center;
 
-        z-index: 0;
-    }
+    flex: 1;
 
-    .workflow-progress {
+    z-index: 1;
+}
 
-        position: absolute;
+.progress-step-circle {
 
-        top: 28px;
+    width: 58px;
 
-        left: 0;
+    height: 58px;
 
-        height: 10px;
+    line-height: 58px;
 
-        background: linear-gradient(
-            90deg,
-            #22c55e,
-            #16a34a
-        );
+    border-radius: 50%;
 
-        border-radius: 20px;
+    color: white;
 
-        z-index: 1;
+    margin: auto;
 
-        transition: width 0.6s ease-in-out;
-    }
+    font-size: 28px;
 
-    .workflow-step {
+    font-weight: bold;
 
-        position: relative;
+    border: 4px solid white;
 
-        text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 
-        flex: 1;
+    transition: all 0.3s ease-in-out;
+}
 
-        z-index: 2;
-    }
+.progress-step-label {
 
-    .circle {
+    margin-top: 14px;
 
-        width: 60px;
+    font-size: 15px;
 
-        height: 60px;
+    font-weight: 700;
 
-        line-height: 60px;
+    color: #334155;
+}
 
-        border-radius: 50%;
+.progress-step-status {
 
-        margin: auto;
+    margin-top: 6px;
 
-        font-size: 28px;
+    font-size: 11px;
 
-        font-weight: bold;
+    font-weight: 700;
 
-        color: white;
+    letter-spacing: 1px;
 
-        border: 4px solid white;
+    color: #64748b;
+}
 
-        box-shadow: 0px 3px 12px rgba(0,0,0,0.18);
+.progress-line {
 
-        transition: all 0.3s ease-in-out;
-    }
+    position: absolute;
 
-    .step-label {
+    top: 28px;
 
-        margin-top: 14px;
+    left: 0;
 
-        font-size: 15px;
+    height: 10px;
 
-        font-weight: 700;
+    background: linear-gradient(
+        90deg,
+        #22c55e,
+        #16a34a
+    );
 
-        color: #0f172a;
-    }
+    z-index: 0;
 
-    .step-status {
+    border-radius: 20px;
 
-        margin-top: 8px;
+    transition: width 0.5s ease-in-out;
+}
 
-        font-size: 12px;
+</style>
 
-        font-weight: 700;
+<div class="progress-container">
 
-        color: #64748b;
+    <div class="progressbar">
+"""
 
-        letter-spacing: 0.5px;
-    }
+# ==========================================================
+# PROGRESS %
+# ==========================================================
 
-    </style>
+progress_percent = calculate_progress()
 
-    <div class="workflow-container">
+progress_html += f"""
+<div class="progress-line"
+     style="width:{progress_percent}%;">
+</div>
+"""
 
-        <div class="workflow-bar">
-    """
+# ==========================================================
+# STEP CIRCLES
+# ==========================================================
 
-    # ======================================================
-    # PROGRESS LINE
-    # ======================================================
+for step in STEP_ORDER:
 
-    html += f"""
+    config = STEP_CONFIG[step]
 
-    <div
-        class="workflow-progress"
-        style="width:{progress_percent}%;">
-    </div>
+    label = config["label"]
 
-    """
+    icon = config["icon"]
 
-    # ======================================================
-    # STEP CIRCLES
-    # ======================================================
+    state = st.session_state.workflow_state[step]
 
-    for step in STEP_ORDER:
+    color = STATE_COLORS[state]
 
-        state = st.session_state.workflow_state[step]
+    progress_html += f"""
 
-        config = STEP_CONFIG[step]
+    <div class="progress-step">
 
-        label = config["label"]
-
-        icon = config["icon"]
-
-        color = STATE_COLORS[state]
-
-        html += f"""
-
-        <div class="workflow-step">
-
-            <div
-                class="circle"
-                style="background:{color};"
-            >
-                {icon}
-            </div>
-
-            <div class="step-label">
-                {label}
-            </div>
-
-            <div class="step-status">
-                {state.upper()}
-            </div>
-
+        <div
+            class="progress-step-circle"
+            style="background:{color};"
+        >
+            {icon}
         </div>
 
-        """
+        <div class="progress-step-label">
+            {label}
+        </div>
 
-    html += """
-
+        <div class="progress-step-status">
+            {state.upper()}
         </div>
 
     </div>
-
     """
 
-    components.html(
-        html,
-        height=220,
-        scrolling=False
-    )
+progress_html += """
+    </div>
+</div>
+"""
 
 # ==========================================================
-# RENDER WORKFLOW BAR
+# RENDER
 # ==========================================================
 
-render_workflow()
+components.html(
+    progress_html,
+    height=210,
+    scrolling=False
+)
+
+# ==========================================================
+# EXAMPLE STATE UPDATE ACTIONS
+# ==========================================================
+
+st.markdown("---")
+
+c1, c2, c3, c4 = st.columns(4)
+
+# ==========================================================
+# SYSTEM SCOPE
+# ==========================================================
+
+with c1:
+
+    if st.button("Upload Scope"):
+
+        st.session_state.workflow_state[
+            "scope"
+        ] = "uploaded"
+
+    if st.button("Save Scope"):
+
+        st.session_state.workflow_state[
+            "scope"
+        ] = "saved"
+
+# ==========================================================
+# KNOWLEDGE SUMMARY
+# ==========================================================
+
+with c2:
+
+    if st.button("Summarize Knowledge"):
+
+        st.session_state.workflow_state[
+            "knowledge"
+        ] = "saved"
+
+# ==========================================================
+# GENERATE CONCERNS
+# ==========================================================
+
+with c3:
+
+    if st.button("Generate Concerns"):
+
+        st.session_state.workflow_state[
+            "concerns"
+        ] = "saved"
+
+# ==========================================================
+# PRODUCE ISR
+# ==========================================================
+
+with c4:
+
+    if st.button("Generate ISR"):
+
+        st.session_state.workflow_state[
+            "isr"
+        ] = "saved"
+
+# ==========================================================
+# FAILURE EXAMPLE
+# ==========================================================
+
+if st.button("Simulate Failure"):
+
+    st.session_state.workflow_state[
+        "knowledge"
+    ] = "failed"
 
 # ==========================================================
 # PAGE NAVIGATION
