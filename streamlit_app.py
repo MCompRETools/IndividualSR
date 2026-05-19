@@ -864,11 +864,6 @@ elif selected_page == "System Scope":
             "System scope saved successfully."
         )
 
-# ==========================================================
-# SUSTAINABILITY KNOWLEDGE
-# ==========================================================
-
-elif selected_page == "Sustainability Knowledge":
 
 
 # ==========================================================
