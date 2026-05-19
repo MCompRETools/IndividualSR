@@ -215,173 +215,440 @@ Individual Sustainability Requirements
 """, unsafe_allow_html=True)
 
 # ==========================================================
-# RESPONSIVE WORKFLOW PROGRESS BAR
+# ENTERPRISE WORKFLOW PROGRESS TRACKER
+# FULL REVISED VERSION
 # ==========================================================
 
+import streamlit as st
 import streamlit.components.v1 as components
 
-# ----------------------------------------------------------
-# STEP STATUS
-# ----------------------------------------------------------
+# ==========================================================
+# INITIALIZE SESSION STATE
+# ==========================================================
 
-steps = [
-    ("System Scope", st.session_state.scope_uploaded),
-    ("System Scope", st.session_state.scope_saved),
-    ("Knowledge Summary", st.session_state.knowledge_summarized),
-    ("Generate Concerns", st.session_state.concerns_generated),
-    ("Produce ISR", st.session_state.isr_generated)
+if "workflow_state" not in st.session_state:
+
+    st.session_state.workflow_state = {
+
+        # possible values:
+        # pending
+        # uploaded
+        # saved
+        # active
+        # failed
+
+        "scope": "pending",
+
+        "knowledge": "pending",
+
+        "concerns": "pending",
+
+        "isr": "pending"
+    }
+
+# ==========================================================
+# STEP CONFIGURATION
+# ==========================================================
+
+STEP_CONFIG = {
+
+    "scope": {
+
+        "label": "System Scope",
+
+        "icon": "📄"
+    },
+
+    "knowledge": {
+
+        "label": "Knowledge Summary",
+
+        "icon": "📘"
+    },
+
+    "concerns": {
+
+        "label": "Generate Concerns",
+
+        "icon": "💡"
+    },
+
+    "isr": {
+
+        "label": "Produce ISR",
+
+        "icon": "⚙️"
+    }
+}
+
+# ==========================================================
+# STATE COLORS
+# ==========================================================
+
+STATE_COLORS = {
+
+    "pending": "#facc15",
+
+    "uploaded": "#86efac",
+
+    "saved": "#22c55e",
+
+    "active": "#2563eb",
+
+    "failed": "#ef4444"
+}
+
+# ==========================================================
+# STEP ORDER
+# ==========================================================
+
+STEP_ORDER = [
+    "scope",
+    "knowledge",
+    "concerns",
+    "isr"
 ]
 
-# ----------------------------------------------------------
-# BUILD HTML
-# ----------------------------------------------------------
+# ==========================================================
+# UPDATE WORKFLOW STATE
+# ==========================================================
 
-progress_html = """
-<style>
+def update_workflow_state(step_name, state):
 
-.progress-container {
+    st.session_state.workflow_state[step_name] = state
 
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 40px;
-}
+# ==========================================================
+# CALCULATE PROGRESS %
+# ==========================================================
 
-.progressbar {
+def calculate_progress():
 
-    counter-reset: step;
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    margin: 40px 0;
-    padding: 0;
-}
+    score = 0
 
-.progressbar::before {
+    for step in STEP_ORDER:
 
-    content: '';
-    position: absolute;
-    top: 28px;
-    left: 0;
-    width: 100%;
-    height: 8px;
-    background: #d1d5db;
-    z-index: 0;
-    border-radius: 10px;
-}
+        state = st.session_state.workflow_state[step]
 
-.progress-step {
+        # ---------------------------------------------
+        # Partial completion
+        # ---------------------------------------------
 
-    position: relative;
-    text-align: center;
-    flex: 1;
-    z-index: 1;
-}
+        if state == "uploaded":
 
-.progress-step-circle {
+            score += 0.5
 
-    width: 55px;
-    height: 55px;
-    line-height: 55px;
-    border-radius: 50%;
-    background: #facc15;
-    color: white;
-    margin: auto;
-    font-size: 22px;
-    font-weight: bold;
-    border: 4px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
+        # ---------------------------------------------
+        # Full completion
+        # ---------------------------------------------
 
-.progress-step.active .progress-step-circle {
+        elif state == "saved":
 
-    background: #22c55e;
-}
+            score += 1
 
-.progress-step-label {
-
-    margin-top: 14px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #334155;
-}
-
-.progress-line {
-
-    position: absolute;
-    top: 28px;
-    left: 0;
-    height: 8px;
-    background: #22c55e;
-    z-index: 0;
-    border-radius: 10px;
-    transition: width 0.5s ease-in-out;
-}
-
-</style>
-
-<div class="progress-container">
-
-    <div class="progressbar">
-"""
-
-# ----------------------------------------------------------
-# PROGRESS %
-# ----------------------------------------------------------
-
-completed_steps = sum([1 for _, status in steps if status])
-
-progress_percent = 0
-
-if len(steps) > 1:
     progress_percent = (
-        (completed_steps - 1)
-        / (len(steps) - 1)
+        score / len(STEP_ORDER)
     ) * 100
 
-progress_percent = max(0, progress_percent)
+    return progress_percent
 
-progress_html += f"""
-<div class="progress-line"
-     style="width:{progress_percent}%;">
-</div>
-"""
+# ==========================================================
+# RENDER PROGRESS BAR
+# ==========================================================
 
-# ----------------------------------------------------------
-# STEP CIRCLES
-# ----------------------------------------------------------
+def render_workflow():
 
-for idx, (label, status) in enumerate(steps):
+    progress_percent = calculate_progress()
 
-    active_class = "active" if status else ""
+    html = """
 
-    progress_html += f"""
-    <div class="progress-step {active_class}">
+    <style>
 
-        <div class="progress-step-circle">
-            {idx + 1}
-        </div>
+    .workflow-container {
 
-        <div class="progress-step-label">
-            {label}
-        </div>
+        width: 100%;
 
-    </div>
+        margin-top: 20px;
+
+        margin-bottom: 40px;
+
+        padding-left: 10px;
+
+        padding-right: 10px;
+    }
+
+    .workflow-bar {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        position: relative;
+
+        margin-top: 60px;
+    }
+
+    .workflow-bar::before {
+
+        content: '';
+
+        position: absolute;
+
+        top: 28px;
+
+        left: 0;
+
+        width: 100%;
+
+        height: 10px;
+
+        background: #d1d5db;
+
+        border-radius: 20px;
+
+        z-index: 0;
+    }
+
+    .workflow-progress {
+
+        position: absolute;
+
+        top: 28px;
+
+        left: 0;
+
+        height: 10px;
+
+        background: linear-gradient(
+            90deg,
+            #22c55e,
+            #16a34a
+        );
+
+        border-radius: 20px;
+
+        z-index: 1;
+
+        transition: width 0.6s ease-in-out;
+    }
+
+    .workflow-step {
+
+        position: relative;
+
+        text-align: center;
+
+        flex: 1;
+
+        z-index: 2;
+    }
+
+    .circle {
+
+        width: 60px;
+
+        height: 60px;
+
+        line-height: 60px;
+
+        border-radius: 50%;
+
+        margin: auto;
+
+        font-size: 28px;
+
+        font-weight: bold;
+
+        color: white;
+
+        border: 4px solid white;
+
+        box-shadow: 0px 3px 12px rgba(0,0,0,0.18);
+
+        transition: all 0.3s ease-in-out;
+    }
+
+    .step-label {
+
+        margin-top: 14px;
+
+        font-size: 15px;
+
+        font-weight: 700;
+
+        color: #0f172a;
+    }
+
+    .step-status {
+
+        margin-top: 8px;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        color: #64748b;
+
+        letter-spacing: 0.5px;
+    }
+
+    </style>
+
+    <div class="workflow-container">
+
+        <div class="workflow-bar">
     """
 
-progress_html += """
+    # ======================================================
+    # PROGRESS LINE
+    # ======================================================
+
+    html += f"""
+
+    <div
+        class="workflow-progress"
+        style="width:{progress_percent}%;">
     </div>
-</div>
-"""
 
-# ----------------------------------------------------------
-# RENDER
-# ----------------------------------------------------------
+    """
 
-components.html(
-    progress_html,
-    height=180,
-    scrolling=False
-)
+    # ======================================================
+    # STEP CIRCLES
+    # ======================================================
+
+    for step in STEP_ORDER:
+
+        state = st.session_state.workflow_state[step]
+
+        config = STEP_CONFIG[step]
+
+        label = config["label"]
+
+        icon = config["icon"]
+
+        color = STATE_COLORS[state]
+
+        html += f"""
+
+        <div class="workflow-step">
+
+            <div
+                class="circle"
+                style="background:{color};"
+            >
+                {icon}
+            </div>
+
+            <div class="step-label">
+                {label}
+            </div>
+
+            <div class="step-status">
+                {state.upper()}
+            </div>
+
+        </div>
+
+        """
+
+    html += """
+
+        </div>
+
+    </div>
+
+    """
+
+    components.html(
+        html,
+        height=220,
+        scrolling=False
+    )
+
+# ==========================================================
+# RENDER WORKFLOW BAR
+# ==========================================================
+
+render_workflow()
+
+# ==========================================================
+# EXAMPLE UI ACTIONS
+# ==========================================================
+
+st.markdown("---")
+
+st.subheader("Example Workflow Actions")
+
+c1, c2, c3, c4 = st.columns(4)
+
+# ==========================================================
+# SYSTEM SCOPE
+# ==========================================================
+
+with c1:
+
+    if st.button("Upload Scope"):
+
+        update_workflow_state(
+            "scope",
+            "uploaded"
+        )
+
+    if st.button("Save Scope"):
+
+        update_workflow_state(
+            "scope",
+            "saved"
+        )
+
+# ==========================================================
+# KNOWLEDGE
+# ==========================================================
+
+with c2:
+
+    if st.button("Summarize Knowledge"):
+
+        update_workflow_state(
+            "knowledge",
+            "saved"
+        )
+
+# ==========================================================
+# CONCERNS
+# ==========================================================
+
+with c3:
+
+    if st.button("Generate Concerns"):
+
+        update_workflow_state(
+            "concerns",
+            "saved"
+        )
+
+# ==========================================================
+# ISR
+# ==========================================================
+
+with c4:
+
+    if st.button("Generate ISR"):
+
+        update_workflow_state(
+            "isr",
+            "saved"
+        )
+
+# ==========================================================
+# FAILURE EXAMPLE
+# ==========================================================
+
+if st.button("Simulate Failure"):
+
+    update_workflow_state(
+        "knowledge",
+        "failed"
+    )
 # ==========================================================
 # PAGE NAVIGATION
 # ==========================================================
