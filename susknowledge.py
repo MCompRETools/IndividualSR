@@ -61,18 +61,9 @@ def load_pdf_text(pdf_path):
 def build_prompt(document_text):
 
     prompt = f"""
-You are a cross-domain analyst with expertise in:
+You are an cross-domain analyst that have knowledge of human sustainabability and software engineering. You will be given with a document that contain information on individual sustainability and human values that needs to be perceived in software engineering.
 
-- human sustainability
-- software engineering
-- sustainable software systems
-- human values in AI systems
-
-You will be provided with a document
-related to sustainability and software engineering.
-
-Your task is to generate a reusable,
-structured knowledge summary.
+Your task is to read the provided document and produce a structured, faithful, and reusable knowledge summary of its content. Summarize contents such that might be useful for sustainable software design. The goal is NOT just summarization, but extracting knowledge that can be reliably reused in subsequent reasoning tasks.
 
 DOCUMENT:
 \"\"\"
@@ -81,35 +72,43 @@ DOCUMENT:
 
 Follow these instructions strictly:
 
-1. Preserve semantic integrity
-2. Do not omit critical concepts
-3. Do not introduce external knowledge
+1. Preserve Semantic Integrity
+- Do NOT omit critical concepts, definitions, or relationships.
+- Avoid simplification that changes meaning.
+- Do NOT introduce external knowledge.
 
-Structure output into:
+2. Structure the Output into the Following Sections:
 
 A. Core Definitions
+- Summarize definitions of key concepts.
+- Maintain original meaning but you may rephrase for your own clarity.
 
 B. Key Models and Theories
+- Extract all theoretical constructs (e.g., value hierarchies, levels, frameworks).
+- Represent them in structured form.
 
 C. Taxonomies / Value Systems
+- Extract relevant categories, classifications, or value systems for software design.
+- Summarize mapping relationships (e.g., value → system implication).
 
 D. Operationalization Logic
+- Explain how abstract concepts (e.g., human values) are translated into system-level requirements.
 
 E. Actionable Knowledge Units
+- Convert insights into reusable rules or patterns:
+  Format:
+  - IF [context]
+  - THEN [design implication]
 
-Format actionable units as:
+3. Output Style
+- Use clear, structured formatting.
+- Avoid verbosity but ensure completeness.
+- Use precise terminology (no vague summaries).
 
-- IF [context]
-- THEN [design implication]
+4. Final Step: Knowledge Compression
+- Provide a concise "Model Memory Summary"
+- This should be a concise representation suitable for reuse in prompts.
 
-Finally provide:
-
-F. Model Memory Summary
-
-The summary should be reusable for
-future prompt engineering and reasoning.
-
-Use structured formatting.
 """
 
     return prompt
@@ -296,7 +295,12 @@ with right:
             st.error("Please provide API key.")
 
         else:
+            if "workflow_state" in st.session_state:
 
+                st.session_state.workflow_state[
+                    "knowledge"
+                ] = "active"
+                
             with st.spinner(
                 "Generating knowledge summary..."
             ):
@@ -334,12 +338,22 @@ with right:
                     # --------------------------------------
                     # SAVE SUMMARY
                     # --------------------------------------
-
+                    
                     save_text(
                         result,
                         SUMMARY_FILE
                     )
-                    st.session_state.knowledge_summarized = True
+                    
+                    # --------------------------------------
+                    # UPDATE GLOBAL WORKFLOW STATE
+                    # --------------------------------------
+                    
+                    if "workflow_state" in st.session_state:
+                    
+                        st.session_state.workflow_state[
+                            "knowledge"
+                        ] = "saved"
+                    
                     st.success(
                         f"Summary saved to {SUMMARY_FILE}"
                     )
@@ -357,7 +371,13 @@ with right:
 
                 except Exception as e:
 
-                    st.error(str(e))
+                    
+                    if "workflow_state" in st.session_state:
+
+                        st.session_state.workflow_state[
+                            "knowledge"
+                        ] = "failed"
+                        st.error(str(e))
 
 # ==========================================================
 # LOAD EXISTING SUMMARY
