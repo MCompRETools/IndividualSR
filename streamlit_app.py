@@ -559,19 +559,6 @@ c1, c2, c3, c4 = st.columns(4)
 # SYSTEM SCOPE
 # ==========================================================
 
-with c1:
-
-    if st.button("Upload Scope"):
-
-        st.session_state.workflow_state[
-            "scope"
-        ] = "uploaded"
-
-    if st.button("Save Scope"):
-
-        st.session_state.workflow_state[
-            "scope"
-        ] = "saved"
 
 # ==========================================================
 # KNOWLEDGE SUMMARY
@@ -707,6 +694,19 @@ elif selected_page == "System Scope":
 
         st.success("System scope saved.")
         st.session_state.scope_saved = True
+    with c1:
+
+    if st.button("Upload Scope"):
+
+        st.session_state.workflow_state[
+            "scope"
+        ] = "uploaded"
+
+    if st.button("Save Scope"):
+
+        st.session_state.workflow_state[
+            "scope"
+        ] = "saved"
 
 
 # ==========================================================
