@@ -195,7 +195,7 @@ ISR Generation Framework
 </div>
 
 <div class="sub-title">
-Interactive Sustainability-aware Requirements Engineering Platform
+Individual Sustainability-aware Requirements Engineering Platform
 </div>
 """, unsafe_allow_html=True)
 
