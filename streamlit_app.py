@@ -1116,29 +1116,7 @@ elif selected_page == "Sustainability Knowledge":
         st.markdown(
             "## Knowledge Summarization"
         )
-        if "summary_text_area" not in st.session_state:
-
-            st.session_state[
-                "summary_text_area"
-            ] = st.session_state.get(
-                "summary_text",
-                ""
-            )
-
-        # --------------------------------------------------
-        # TEXT AREA
-        # --------------------------------------------------
-
-        edited_text2 = st.text_area(
-
-            "Edit Sustainability Knowledge Summary",
-
-            key="Summary_text_area",
-
-            height=700,
-
-            width= 600
-        )
+       
         # --------------------------------------------------
         # PROVIDER
         # --------------------------------------------------
@@ -1314,15 +1292,29 @@ elif selected_page == "Sustainability Knowledge":
                         # ------------------------------------------------------
                         # EDITABLE SUMMARY TEXTBOX
                         # ------------------------------------------------------
+                         if "summary_text_area" not in st.session_state:
+                             st.session_state[
+                                "summary_text_area"
+                            ] = st.session_state.get(
+                                "summary_text",
+                                ""
+                            )
+                
+                        # --------------------------------------------------
+                        # TEXT AREA
+                        # --------------------------------------------------
+                
+                            edited_text2 = st.text_area(
+                    
+                                "Edit Sustainability Knowledge Summary",
+                    
+                                key="Summary_text_area",
+                    
+                                height=700,
+                    
+                                width= 600
+                            )
                         
-                        edited_summary = st.text_area(
-                        
-                            "Editable Knowledge Summary",
-                        
-                            key="summary_editor",
-                        
-                            height=500
-                        )
                         
                         # ------------------------------------------------------
                         # SAVE SUMMARY BUTTON
