@@ -696,17 +696,17 @@ elif selected_page == "System Scope":
         st.session_state.scope_saved = True
     with c1:
 
-    if st.button("Upload Scope"):
-
-        st.session_state.workflow_state[
-            "scope"
-        ] = "uploaded"
-
-    if st.button("Save Scope"):
-
-        st.session_state.workflow_state[
-            "scope"
-        ] = "saved"
+        if st.button("Upload Scope"):
+    
+            st.session_state.workflow_state[
+                "scope"
+            ] = "uploaded"
+    
+        if st.button("Save Scope"):
+    
+            st.session_state.workflow_state[
+                "scope"
+            ] = "saved"
 
 
 # ==========================================================
