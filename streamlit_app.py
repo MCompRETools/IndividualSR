@@ -8,7 +8,21 @@ import fitz
 import streamlit as st
 import pandas as pd
 from streamlit_option_menu import option_menu
+# ==========================================================
+# WORKFLOW STATUS FLAGS
+# ==========================================================
 
+if "scope_uploaded" not in st.session_state:
+    st.session_state.scope_uploaded = False
+
+if "knowledge_summarized" not in st.session_state:
+    st.session_state.knowledge_summarized = False
+
+if "concerns_generated" not in st.session_state:
+    st.session_state.concerns_generated = False
+
+if "isr_generated" not in st.session_state:
+    st.session_state.isr_generated = False
 # ==========================================================
 # PAGE CONFIG
 # ==========================================================
@@ -19,7 +33,77 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+# ==========================================================
+# WORKFLOW PROGRESS TRACKER
+# ==========================================================
 
+def workflow_step(title, completed):
+
+    color = "#22c55e" if completed else "#facc15"
+
+    icon = "✅" if completed else "🟡"
+
+    return f"""
+    <div style="
+        flex:1;
+        background:white;
+        border-radius:16px;
+        padding:18px;
+        border:2px solid {color};
+        text-align:center;
+        box-shadow:0 2px 6px rgba(0,0,0,0.04);
+    ">
+
+        <div style="
+            font-size:30px;
+            margin-bottom:10px;
+        ">
+            {icon}
+        </div>
+
+        <div style="
+            font-size:15px;
+            font-weight:700;
+            color:#0f172a;
+        ">
+            {title}
+        </div>
+
+    </div>
+    """
+
+st.markdown(f"""
+
+<div style="
+    display:flex;
+    gap:18px;
+    margin-top:20px;
+    margin-bottom:35px;
+">
+
+{workflow_step(
+    "System Scope Elicitation",
+    st.session_state.scope_uploaded
+)}
+
+{workflow_step(
+    "Knowledge Summarization",
+    st.session_state.knowledge_summarized
+)}
+
+{workflow_step(
+    "Generate Sustainability Concerns",
+    st.session_state.concerns_generated
+)}
+
+{workflow_step(
+    "Produce ISR",
+    st.session_state.isr_generated
+)}
+
+</div>
+
+""", unsafe_allow_html=True)
 # ==========================================================
 # FILE PATHS
 # ==========================================================
@@ -243,9 +327,6 @@ if selected_page == "Dashboard":
         </div>
         """, unsafe_allow_html=True)
 
-# ==========================================================
-# SYSTEM SCOPE PAGE
-# ==========================================================
 
 # ==========================================================
 # SYSTEM SCOPE PAGE
@@ -280,7 +361,7 @@ elif selected_page == "System Scope":
         ) as f:
 
             st.session_state.system_scope_text = f.read()
-
+            st.session_state.scope_uploaded = True
     # ------------------------------------------------------
     # FILE UPLOAD
     # ------------------------------------------------------
