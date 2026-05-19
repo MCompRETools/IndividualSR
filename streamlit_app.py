@@ -689,22 +689,7 @@ elif selected_page == "System Scope":
 
 elif selected_page == "Sustainability Knowledge":
 
-    st.markdown("""
-    <div class='content-card'>
-        <h2>Sustainability Knowledge</h2>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Run Knowledge Summarization"):
-
-        st.session_state.workflow_state[
-            "knowledge"
-        ] = "saved"
-
-        st.success(
-            "Knowledge summarized successfully."
-        )
-
+    import susknowledge
 # ==========================================================
 # GENERATE CONCERNS
 # ==========================================================
