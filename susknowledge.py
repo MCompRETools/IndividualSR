@@ -6,7 +6,7 @@
 import streamlit as st
 import os
 
-from pypdf import PdfReader
+from PyPDF2 import PdfReader
 
 import google.generativeai as genai
 from openai import OpenAI
