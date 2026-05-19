@@ -339,7 +339,7 @@ with right:
                         result,
                         SUMMARY_FILE
                     )
-
+                    st.session_state.knowledge_summarized = True
                     st.success(
                         f"Summary saved to {SUMMARY_FILE}"
                     )
