@@ -1012,7 +1012,7 @@ elif selected_page == "Sustainability Knowledge":
         <h2>Sustainability Knowledge</h2>
     </div>
     """, unsafe_allow_html=True)
-     st.markdown("""
+    st.markdown("""
     <div class='content-card'>
         <h2>Generated Summary</h2>
     </div>
