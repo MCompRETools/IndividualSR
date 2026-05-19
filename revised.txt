@@ -1,0 +1,318 @@
+Guidance to Individual Sustainability
+Requirements Elicitation
+Mandira Roy et al.
+March 2026
+1 Key Concepts
+1.1 Individual Dimension: Definitions
+As defined in the Karlskrona manifesto, individual sustainability refers to the
+maintenance of the private goods of individual human capital. The human
+capital consists of health, education, skills, knowledge, leadership, and access
+to services. Individual dimension covers individual freedom, agency, human
+dignity, and fulfilment.
+Individual sustainability refers to longer-term changes in individuals’ atti-
+tudes, aptitudes and/or behavior that result from their involvement with a par-
+ticular sports development program or activity. This is achieved by evaluating
+the consumption output using a consumer’s personal and economic well-being
+as standards. Individual sustainability relies on a capacity for reflection and
+an awareness of one’s past, present, and future to achieve positive living and
+psychological well-being. It is a person’s ability to live a healthy lifestyle that
+includes creating harmony, interconnections, community, ethically responsible
+systems, and relatively high levels of awareness in one’s values, thoughts, and
+behaviors.
+The individual dimension covers individual freedom and agency (the ability
+to act in an environment), human dignity and fulfillment. It includes the ability
+of individuals to thrive, exercise their rights and develop freely.
+Individual sustainability includes possessing a well-developed and demon-
+strated value system that acknowledges the importance and interconnectedness
+of all global biological and social systems, and our appropriate place within
+them.
+1.2 Human Abilities or Values Pertaining to Individual
+Sustainability
+Individual Sustainability Requirements (ISR) are system-specific requirements
+derived from underlying human values and human abilities. Human values rep-
+resent abstract principles that capture what individuals consider important, and
+1
+they play a central role in shaping decision-making and behavior. Values func-
+tion as guiding criteria through which individuals justify actions, make choices,
+and evaluate themselves, others, and events. These values may include aspects
+such as achievement, prestige, and wealth, which, although not strictly ethical
+in nature, significantly influence behavior and decisions. For example, when
+Google employees urged their CEO to withdraw from Project Maven, their
+arguments extended beyond moral responsibility to include concerns about po-
+tential damage to the company’s reputation and its ability to attract talent.
+This illustrates that values such as market reputation and public image—while
+not traditionally categorized as ethical—are nonetheless influential and actively
+guide decision-making.
+Although values are organized in a universal and structured manner, indi-
+viduals and groups differ substantially in the relative importance they assign
+to different values. Building on this, Maio et al. conceptualize values as men-
+tal representations operating across three interconnected levels: (1) L1 (Value
+system level), which captures patterns and relationships among values held by
+individuals; (2) L2 (Abstract interpretation level), where individuals interpret
+what a value means in a given context (e.g., what constitutes “high-quality soft-
+ware” as an expression of achievement); and (3) L3 (Behavioral level), where
+values are instantiated through concrete actions and system behaviors. For in-
+stance, a search engine company that prioritizes privacy may operationalize this
+value by ensuring that user queries are never logged.
+In this context, operationalizing human values in software refers to the pro-
+cess of identifying relevant values and translating them into concrete, imple-
+mentable, and measurable constructs that can be validated and verified within
+a system. ISR serves as this operational bridge by converting abstract values
+into system-level requirements.
+An important empirical finding is that value hierarchies are context-dependent
+and dynamic. Even for the same individual, the relative importance of values
+may shift across domains. While some values, such as security or achievement,
+tend to remain stable, others may change in significance or become irrelevant de-
+pending on the application context. This highlights the need for domain-specific
+elicitation and operationalization of values when deriving ISR.
+1.2.1 Unified Characteristics of a Self-Actualized / Fully Function-
+ing Individual
+The following characteristics synthesize and de-duplicate the attributes pro-
+posed by Maslow and Rogers, providing a consolidated view of a self-actualized
+or fully functioning individual.
+1.Realistic and Accurate Perception
+Ability to perceive reality objectively, without distortion from biases, fears,
+or social conditioning.
+2.Acceptance of Self, Others, and Nature
+Comfort with oneself and others without excessive guilt or judgment, along
+2
+with acceptance of natural processes.
+3.Openness to Experience
+Willingness to engage with new ideas, emotions, and experiences without
+defensiveness.
+4.Authenticity and Inner Congruence
+Alignment between internal feelings and external behavior; acting in ways
+true to oneself.
+5.Spontaneity and Naturalness
+Ability to act freely and genuinely without rigid adherence to social ex-
+pectations.
+6.Problem-Centered Orientation
+Focus on meaningful goals beyond self-interest, with a commitment to
+solving real-world or societal problems.
+7.Autonomy and Inner Authority
+Independence from external pressures, with decisions guided by internal
+values rather than societal norms.
+8.Resistance to Social Conditioning
+Critical stance toward rigid norms and institutions when they conflict with
+personal values.
+9.Desire for Privacy and Reflection
+Capacity for solitude, self-reflection, and independence from constant so-
+cial interaction.
+10.Deep Interpersonal Relationships and Intimacy
+Ability to form meaningful, empathetic, and authentic relationships with
+others.
+11.Empathy and Identification with Humanity
+Strong sense of connection, compassion, and responsibility toward others
+and society.
+12.Democratic and Egalitarian Attitude
+Respect for all individuals and valuing equality and fairness in interactions.
+13.Creativity and Expressiveness
+Ability to think innovatively and express oneself in original and adaptive
+ways.
+14.Freshness of Appreciation
+Capacity to experience everyday events with renewed wonder and emo-
+tional richness.
+3
+15.Peak Experiences
+Experiencing intense moments of joy, insight, or transcendence that pro-
+vide meaning and fulfillment.
+16.Holistic and Process-Oriented Self
+Viewing life as a continuous evolving process and embracing growth and
+change.
+17.Value System Transformation
+Shift toward intrinsic values such as growth, meaning, ethics, and self-
+development.
+18.Reduced Materialism
+Lower emphasis on material possessions, prioritizing experiences and re-
+lationships.
+19.Spiritual or Existential Awareness
+Interest in deeper meaning, purpose, or connection beyond the self.
+20.Balanced View of Science and Technology
+Critical yet reflective stance toward technology, recognizing both benefits
+and limitations.
+21.Ecological and Nature-Oriented Awareness
+Respect and sensitivity toward nature and environmental interconnected-
+ness.
+Note: These characteristics are synthesized by merging overlapping concepts
+from Maslow’s self-actualization theory and Rogers’ fully functioning person,
+ensuring removal of redundancy while preserving conceptual completeness.
+1.2.2 Schwartz basic human values
+It considers the following concepts:-
+1. Self-Direction: Independent thought and action-choosing, creating and
+exploring
+2. Simulation: Excitement, novelty, challenging in life
+3. Hedonism: Pleasure or sensuous gratification for oneself
+4. Achievement: Personal success through demonstrating competence
+5. Power: social status and prestige, control or dominance over people and
+resources
+6. Security: safety, harmony and stability of society or self
+7. Conformity: restraint of actions, inclinations or impulses
+4
+8. Tradition: respect, commitment and acceptance of the customs and ideas
+9. Benevolence: preserving and enhancing the welfare
+10. Universalism: understanding, appreciation, tolerance and protection for
+the welfare
+V alue Theme Description in Software Context Mapped Schwartz V alue
+Conformity The system supports adherence to es-
+tablished rules, standards, and expected
+norms of behaviour, ensuring that users act
+within predefined constraints and guide-
+lines.
+Conformity – Rules
+Pleasure The system provides enjoyment, satisfac-
+tion, or a positive emotional experience
+during interaction, contributing to user en-
+gagement and comfort.
+Hedonism
+Dignity The system ensures that users are treated
+with respect and are not exposed to humil-
+iation, embarrassment, or loss of self-worth
+during interaction.
+Face
+Inclusiveness The system accommodates diverse user
+groups, including differences in language,
+culture, ability, and background, ensuring
+equitable participation.
+Universalism – Concern
+Sense of Belonging The system enables users to feel socially
+connected, included, and part of a com-
+munity through interaction and communi-
+cation features.
+Security – Personal
+Freedom The system provides users with the ability
+to make choices, control actions, and avoid
+unnecessary restrictions in interaction.
+Self-direction – Action
+Independence The system allows users to perform tasks
+without reliance on external systems, in-
+termediaries, or additional support, en-
+hancing autonomy.
+Self-direction – Action
+Wealth The system reflects or impacts financial
+considerations, such as cost savings, mon-
+etary benefits, or resource ownership.
+Power – Resources
+Privacy The system protects user data, personal in-
+formation, and identity from unauthorized
+access, exposure, or misuse.
+Self-direction – Action
+Security The system safeguards users from threats,
+vulnerabilities, and risks, ensuring safe and
+protected interaction.
+Security – Personal
+Table 1: Human Value Themes and Their Mapping to Schwartz’s Model
+5
+V alue Theme Description in Software Context Possible Mapping to
+Schwartz V alue
+Trust The system is perceived as reliable, safe,
+and dependable by users, fostering confi-
+dence in its behaviour and outputs.
+Conformity – Interpersonal
+Correctness The system produces accurate, expected,
+and logically consistent outputs, ensuring
+correctness of functionality.
+No clear direct mapping
+Compatibility The system operates effectively across dif-
+ferent devices, platforms, and environ-
+ments without conflicts or limitations.
+Power – Resources
+Portability The system allows users to transfer, mi-
+grate, or reuse data and functionalities
+across different contexts and devices.
+Self-direction – Action /
+Power – Resources
+Reliability The system maintains stable performance
+over time, minimizing failures, crashes,
+and unexpected behaviour.
+No clear direct mapping
+Efficiency The system enables users to complete tasks
+with minimal time, effort, and resource
+consumption.
+Power – Resources
+Energy Preservation The system optimizes energy consumption,
+such as reducing battery usage or compu-
+tational overhead.
+Power – Resources
+Usability The system is easy to learn, understand,
+and operate, enabling users to perform
+tasks effectively and with minimal diffi-
+culty.
+Benevolence – Caring
+Accessibility The system ensures that users with vary-
+ing abilities, including disabilities, can ef-
+fectively interact with and benefit from its
+functionalities.
+Benevolence – Caring / Uni-
+versalism – Concern
+Longevity The system remains functional, maintain-
+able, and usable over a long period, sup-
+porting long-term user needs and stability.
+Security – Personal
+Table 2: System Value Themes and Their Interpreted Mapping to Schwartz’s
+Model
+1.3 SuSAF Framework for Individual Sustainability
+TheSusAFapproach proposes the following categories of sustainability dimensions-
+Health
+Health means the state of a person ’s mental or physical condition.
+•How can the product or service improve or worsen a person’s physical,
+mental, and/or emotional health?
+6
+•For example, can it make a person feel anything good or bad – e.g., (un-
+der)valued, (dis)respected, (in)dependent, or coerced?
+Lifelong Learning
+Lifelong learning means the use of learning opportunities throughout people’s
+lives for continuous development.
+•How can the product or service affect people’s competencies?
+Privacy
+Privacy means being free from intrusion or disturbance in one’s private life.
+•How can the product or service expose (or help to hide) a person’s identity,
+whereabouts, or relations?
+Safety
+Safety means being protected from danger, risk, or injury.
+•How can the product or service expose (or protect) a person from physical
+harm?
+•How can it make a person feel more (or less) exposed to harm?
+•What if the product or service is used in an unintended way?
+Self-awareness and Free Will
+Self-awareness and free will mean the capacity of an individual to act or make
+decisions on their own.
+•How can the product or service empower (or prevent) a person from taking
+an action or decision when necessary?
+•Can those affected by the product or service understand its implications,
+express concerns, or be represented by someone?
+1.4 Human Values and Artificial Intelligence (AI)
+As AI-driven systems grow more sophisticated and autonomous, they raise fun-
+damental questions about alignment: not just whether the underlying AI mod-
+els behave safely, but whether the software systems that embed and orchestrate
+them uphold human values like trust, honesty, autonomy, fairness, and account-
+ability.
+One of the central challenges in addressing these values lies in the highly
+subjective prioritization of values. This is especially significant for AI systems
+due to their autonomy, opacity, and wide-reaching societal impact. Different
+7
+stakeholders (e.g., developers, users, regulators, domain experts) and impacted
+communities often hold divergent or conflicting value priorities. For example,
+a development team may prioritize system efficiency and scalability, while end
+users may emphasize transparency in decision-making, equity, or preservation
+of autonomy. Values such as sustainability, privacy, accountability, and inclu-
+siveness are often interpreted and weighted differently, leading to miscommuni-
+cation, overlooked needs, or unintended harms. Conflicts may arise within user
+groups as well. For example, law enforcement may emphasize national secu-
+rity, while civil rights groups prioritize privacy protections. Similarly, designers
+might face a trade-off between creating highly secure systems and maintaining
+ease of use for end users.
+If these differences remain unrecognized or unresolved, the resulting design
+decisions may not align with stakeholder expectations, undermining trust in AI
+systems and potentially causing real-world consequences.
+Value alignment in AI-driven systems requires translating abstract human
+values into measurable indicators, embedding them into system architecture,
+continuously monitoring their adherence, and adapting them dynamically across
+contexts and stakeholders.
+Self-adaptive socio-technical systems (SASTSs)—especially those driven by
+AI—raises serious concerns about the erosion of human autonomy, values, and
+ethical control. While such systems optimize decisions automatically, they often
+suffer from misaligned objectives, algorithmic bias, and neglect of human values,
+particularly “soft ethics” such as personal preferences and cultural norms. The
+authors emphasize that current regulatory approaches (e.g., GDPR) are largely
+reactive and insufficient, and that systems must instead be designed to actively
+empower humans during interaction, rather than treating them as passive users.
