@@ -1336,11 +1336,11 @@ elif selected_page == "Sustainability Knowledge":
                                     f"Summary updated and saved to {SUMMARY_FILE}"
                                 )
 
-    except Exception as e:
-
-        st.error(
-            f"Failed to save summary: {e}"
-        )
+                            except Exception as e:
+                        
+                                st.error(
+                                    f"Failed to save summary: {e}"
+                                )
                 except Exception as e:
 
                     if "workflow_state" in st.session_state:
