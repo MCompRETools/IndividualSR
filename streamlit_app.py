@@ -212,83 +212,169 @@ Individual Sustainability Requirements
 """, unsafe_allow_html=True)
 
 # ==========================================================
-# WORKFLOW TRACKER
+# RESPONSIVE WORKFLOW PROGRESS BAR
 # ==========================================================
 
-def workflow_card(title, completed):
+import streamlit.components.v1 as components
 
-    color = "#22c55e" if completed else "#facc15"
+# ----------------------------------------------------------
+# STEP STATUS
+# ----------------------------------------------------------
 
-    icon = "✅" if completed else "🟡"
+steps = [
+    ("System Scope", st.session_state.scope_uploaded),
+    ("Knowledge Summary", st.session_state.knowledge_summarized),
+    ("Generate Concerns", st.session_state.concerns_generated),
+    ("Produce ISR", st.session_state.isr_generated)
+]
 
-    return f"""
-    <div style="
-        flex:1;
-        background:white;
-        border-radius:16px;
-        padding:20px;
-        border:2px solid {color};
-        text-align:center;
-        box-shadow:0 2px 8px rgba(0,0,0,0.05);
-    ">
+# ----------------------------------------------------------
+# BUILD HTML
+# ----------------------------------------------------------
 
-        <div style="
-            font-size:32px;
-            margin-bottom:10px;
-        ">
-            {icon}
+progress_html = """
+<style>
+
+.progress-container {
+
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.progressbar {
+
+    counter-reset: step;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 40px 0;
+    padding: 0;
+}
+
+.progressbar::before {
+
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: #d1d5db;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+.progress-step {
+
+    position: relative;
+    text-align: center;
+    flex: 1;
+    z-index: 1;
+}
+
+.progress-step-circle {
+
+    width: 55px;
+    height: 55px;
+    line-height: 55px;
+    border-radius: 50%;
+    background: #facc15;
+    color: white;
+    margin: auto;
+    font-size: 22px;
+    font-weight: bold;
+    border: 4px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.progress-step.active .progress-step-circle {
+
+    background: #22c55e;
+}
+
+.progress-step-label {
+
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.progress-line {
+
+    position: absolute;
+    top: 28px;
+    left: 0;
+    height: 8px;
+    background: #22c55e;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+</style>
+
+<div class="progress-container">
+
+    <div class="progressbar">
+"""
+
+# ----------------------------------------------------------
+# PROGRESS %
+# ----------------------------------------------------------
+
+completed_steps = sum([1 for _, status in steps if status])
+
+progress_percent = 0
+
+if len(steps) > 1:
+    progress_percent = (
+        (completed_steps - 1)
+        / (len(steps) - 1)
+    ) * 100
+
+progress_percent = max(0, progress_percent)
+
+progress_html += f"""
+<div class="progress-line"
+     style="width:{progress_percent}%;">
+</div>
+"""
+
+# ----------------------------------------------------------
+# STEP CIRCLES
+# ----------------------------------------------------------
+
+for idx, (label, status) in enumerate(steps):
+
+    active_class = "active" if status else ""
+
+    progress_html += f"""
+    <div class="progress-step {active_class}">
+
+        <div class="progress-step-circle">
+            {idx + 1}
         </div>
 
-        <div style="
-            font-size:15px;
-            font-weight:700;
-            color:#0f172a;
-        ">
-            {title}
+        <div class="progress-step-label">
+            {label}
         </div>
 
     </div>
     """
 
-workflow_html = f"""
-<div style="
-    display:flex;
-    gap:20px;
-    margin-top:20px;
-    margin-bottom:35px;
-">
-
-    {workflow_card(
-        "System Scope Elicitation",
-        st.session_state.scope_uploaded
-    )}
-
-    {workflow_card(
-        "Knowledge Summarization",
-        st.session_state.knowledge_summarized
-    )}
-
-    {workflow_card(
-        "Generate Sustainability Concerns",
-        st.session_state.concerns_generated
-    )}
-
-    {workflow_card(
-        "Produce ISR",
-        st.session_state.isr_generated
-    )}
-
+progress_html += """
+    </div>
 </div>
 """
 
-# IMPORTANT:
-# USE components.html NOT st.markdown
-
-import streamlit.components.v1 as components
+# ----------------------------------------------------------
+# RENDER
+# ----------------------------------------------------------
 
 components.html(
-    workflow_html,
-    height=170,
+    progress_html,
+    height=180,
     scrolling=False
 )
 # ==========================================================
