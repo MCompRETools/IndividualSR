@@ -226,10 +226,15 @@ if st.session_state.knowledge_text == "":
 
         elif os.path.exists(PDF_FILE):
 
-            st.session_state.knowledge_text = (
-                load_pdf_text(PDF_FILE)
-            )
+            loaded_text = load_pdf_text(PDF_FILE)
 
+            st.session_state[
+                "knowledge_text"
+            ] = loaded_text
+            
+            st.session_state[
+                "knowledge_text_area"
+            ] = loaded_text
         else:
 
             st.warning(
@@ -257,7 +262,6 @@ st.markdown("""
 # ==========================================================
 
 left, right = st.columns([1.4, 1])
-
 # ==========================================================
 # LEFT PANEL
 # ==========================================================
@@ -269,13 +273,17 @@ with left:
     )
 
     # ------------------------------------------------------
-    # SAFE INITIAL VALUE
+    # INITIALIZE EDITOR STATE ONCE
     # ------------------------------------------------------
 
-    initial_text = st.session_state.get(
-        "knowledge_text",
-        ""
-    )
+    if "knowledge_text_area" not in st.session_state:
+
+        st.session_state[
+            "knowledge_text_area"
+        ] = st.session_state.get(
+            "knowledge_text",
+            ""
+        )
 
     # ------------------------------------------------------
     # TEXT AREA
@@ -285,11 +293,9 @@ with left:
 
         "Edit Sustainability Knowledge",
 
-        value=initial_text,
+        key="knowledge_text_area",
 
-        height=700,
-
-        key="knowledge_text_area"
+        height=700
     )
 
     # ------------------------------------------------------
@@ -303,26 +309,26 @@ with left:
 
         try:
 
-            # ----------------------------------------------
+            # ------------------------------------------
             # SAVE FILE
-            # ----------------------------------------------
+            # ------------------------------------------
 
             save_text(
                 edited_text,
                 REVISED_FILE
             )
 
-            # ----------------------------------------------
-            # UPDATE SESSION STATE
-            # ----------------------------------------------
+            # ------------------------------------------
+            # UPDATE MASTER STATE
+            # ------------------------------------------
 
             st.session_state[
                 "knowledge_text"
             ] = edited_text
 
-            # ----------------------------------------------
-            # UPDATE WORKFLOW STATE
-            # ----------------------------------------------
+            # ------------------------------------------
+            # UPDATE WORKFLOW
+            # ------------------------------------------
 
             if "workflow_state" in st.session_state:
 
@@ -333,12 +339,6 @@ with left:
             st.success(
                 f"Saved to {REVISED_FILE}"
             )
-
-            # ----------------------------------------------
-            # SAFE RERUN
-            # ----------------------------------------------
-
-            st.rerun()
 
         except Exception as e:
 
