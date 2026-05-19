@@ -314,6 +314,7 @@ progress_html = """
     background: #22c55e;
     z-index: 0;
     border-radius: 10px;
+    transition: width 0.5s ease-in-out;
 }
 
 </style>
