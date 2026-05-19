@@ -2,6 +2,10 @@ import streamlit as st
 import streamlit.components.v1 as components
 import os
 
+from pypdf import PdfReader
+
+import google.generativeai as genai
+from openai import OpenAI
 # ==========================================================
 # PAGE CONFIG
 # ==========================================================
