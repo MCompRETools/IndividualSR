@@ -1012,11 +1012,6 @@ elif selected_page == "Sustainability Knowledge":
         <h2>Sustainability Knowledge</h2>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("""
-    <div class='content-card'>
-        <h2>Generated Summary</h2>
-    </div>
-    """, unsafe_allow_html=True)
     # ======================================================
     # LAYOUT
     # ======================================================
@@ -1060,7 +1055,12 @@ elif selected_page == "Sustainability Knowledge":
 
             width= 600
         )
-
+        edited_text2= st.text_area(
+            "LLM Output",
+            value="",
+            height=500,
+            key="summary_output_area"
+        )
         # --------------------------------------------------
         # SAVE BUTTON
         # --------------------------------------------------
