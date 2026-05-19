@@ -1052,7 +1052,7 @@ elif selected_page == "Sustainability Knowledge":
 
             height=700,
 
-            width= 550
+            width= 600
         )
 
         # --------------------------------------------------
@@ -1125,7 +1125,7 @@ elif selected_page == "Sustainability Knowledge":
             "Select Provider",
 
             [
-                "Gemini",
+                "Google",
                 "OpenAI"
             ]
         )
@@ -1259,17 +1259,88 @@ elif selected_page == "Sustainability Knowledge":
                             "## Generated Summary"
                         )
 
-                        st.text_area(
 
-                            "LLM Output",
-
-                            value=result,
-
-                            height=500,
-
-                            key="summary_output_area"
+                        # ------------------------------------------------------
+                        # INITIALIZE SUMMARY EDITOR
+                        # ------------------------------------------------------
+                        
+                        if "summary_editor" not in st.session_state:
+                        
+                            # ----------------------------------------------
+                            # LOAD EXISTING SUMMARY FILE
+                            # ----------------------------------------------
+                        
+                            if os.path.exists(SUMMARY_FILE):
+                        
+                                with open(
+                                    SUMMARY_FILE,
+                                    "r",
+                                    encoding="utf-8"
+                                ) as f:
+                        
+                                    st.session_state[
+                                        "summary_editor"
+                                    ] = f.read()
+                        
+                            else:
+                        
+                                st.session_state[
+                                    "summary_editor"
+                                ] = result
+                        
+                        # ------------------------------------------------------
+                        # EDITABLE SUMMARY TEXTBOX
+                        # ------------------------------------------------------
+                        
+                        edited_summary = st.text_area(
+                        
+                            "Editable Knowledge Summary",
+                        
+                            key="summary_editor",
+                        
+                            height=500
                         )
+                        
+                        # ------------------------------------------------------
+                        # SAVE SUMMARY BUTTON
+                        # ------------------------------------------------------
+                        
+                        if st.button(
+                            "Save Edited Summary",
+                            key="save_summary_btn"
+                        ):
+                        
+                            try:
+                        
+                                # ------------------------------------------
+                                # SAVE LOCALLY
+                                # ------------------------------------------
+                        
+                                save_text(
+                                    edited_summary,
+                                    SUMMARY_FILE
+                                )
+                        
+                                # ------------------------------------------
+                                # OPTIONAL GITHUB SAVE
+                                # ------------------------------------------
+                        
+                                # save_to_github(
+                                #     file_content=edited_summary,
+                                #     repo_name="YOUR_USERNAME/YOUR_REPO",
+                                #     file_path="summary_output.txt",
+                                #     github_token=st.secrets["GITHUB_TOKEN"]
+                                # )
+                        
+                                st.success(
+                                    f"Summary updated and saved to {SUMMARY_FILE}"
+                                )
 
+    except Exception as e:
+
+        st.error(
+            f"Failed to save summary: {e}"
+        )
                 except Exception as e:
 
                     if "workflow_state" in st.session_state:
