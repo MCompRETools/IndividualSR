@@ -1,7 +1,8 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import os
-
+from github import Github
+import base64
 from pypdf import PdfReader
 
 import google.generativeai as genai
@@ -63,7 +64,73 @@ def save_text(text, filename):
     ) as f:
 
         f.write(text)
+# ==========================================================
+# SAVE FILE TO GITHUB
+# ==========================================================
 
+def save_to_github(
+    file_content,
+    repo_name,
+    file_path,
+    github_token,
+    commit_message="Update revised knowledge"
+):
+
+    try:
+
+        # --------------------------------------------------
+        # AUTH
+        # --------------------------------------------------
+
+        g = Github(github_token)
+
+        repo = g.get_repo(repo_name)
+
+        # --------------------------------------------------
+        # CHECK EXISTING FILE
+        # --------------------------------------------------
+
+        try:
+
+            existing_file = repo.get_contents(
+                file_path
+            )
+
+            repo.update_file(
+
+                path=file_path,
+
+                message=commit_message,
+
+                content=file_content,
+
+                sha=existing_file.sha
+            )
+
+        # --------------------------------------------------
+        # CREATE NEW FILE
+        # --------------------------------------------------
+
+        except Exception:
+
+            repo.create_file(
+
+                path=file_path,
+
+                message=commit_message,
+
+                content=file_content
+            )
+
+        return True
+
+    except Exception as e:
+
+        st.error(
+            f"GitHub Save Failed: {e}"
+        )
+
+        return False
 # ==========================================================
 # BUILD PROMPT
 # ==========================================================
@@ -1159,6 +1226,23 @@ elif selected_page == "Sustainability Knowledge":
                             SUMMARY_FILE
                         )
 
+
+                        # ------------------------------------------
+                        # GITHUB SAVE
+                        # ------------------------------------------
+                        
+                        github_success = save_to_github(
+                        
+                            file_content=edited_text,
+                        
+                            repo_name="MCompRETools/IndividualSR",
+                        
+                            file_path="revised.txt",
+                        
+                            github_token=st.secrets["GITHUB_TOKEN"],
+                        
+                            commit_message="Update revised sustainability knowledge"
+                        )
                         if "workflow_state" in st.session_state:
 
                             st.session_state.workflow_state[
