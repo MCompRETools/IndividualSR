@@ -1,12 +1,12 @@
 # ==========================================================
 # susknowledge.py
-# ENTERPRISE STABLE VERSION
+# FULLY REVISED STABLE VERSION
 # ==========================================================
 
 import streamlit as st
 import os
 
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 import google.generativeai as genai
 from openai import OpenAI
@@ -15,7 +15,9 @@ from openai import OpenAI
 # PATHS
 # ==========================================================
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(
+    os.path.dirname(__file__)
+)
 
 PDF_FILE = os.path.join(
     BASE_DIR,
@@ -33,9 +35,10 @@ SUMMARY_FILE = os.path.join(
 )
 
 # ==========================================================
-# LOAD PDF
+# PDF LOADER
 # ==========================================================
 
+@st.cache_data(show_spinner=False)
 def load_pdf_text(pdf_path):
 
     reader = PdfReader(pdf_path)
@@ -73,54 +76,53 @@ def save_text(text, filename):
 def build_prompt(document_text):
 
     prompt = f"""
-You are an cross-domain analyst that have knowledge of human sustainabability and software engineering. You will be given with a document that contain information on individual sustainability and human values that needs to be perceived in software engineering.
+You are an cross-domain analyst that have knowledge
+of human sustainability and software engineering.
 
-Your task is to read the provided document and produce a structured, faithful, and reusable knowledge summary of its content. Summarize contents such that might be useful for sustainable software design. The goal is NOT just summarization, but extracting knowledge that can be reliably reused in subsequent reasoning tasks.
+You will be given a document containing
+information on individual sustainability
+and human values relevant to software engineering.
+
+Your task is to produce a structured,
+faithful, reusable sustainability knowledge summary.
 
 DOCUMENT:
 \"\"\"
 {document_text}
 \"\"\"
 
-Follow these instructions strictly:
+==================================================
+TASKS
+==================================================
 
-1. Preserve Semantic Integrity
-- Do NOT omit critical concepts, definitions, or relationships.
-- Avoid simplification that changes meaning.
-- Do NOT introduce external knowledge.
+1. Preserve semantic integrity
 
-2. Structure the Output into the Following Sections:
+2. Extract:
+- Core definitions
+- Models and theories
+- Taxonomies
+- Operationalization logic
+- Actionable knowledge rules
+
+3. Create reusable knowledge representation
+
+4. Produce concise memory summary
+
+==================================================
+OUTPUT FORMAT
+==================================================
 
 A. Core Definitions
-- Summarize definitions of key concepts.
-- Maintain original meaning but you may rephrase for your own clarity.
 
 B. Key Models and Theories
-- Extract all theoretical constructs (e.g., value hierarchies, levels, frameworks).
-- Represent them in structured form.
 
 C. Taxonomies / Value Systems
-- Extract relevant categories, classifications, or value systems for software design.
-- Summarize mapping relationships (e.g., value → system implication).
 
 D. Operationalization Logic
-- Explain how abstract concepts (e.g., human values) are translated into system-level requirements.
 
 E. Actionable Knowledge Units
-- Convert insights into reusable rules or patterns:
-  Format:
-  - IF [context]
-  - THEN [design implication]
 
-3. Output Style
-- Use clear, structured formatting.
-- Avoid verbosity but ensure completeness.
-- Use precise terminology (no vague summaries).
-
-4. Final Step: Knowledge Compression
-- Provide a concise "Model Memory Summary"
-- This should be a concise representation suitable for reuse in prompts.
-
+F. Model Memory Summary
 """
 
     return prompt
@@ -135,11 +137,17 @@ def run_gemini(
     model_name
 ):
 
-    genai.configure(api_key=api_key)
+    genai.configure(
+        api_key=api_key
+    )
 
-    model = genai.GenerativeModel(model_name)
+    model = genai.GenerativeModel(
+        model_name
+    )
 
-    response = model.generate_content(prompt)
+    response = model.generate_content(
+        prompt
+    )
 
     return response.text
 
@@ -153,7 +161,9 @@ def run_openai(
     model_name
 ):
 
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(
+        api_key=api_key
+    )
 
     response = client.chat.completions.create(
 
@@ -186,15 +196,17 @@ if "knowledge_text" not in st.session_state:
 
     st.session_state.knowledge_text = ""
 
-# ----------------------------------------------------------
-# LOAD REVISED FILE
-# ----------------------------------------------------------
+# ==========================================================
+# LOAD KNOWLEDGE SOURCE
+# ==========================================================
 
-if (
-    st.session_state.knowledge_text == ""
-):
+if st.session_state.knowledge_text == "":
 
     try:
+
+        # --------------------------------------------------
+        # LOAD REVISED FILE
+        # --------------------------------------------------
 
         if os.path.exists(REVISED_FILE):
 
@@ -204,12 +216,24 @@ if (
                 encoding="utf-8"
             ) as f:
 
-                st.session_state.knowledge_text = f.read()
+                st.session_state.knowledge_text = (
+                    f.read()
+                )
+
+        # --------------------------------------------------
+        # LOAD PDF
+        # --------------------------------------------------
 
         elif os.path.exists(PDF_FILE):
 
             st.session_state.knowledge_text = (
                 load_pdf_text(PDF_FILE)
+            )
+
+        else:
+
+            st.warning(
+                f"{PDF_FILE} not found."
             )
 
     except Exception as e:
@@ -240,17 +264,18 @@ left, right = st.columns([1.4, 1])
 
 with left:
 
-    st.markdown("## Sustainability Knowledge")
+    st.markdown(
+        "## Sustainability Knowledge"
+    )
 
     # ------------------------------------------------------
-    # STABLE EDITOR INITIALIZATION
+    # SAFE INITIAL VALUE
     # ------------------------------------------------------
 
-    if "knowledge_editor" not in st.session_state:
-
-        st.session_state.knowledge_editor = (
-            st.session_state.knowledge_text
-        )
+    initial_text = st.session_state.get(
+        "knowledge_text",
+        ""
+    )
 
     # ------------------------------------------------------
     # TEXT AREA
@@ -260,9 +285,11 @@ with left:
 
         "Edit Sustainability Knowledge",
 
-        key="knowledge_editor",
+        value=initial_text,
 
-        height=700
+        height=700,
+
+        key="knowledge_text_area"
     )
 
     # ------------------------------------------------------
@@ -276,26 +303,26 @@ with left:
 
         try:
 
-            # ------------------------------------------
+            # ----------------------------------------------
             # SAVE FILE
-            # ------------------------------------------
+            # ----------------------------------------------
 
             save_text(
                 edited_text,
                 REVISED_FILE
             )
 
-            # ------------------------------------------
+            # ----------------------------------------------
             # UPDATE SESSION STATE
-            # ------------------------------------------
+            # ----------------------------------------------
 
-            st.session_state.knowledge_text = (
-                edited_text
-            )
+            st.session_state[
+                "knowledge_text"
+            ] = edited_text
 
-            # ------------------------------------------
-            # UPDATE WORKFLOW
-            # ------------------------------------------
+            # ----------------------------------------------
+            # UPDATE WORKFLOW STATE
+            # ----------------------------------------------
 
             if "workflow_state" in st.session_state:
 
@@ -306,6 +333,12 @@ with left:
             st.success(
                 f"Saved to {REVISED_FILE}"
             )
+
+            # ----------------------------------------------
+            # SAFE RERUN
+            # ----------------------------------------------
+
+            st.rerun()
 
         except Exception as e:
 
@@ -319,10 +352,12 @@ with left:
 
 with right:
 
-    st.markdown("## Knowledge Summarization")
+    st.markdown(
+        "## Knowledge Summarization"
+    )
 
     # ------------------------------------------------------
-    # MODEL PROVIDER
+    # PROVIDER
     # ------------------------------------------------------
 
     model_provider = st.selectbox(
@@ -336,7 +371,7 @@ with right:
     )
 
     # ------------------------------------------------------
-    # MODEL SELECTION
+    # MODEL
     # ------------------------------------------------------
 
     if model_provider == "Gemini":
@@ -381,7 +416,8 @@ with right:
     # ------------------------------------------------------
 
     if st.button(
-        "Generate Knowledge Summary"
+        "Generate Knowledge Summary",
+        key="generate_summary_btn"
     ):
 
         if not api_key:
@@ -392,9 +428,9 @@ with right:
 
         else:
 
-            # ------------------------------------------
+            # ----------------------------------------------
             # ACTIVE STATE
-            # ------------------------------------------
+            # ----------------------------------------------
 
             if "workflow_state" in st.session_state:
 
@@ -408,17 +444,17 @@ with right:
 
                 try:
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # BUILD PROMPT
-                    # ----------------------------------
+                    # --------------------------------------
 
                     prompt = build_prompt(
                         edited_text
                     )
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # GEMINI
-                    # ----------------------------------
+                    # --------------------------------------
 
                     if model_provider == "Gemini":
 
@@ -431,9 +467,9 @@ with right:
                             model_name
                         )
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # OPENAI
-                    # ----------------------------------
+                    # --------------------------------------
 
                     else:
 
@@ -446,18 +482,18 @@ with right:
                             model_name
                         )
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # SAVE SUMMARY
-                    # ----------------------------------
+                    # --------------------------------------
 
                     save_text(
                         result,
                         SUMMARY_FILE
                     )
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # UPDATE WORKFLOW
-                    # ----------------------------------
+                    # --------------------------------------
 
                     if "workflow_state" in st.session_state:
 
@@ -465,19 +501,21 @@ with right:
                             "knowledge"
                         ] = "saved"
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # SUCCESS
-                    # ----------------------------------
+                    # --------------------------------------
 
                     st.success(
                         f"Summary saved to {SUMMARY_FILE}"
                     )
 
-                    # ----------------------------------
+                    # --------------------------------------
                     # OUTPUT
-                    # ----------------------------------
+                    # --------------------------------------
 
-                    st.markdown("## Generated Summary")
+                    st.markdown(
+                        "## Generated Summary"
+                    )
 
                     st.text_area(
 
@@ -485,14 +523,16 @@ with right:
 
                         value=result,
 
-                        height=500
+                        height=500,
+
+                        key="summary_output_area"
                     )
 
                 except Exception as e:
 
-                    # ----------------------------------
-                    # FAILURE STATE
-                    # ----------------------------------
+                    # --------------------------------------
+                    # FAILURE
+                    # --------------------------------------
 
                     if "workflow_state" in st.session_state:
 
