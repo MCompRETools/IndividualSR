@@ -215,7 +215,7 @@ Individual Sustainability Requirements
 # WORKFLOW TRACKER
 # ==========================================================
 
-def workflow_step(title, completed):
+def workflow_card(title, completed):
 
     color = "#22c55e" if completed else "#facc15"
 
@@ -229,7 +229,7 @@ def workflow_step(title, completed):
         padding:20px;
         border:2px solid {color};
         text-align:center;
-        box-shadow:0 2px 6px rgba(0,0,0,0.04);
+        box-shadow:0 2px 8px rgba(0,0,0,0.05);
     ">
 
         <div style="
@@ -253,27 +253,27 @@ def workflow_step(title, completed):
 workflow_html = f"""
 <div style="
     display:flex;
-    gap:18px;
+    gap:20px;
     margin-top:20px;
     margin-bottom:35px;
 ">
 
-    {workflow_step(
+    {workflow_card(
         "System Scope Elicitation",
         st.session_state.scope_uploaded
     )}
 
-    {workflow_step(
+    {workflow_card(
         "Knowledge Summarization",
         st.session_state.knowledge_summarized
     )}
 
-    {workflow_step(
+    {workflow_card(
         "Generate Sustainability Concerns",
         st.session_state.concerns_generated
     )}
 
-    {workflow_step(
+    {workflow_card(
         "Produce ISR",
         st.session_state.isr_generated
     )}
@@ -281,11 +281,16 @@ workflow_html = f"""
 </div>
 """
 
-st.markdown(
-    workflow_html,
-    unsafe_allow_html=True
-)
+# IMPORTANT:
+# USE components.html NOT st.markdown
 
+import streamlit.components.v1 as components
+
+components.html(
+    workflow_html,
+    height=170,
+    scrolling=False
+)
 # ==========================================================
 # PAGE NAVIGATION
 # ==========================================================
