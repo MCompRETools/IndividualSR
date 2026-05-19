@@ -1016,7 +1016,7 @@ elif selected_page == "Sustainability Knowledge":
     # LAYOUT
     # ======================================================
 
-    left, right = st.columns([1.4, 1])
+    left, right = st.columns([1.2, 1])
 
     # ======================================================
     # LEFT PANEL
