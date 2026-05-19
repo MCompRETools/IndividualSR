@@ -946,7 +946,9 @@ elif selected_page == "Sustainability Knowledge":
     if "knowledge_text" not in st.session_state:
 
         st.session_state.knowledge_text = ""
-
+        
+    if "summary_editor" not in st.session_state:
+        st.session_state.summary_editor = ""
     # ------------------------------------------------------
     # LOAD KNOWLEDGE SOURCE
     # ------------------------------------------------------
