@@ -118,46 +118,97 @@ UPDATED_KNOWLEDGE_FILE = "updatedSRknowledge.txt"
 # CUSTOM CSS
 # ==========================================================
 
+# ==========================================================
+# CUSTOM CSS
+# ==========================================================
+
 st.markdown("""
 <style>
 
+/* =====================================================
+APP BACKGROUND
+===================================================== */
+
 .stApp {
-    background-color: 	#e0e7ff;
+    background-color: #e0e7ff;
 }
 
+/* =====================================================
+SIDEBAR
+===================================================== */
+
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #021024 0%, #021024 100%);
+
+    background: linear-gradient(
+        180deg,
+        #021024 0%,
+        #021024 100%
+    );
 }
+
+/* =====================================================
+SIDEBAR TEXT
+===================================================== */
 
 section[data-testid="stSidebar"] * {
     color: #06b6d4;
 }
 
+/* =====================================================
+METRIC CARDS
+===================================================== */
+
 .metric-card {
+
     background: white;
+
     padding: 22px;
+
     border-radius: 16px;
+
     box-shadow: 0px 2px 10px rgba(0,0,0,0.06);
+
     border: 1px solid #e6e9f0;
 }
 
+/* =====================================================
+TITLES
+===================================================== */
+
 .main-title {
+
     font-size: 36px;
+
     font-weight: 800;
+
     color: #0f172a;
 }
 
 .sub-title {
-    color: 	#06b6d4;
+
+    color: #06b6d4;
 }
 
+/* =====================================================
+CONTENT CARDS
+===================================================== */
+
 .card {
+
     background: white;
+
     padding: 20px;
+
     border-radius: 14px;
+
     border: 1px solid #dce3f0;
+
     margin-bottom: 15px;
 }
+
+/* =====================================================
+TEXTAREA
+===================================================== */
 
 textarea {
     font-size: 15px !important;
@@ -165,172 +216,6 @@ textarea {
 
 </style>
 """, unsafe_allow_html=True)
-
-# ==========================================================
-# SIDEBAR
-# ==========================================================
-
-
-with st.sidebar:
-
-    selected_page = option_menu(
-        menu_title="Navigation",
-
-        options=[
-            "Dashboard",
-            "System Scope",
-            "Sustainability Knowledge",
-            "Generate Concerns",
-            "Produce ISR"
-        ],
-
-        icons=[
-            "speedometer2",
-            "file-earmark-text",
-            "book",
-            "lightbulb",
-            "gear"
-        ],
-
-        menu_icon="cast",
-
-        default_index=0,
-
-       styles={
-
-    # --------------------------------------------------
-    # MAIN CONTAINER
-    # --------------------------------------------------
-
-        "container": {
-    
-            "padding": "8px",
-    
-            "background-color": "#021024",
-    
-            "border-radius": "18px",
-        },
-
-    # --------------------------------------------------
-    # ICON STYLING
-    # --------------------------------------------------
-
-        "icon": {
-    
-            "color": "#06b6d4",
-    
-            "font-size": "22px",
-        },
-
-    # --------------------------------------------------
-    # NAVIGATION ITEM
-    # --------------------------------------------------
-
-        "nav-link": {
-    
-            "font-size": "20px",
-    
-            "font-weight": "500",
-    
-            "text-align": "left",
-    
-            "margin": "8px",
-    
-            "padding": "14px 18px",
-    
-            "border-radius": "16px",
-    
-            "color": "#06b6d4",
-    
-            "--hover-color": "#082f49",
-    
-        },
-
-    # --------------------------------------------------
-    # ACTIVE NAVIGATION ITEM
-    # --------------------------------------------------
-
-        "nav-link-selected": {
-    
-            "background-color": "#2563eb",
-    
-            "color": "white",
-    
-            "font-weight": "700",
-        },
-
-    # --------------------------------------------------
-    # MENU TITLE
-    # --------------------------------------------------
-
-        "menu-title": {
-    
-            "color": "#06b6d4",
-    
-            "font-size": "30px",
-    
-            "font-weight": "700",
-        },
-    }
-)
-# ==========================================================
-# HEADER
-# ==========================================================
-
-st.markdown("""
-<div class="main-title">
-ISR Generation Framework
-</div>
-
-<div class="sub-title">
-Individual Sustainability-aware Requirements Engineering Platform
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ==========================================================
-# DASHBOARD
-# ==========================================================
-
-if selected_page == "Dashboard":
-
-    st.markdown("## Dashboard")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    with c1:
-        st.markdown("""
-        <div class="metric-card">
-            <h4>Total Concerns</h4>
-            <h1>12</h1>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c2:
-        st.markdown("""
-        <div class="metric-card">
-            <h4>Total ISRs</h4>
-            <h1>21</h1>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c3:
-        st.markdown("""
-        <div class="metric-card">
-            <h4>Human Values</h4>
-            <h1>9</h1>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c4:
-        st.markdown("""
-        <div class="metric-card">
-            <h4>NFR Categories</h4>
-            <h1>6</h1>
-        </div>
-        """, unsafe_allow_html=True)
-
 
 # ==========================================================
 # SYSTEM SCOPE PAGE
