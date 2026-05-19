@@ -166,19 +166,18 @@ st.markdown(
 
 with st.sidebar:
 
-    st.markdown("""
-    <div style='padding-top:20px;'>
-
-        <h1 style='
-            color:#06b6d4;
-            font-size:40px;
-            font-weight:800;
-        '>
-        Navigation
-        </h1>
-
-    </div>
-    """, unsafe_allow_html=True)
+    st.sidebar.markdown(
+    """
+    <h1 style='
+        color:#06b6d4;
+        font-size:40px;
+        font-weight:800;
+    '>
+    Navigation
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 
     st.markdown("---")
 
