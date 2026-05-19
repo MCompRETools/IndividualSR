@@ -118,105 +118,58 @@ UPDATED_KNOWLEDGE_FILE = "updatedSRknowledge.txt"
 # CUSTOM CSS
 # ==========================================================
 
-# ==========================================================
-# CUSTOM CSS
-# ==========================================================
-
-st.markdown("""
+CUSTOM_CSS = r"""
 <style>
-
-/* =====================================================
-APP BACKGROUND
-===================================================== */
 
 .stApp {
     background-color: #e0e7ff;
 }
 
-/* =====================================================
-SIDEBAR
-===================================================== */
-
 section[data-testid="stSidebar"] {
-
-    background: linear-gradient(
-        180deg,
-        #021024 0%,
-        #021024 100%
-    );
+    background: linear-gradient(180deg, #021024 0%, #021024 100%);
 }
-
-/* =====================================================
-SIDEBAR TEXT
-===================================================== */
 
 section[data-testid="stSidebar"] * {
     color: #06b6d4;
 }
 
-/* =====================================================
-METRIC CARDS
-===================================================== */
-
 .metric-card {
-
     background: white;
-
     padding: 22px;
-
     border-radius: 16px;
-
     box-shadow: 0px 2px 10px rgba(0,0,0,0.06);
-
     border: 1px solid #e6e9f0;
 }
 
-/* =====================================================
-TITLES
-===================================================== */
-
 .main-title {
-
     font-size: 36px;
-
     font-weight: 800;
-
     color: #0f172a;
 }
 
 .sub-title {
-
     color: #06b6d4;
 }
 
-/* =====================================================
-CONTENT CARDS
-===================================================== */
-
 .card {
-
     background: white;
-
     padding: 20px;
-
     border-radius: 14px;
-
     border: 1px solid #dce3f0;
-
     margin-bottom: 15px;
 }
-
-/* =====================================================
-TEXTAREA
-===================================================== */
 
 textarea {
     font-size: 15px !important;
 }
 
 </style>
-""", unsafe_allow_html=True)
+"""
 
+st.markdown(
+    CUSTOM_CSS,
+    unsafe_allow_html=True
+)
 # ==========================================================
 # SYSTEM SCOPE PAGE
 # ==========================================================
