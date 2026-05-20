@@ -1107,264 +1107,258 @@ elif selected_page == "Sustainability Knowledge":
                     f"Save failed: {e}"
                 )
 
-    # ======================================================
-    # RIGHT PANEL
-    # ======================================================
+   # ======================================================
+# RIGHT PANEL
+# ======================================================
 
-    with right:
+with right:
 
-        st.markdown(
-            "## Knowledge Summarization"
-        )
-       
-        # --------------------------------------------------
-        # PROVIDER
-        # --------------------------------------------------
+    st.markdown(
+        "## Knowledge Summarization"
+    )
 
-        model_provider = st.selectbox(
+    # --------------------------------------------------
+    # PROVIDER
+    # --------------------------------------------------
 
-            "Select Provider",
+    model_provider = st.selectbox(
+
+        "Select Provider",
+
+        [
+            "Google",
+            "OpenAI"
+        ]
+    )
+
+    # --------------------------------------------------
+    # MODEL SELECTION
+    # --------------------------------------------------
+
+    if model_provider == "Google":
+
+        model_name = st.selectbox(
+
+            "Select Gemini Model",
 
             [
-                "Google",
-                "OpenAI"
+                "gemini-2.5-flash",
+                "gemini-1.5-pro",
+                "gemini-1.5-flash"
             ]
         )
 
-        # --------------------------------------------------
-        # MODEL
-        # --------------------------------------------------
+    else:
 
-        if model_provider == "Gemini":
+        model_name = st.selectbox(
 
-            model_name = st.selectbox(
+            "Select OpenAI Model",
 
-                "Select Gemini Model",
+            [
+                "gpt-4o",
+                "gpt-4.1-mini",
+                "gpt-4-turbo"
+            ]
+        )
 
-                [
-                    "gemini-2.5-flash",
-                    "gemini-1.5-pro",
-                    "gemini-1.5-flash"
-                ]
+    # --------------------------------------------------
+    # API KEY
+    # --------------------------------------------------
+
+    api_key = st.text_input(
+
+        "Enter API Key",
+
+        type="password"
+    )
+
+    # --------------------------------------------------
+    # LOAD EXISTING SUMMARY
+    # --------------------------------------------------
+
+    if "summary_editor" not in st.session_state:
+
+        if os.path.exists(SUMMARY_FILE):
+
+            with open(
+                SUMMARY_FILE,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                st.session_state.summary_editor = (
+                    f.read()
+                )
+
+        else:
+
+            st.session_state.summary_editor = ""
+
+    # --------------------------------------------------
+    # GENERATE BUTTON
+    # --------------------------------------------------
+
+    if st.button(
+        "Generate Knowledge Summary",
+        key="generate_summary_btn"
+    ):
+
+        if not api_key:
+
+            st.error(
+                "Please provide API key."
             )
 
         else:
 
-            model_name = st.selectbox(
+            try:
 
-                "Select OpenAI Model",
+                st.session_state.workflow_state[
+                    "knowledge"
+                ] = "active"
 
-                [
-                    "gpt-4o",
-                    "gpt-4.1-mini",
-                    "gpt-4-turbo"
-                ]
+                with st.spinner(
+                    "Generating sustainability knowledge summary..."
+                ):
+
+                    prompt = build_prompt(
+                        edited_text
+                    )
+
+                    # --------------------------------------
+                    # GEMINI
+                    # --------------------------------------
+
+                    if model_provider == "Google":
+
+                        result = run_gemini(
+
+                            prompt,
+
+                            api_key,
+
+                            model_name
+                        )
+
+                    # --------------------------------------
+                    # OPENAI
+                    # --------------------------------------
+
+                    else:
+
+                        result = run_openai(
+
+                            prompt,
+
+                            api_key,
+
+                            model_name
+                        )
+
+                    # --------------------------------------
+                    # SAVE SUMMARY
+                    # --------------------------------------
+
+                    save_text(
+                        result,
+                        SUMMARY_FILE
+                    )
+
+                    st.session_state.summary_editor = (
+                        result
+                    )
+
+                    st.session_state.workflow_state[
+                        "knowledge"
+                    ] = "saved"
+
+                    st.success(
+                        f"Summary saved to {SUMMARY_FILE}"
+                    )
+
+            except Exception as e:
+
+                st.session_state.workflow_state[
+                    "knowledge"
+                ] = "failed"
+
+                st.error(str(e))
+
+    # ==================================================
+    # GENERATED SUMMARY AREA
+    # ==================================================
+
+    st.markdown(
+        "## Generated Summary"
+    )
+
+    edited_summary = st.text_area(
+
+        "Edit Sustainability Knowledge Summary",
+
+        value=st.session_state.summary_editor,
+
+        key="summary_text_area",
+
+        height=500
+    )
+
+    # --------------------------------------------------
+    # SAVE SUMMARY BUTTON
+    # --------------------------------------------------
+
+    if st.button(
+
+        "Save Edited Summary",
+
+        key="save_summary_btn"
+    ):
+
+        try:
+
+            # ------------------------------------------
+            # SAVE LOCALLY
+            # ------------------------------------------
+
+            save_text(
+                edited_summary,
+                SUMMARY_FILE
             )
 
-        # --------------------------------------------------
-        # API KEY
-        # --------------------------------------------------
+            # ------------------------------------------
+            # SAVE TO GITHUB
+            # ------------------------------------------
 
-        api_key = st.text_input(
+            github_success = save_to_github(
 
-            "Enter API Key",
+                file_content=edited_summary,
 
-            type="password"
-        )
+                repo_name="MCompRETools/IndividualSR",
 
-        # --------------------------------------------------
-        # GENERATE BUTTON
-        # --------------------------------------------------
+                file_path="summary_output.txt",
 
-        if st.button(
-            "Generate Knowledge Summary",
-            key="generate_summary_btn"
-        ):
+                github_token=st.secrets[
+                    "GITHUB_TOKEN"
+                ],
 
-            if not api_key:
-
-                st.error(
-                    "Please provide API key."
+                commit_message=(
+                    "Update summarized sustainability knowledge"
                 )
+            )
 
-            else:
+            st.session_state.summary_editor = (
+                edited_summary
+            )
 
-                try:
+            st.success(
+                f"Summary updated and saved to {SUMMARY_FILE}"
+            )
 
-                    if "workflow_state" in st.session_state:
+        except Exception as e:
 
-                        st.session_state.workflow_state[
-                            "knowledge"
-                        ] = "active"
-
-                    with st.spinner(
-                        "Generating sustainability knowledge summary..."
-                    ):
-
-                        prompt = build_prompt(
-                            edited_text
-                        )
-
-                        # ------------------------------
-                        # GEMINI
-                        # ------------------------------
-
-                        if model_provider == "Gemini":
-
-                            result = run_gemini(
-
-                                prompt,
-
-                                api_key,
-
-                                model_name
-                            )
-
-                        # ------------------------------
-                        # OPENAI
-                        # ------------------------------
-
-                        else:
-
-                            result = run_openai(
-
-                                prompt,
-
-                                api_key,
-
-                                model_name
-                            )
-
-                        # ------------------------------
-                        # SAVE SUMMARY
-                        # ------------------------------
-
-                        save_text(
-                            result,
-                            SUMMARY_FILE
-                        )
-
-
-                        
-                        if "workflow_state" in st.session_state:
-
-                            st.session_state.workflow_state[
-                                "knowledge"
-                            ] = "saved"
-
-                        st.success(
-                            f"Summary saved to {SUMMARY_FILE}"
-                        )
-
-                        st.markdown(
-                            "## Generated Summary"
-                        )
-
-
-                        # ------------------------------------------------------
-                        # INITIALIZE SUMMARY EDITOR
-                        # ------------------------------------------------------
-                        
-                        if "summary_editor" not in st.session_state:
-                        
-                            # ----------------------------------------------
-                            # LOAD EXISTING SUMMARY FILE
-                            # ----------------------------------------------
-                        
-                            if os.path.exists(SUMMARY_FILE):
-                        
-                                with open(
-                                    SUMMARY_FILE,
-                                    "r",
-                                    encoding="utf-8"
-                                ) as f:
-                        
-                                    st.session_state[
-                                        "summary_editor"
-                                    ] = f.read()
-                        
-                            else:
-                        
-                                st.session_state[
-                                    "summary_editor"
-                                ] = result
-                        
-                        # ------------------------------------------------------
-                        # EDITABLE SUMMARY TEXTBOX
-                        # ------------------------------------------------------
-                         if "summary_text_area" not in st.session_state:
-                             st.session_state[
-                                "summary_text_area"
-                            ] = st.session_state.get(
-                                "summary_text",
-                                ""
-                            )
-                
-                        # --------------------------------------------------
-                        # TEXT AREA
-                        # --------------------------------------------------
-                
-                            edited_text2 = st.text_area(
-                    
-                                "Edit Sustainability Knowledge Summary",
-                    
-                                key="Summary_text_area",
-                    
-                                height=700,
-                    
-                                width= 600
-                            )
-                        
-                        
-                        # ------------------------------------------------------
-                        # SAVE SUMMARY BUTTON
-                        # ------------------------------------------------------
-                        
-                        if st.button(
-                            "Save Edited Summary",
-                            key="save_summary_btn"
-                        ):
-                        
-                            try:
-                        
-                                # ------------------------------------------
-                                # SAVE LOCALLY
-                                # ------------------------------------------
-                        
-                                save_text(
-                                    edited_summary,
-                                    SUMMARY_FILE
-                                )
-                        
-                                # ------------------------------------------
-                                # OPTIONAL GITHUB SAVE
-                                # ------------------------------------------
-                        
-                                # save_to_github(
-                                #     file_content=edited_summary,
-                                #     repo_name="YOUR_USERNAME/YOUR_REPO",
-                                #     file_path="summary_output.txt",
-                                #     github_token=st.secrets["GITHUB_TOKEN"]
-                                # )
-                        
-                                st.success(
-                                    f"Summary updated and saved to {SUMMARY_FILE}"
-                                )
-
-                            except Exception as e:
-                        
-                                st.error(
-                                    f"Failed to save summary: {e}"
-                                )
-                except Exception as e:
-
-                    if "workflow_state" in st.session_state:
-
-                        st.session_state.workflow_state[
-                            "knowledge"
-                        ] = "failed"
-
-                    st.error(str(e))
+            st.error(
+                f"Failed to save summary: {e}"
+            )
 # ==========================================================
 # GENERATE CONCERNS
 # ==========================================================
