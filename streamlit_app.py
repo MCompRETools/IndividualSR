@@ -1276,7 +1276,7 @@ with right:
                         f"Summary saved to {SUMMARY_FILE}"
                     )
 
-            except Exception as e:
+                except Exception as e:
 
                 st.session_state.workflow_state[
                     "knowledge"
