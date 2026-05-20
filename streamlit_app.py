@@ -1682,7 +1682,7 @@ elif selected_page == "Generate Concerns":
         )
 
         # --------------------------------------------------
-        # SAVE SCOPE
+        # SAVE UPDATED SCOPE
         # --------------------------------------------------
 
         if st.button(
@@ -1853,6 +1853,12 @@ Example:
                             generated_concerns
                         )
 
+                        # ----------------------------------
+                        # RESET ACCEPTED CONCERNS
+                        # ----------------------------------
+
+                        st.session_state.accepted_concerns = []
+
                         st.session_state.workflow_state[
                             "concerns"
                         ] = "saved"
@@ -1894,6 +1900,14 @@ Example:
             )
 
             # --------------------------------------------------
+            # INITIALIZE ACCEPTED STORE
+            # --------------------------------------------------
+
+            if "accepted_concerns" not in st.session_state:
+
+                st.session_state.accepted_concerns = []
+
+            # --------------------------------------------------
             # CATEGORY LOOP
             # --------------------------------------------------
 
@@ -1927,7 +1941,7 @@ Example:
                         # CONCERN
                         # --------------------------------------
 
-                        edited_concern = st.text_area(
+                        st.text_area(
 
                             "Concern",
 
@@ -1937,32 +1951,22 @@ Example:
 
                             key=f"concern_{unique_id}",
 
-                            height=120
+                            height=120,
+
+                            disabled=False
                         )
 
                         # --------------------------------------
                         # IMPACT
                         # --------------------------------------
 
-                        impact = st.selectbox(
+                        st.text_input(
 
                             "Impact",
 
-                            [
-                                "positive",
-                                "negative",
-                                "mixed"
+                            value=concern_obj[
+                                "impact"
                             ],
-
-                            index=[
-                                "positive",
-                                "negative",
-                                "mixed"
-                            ].index(
-                                concern_obj[
-                                    "impact"
-                                ]
-                            ),
 
                             key=f"impact_{unique_id}"
                         )
@@ -1971,7 +1975,7 @@ Example:
                         # HUMAN VALUES
                         # --------------------------------------
 
-                        human_values = st.text_area(
+                        st.text_area(
 
                             "Human Values",
 
@@ -1990,7 +1994,7 @@ Example:
                         # USER GROUPS
                         # --------------------------------------
 
-                        user_groups = st.text_area(
+                        st.text_area(
 
                             "User Groups Affected",
 
@@ -2007,7 +2011,7 @@ Example:
                         # BASIS
                         # --------------------------------------
 
-                        basis = st.text_area(
+                        st.text_area(
 
                             "Basis",
 
@@ -2021,23 +2025,46 @@ Example:
                         )
 
                         # --------------------------------------
-                        # ANALYST COMMENT
+                        # STATUS
                         # --------------------------------------
 
-                        analyst_note = st.text_area(
-
-                            "Analyst Comment",
-
-                            key=f"comment_{unique_id}",
-
-                            height=100
+                        current_status = concern_obj.get(
+                            "status",
+                            "pending"
                         )
+
+                        status_color = {
+
+                            "accepted": "#22c55e",
+
+                            "rejected": "#ef4444",
+
+                            "pending": "#facc15"
+
+                        }.get(
+                            current_status,
+                            "#facc15"
+                        )
+
+                        st.markdown(f"""
+                        <div style="
+                            padding:8px;
+                            border-radius:8px;
+                            background:{status_color};
+                            color:white;
+                            font-weight:700;
+                            text-align:center;
+                            margin-bottom:10px;
+                        ">
+                            STATUS: {current_status.upper()}
+                        </div>
+                        """, unsafe_allow_html=True)
 
                         # --------------------------------------
                         # ACTION BUTTONS
                         # --------------------------------------
 
-                        col1, col2, col3 = st.columns(3)
+                        col1, col2 = st.columns(2)
 
                         # --------------------------------------
                         # ACCEPT
@@ -2054,9 +2081,23 @@ Example:
                                     "status"
                                 ] = "accepted"
 
+                                # ------------------------------
+                                # STORE ACCEPTED CONCERN
+                                # ------------------------------
+
+                                if concern_obj not in (
+                                    st.session_state.accepted_concerns
+                                ):
+
+                                    st.session_state.accepted_concerns.append(
+                                        concern_obj
+                                    )
+
                                 st.success(
                                     "Concern accepted."
                                 )
+
+                                st.rerun()
 
                         # --------------------------------------
                         # REJECT
@@ -2073,79 +2114,55 @@ Example:
                                     "status"
                                 ] = "rejected"
 
+                                # ------------------------------
+                                # REMOVE IF PREVIOUSLY ACCEPTED
+                                # ------------------------------
+
+                                st.session_state.accepted_concerns = [
+
+                                    c
+
+                                    for c in st.session_state.accepted_concerns
+
+                                    if c["concern"] != concern_obj["concern"]
+                                ]
+
                                 st.warning(
                                     "Concern rejected."
                                 )
 
-                        # --------------------------------------
-                        # SAVE EDIT
-                        # --------------------------------------
-
-                        with col3:
-
-                            if st.button(
-                                "💾 Save Edit",
-                                key=f"save_{unique_id}"
-                            ):
-
-                                concern_obj[
-                                    "concern"
-                                ] = edited_concern
-
-                                concern_obj[
-                                    "impact"
-                                ] = impact
-
-                                concern_obj[
-                                    "Human Values affected (ordered from high to low)"
-                                ] = [
-
-                                    x.strip()
-
-                                    for x in human_values.split("\n")
-
-                                    if x.strip()
-                                ]
-
-                                concern_obj[
-                                    "User Groups Affected (ordered from high to low)"
-                                ] = (
-                                    user_groups
-                                )
-
-                                concern_obj[
-                                    "Basis"
-                                ] = basis
-
-                                concern_obj[
-                                    "Analyst Feedback"
-                                ] = analyst_note
-
-                                st.success(
-                                    "Concern updated."
-                                )
+                                st.rerun()
 
             # ==================================================
-            # SAVE ALL CONCERNS
+            # SAVE ACCEPTED CONCERNS
             # ==================================================
 
             st.markdown("---")
 
             if st.button(
-                "Save All Concerns"
+                "Save Accepted Concerns"
             ):
 
                 try:
 
+                    accepted_output = {
+                        "accepted_concerns":
+                        st.session_state.accepted_concerns
+                    }
+
+                    # ------------------------------------------
+                    # SAVE LOCALLY
+                    # ------------------------------------------
+
                     with open(
-                        "generated_concerns.json",
+                        "concern.txt",
                         "w",
                         encoding="utf-8"
                     ) as f:
 
                         json.dump(
 
-                            st.session_state.generated_concerns,
+                            accepted_output,
 
                             f,
 
@@ -2154,8 +2171,33 @@ Example:
                             ensure_ascii=False
                         )
 
+                    # ------------------------------------------
+                    # SAVE TO GITHUB
+                    # ------------------------------------------
+
+                    save_to_github(
+
+                        file_content=json.dumps(
+                            accepted_output,
+                            indent=4,
+                            ensure_ascii=False
+                        ),
+
+                        repo_name="MCompRETools/IndividualSR",
+
+                        file_path="concern.txt",
+
+                        github_token=st.secrets[
+                            "GITHUB_TOKEN"
+                        ],
+
+                        commit_message=(
+                            "Update accepted sustainability concerns"
+                        )
+                    )
+
                     st.success(
-                        "All concerns saved."
+                        "Accepted concerns saved locally and to GitHub."
                     )
 
                 except Exception as e:
