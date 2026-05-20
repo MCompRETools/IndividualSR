@@ -121,4 +121,3 @@
     *   **THEN** design systems to actively empower humans during interaction, ensuring they can understand implications, express concerns, and maintain agency, instead of treating them as passive users.
 *   **IF** aiming for long-term individual sustainability in software,
     *   **THEN** ensure the system supports aspects like "Longevity" (maintainability, usability over time) and "Energy Preservation," reflecting a broader commitment to sustainable practices.
-
