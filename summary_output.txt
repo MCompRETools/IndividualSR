@@ -100,7 +100,6 @@
     *   **Reactive Regulation:** Current regulatory approaches (e.g., GDPR) are often reactive and insufficient; systems need proactive design for human empowerment.
 
 ### E. Actionable Knowledge Units
-
 *   **IF** designing software for individual sustainability,
     *   **THEN** explicitly consider its impact on user health (physical, mental, emotional), lifelong learning, privacy, safety, and self-awareness/free will, using the SusAF framework as a guide.
 *   **IF** eliciting requirements for human-centric software,
