@@ -1,7 +1,5 @@
 Guidance to Individual Sustainability
 Requirements Elicitation
-Mandira Roy et al.
-March 2026
 1 Key Concepts
 1.1 Individual Dimension: Definitions
 As defined in the Karlskrona manifesto, individual sustainability refers to the
