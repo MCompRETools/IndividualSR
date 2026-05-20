@@ -29,7 +29,6 @@ Sustainability
 Individual Sustainability Requirements (ISR) are system-specific requirements
 derived from underlying human values and human abilities. Human values rep-
 resent abstract principles that capture what individuals consider important, and
-1
 they play a central role in shaping decision-making and behavior. Values func-
 tion as guiding criteria through which individuals justify actions, make choices,
 and evaluate themselves, others, and events. These values may include aspects
