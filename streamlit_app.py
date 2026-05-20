@@ -1298,6 +1298,12 @@ elif selected_page == "Sustainability Knowledge":
                         st.session_state.summary_editor = (
                             result
                         )
+                        st.session_state.summary_version = (
+                            st.session_state.get(
+                                "summary_version",
+                                0
+                            ) + 1
+                        )
                         st.session_state.summary_text_area = (
                             result
                         )
@@ -1329,23 +1335,24 @@ elif selected_page == "Sustainability Knowledge":
         # SYNC GENERATED SUMMARY TO TEXTBOX
         # --------------------------------------------------
 
-        if (
-            "summary_text_area" not in st.session_state
-        ):
+        #if (
+         #   "summary_text_area" not in st.session_state
+        #):
         
-            st.session_state.summary_text_area = (
-                st.session_state.summary_editor
-            )
+         #   st.session_state.summary_text_area = (
+         #       st.session_state.summary_editor
+          #  )
 
         # --------------------------------------------------
         # TEXT AREA
         # --------------------------------------------------
-
         edited_summary = st.text_area(
         
             "Edit Sustainability Knowledge Summary",
         
-            key="summary_text_area",
+            value=st.session_state.summary_editor,
+        
+            key=f"summary_text_area_{st.session_state.get('summary_version',0)}",
         
             height=500
         )
@@ -1397,6 +1404,12 @@ elif selected_page == "Sustainability Knowledge":
 
                 st.session_state.summary_editor = (
                     edited_summary
+                )
+                st.session_state.summary_version = (
+                    st.session_state.get(
+                        "summary_version",
+                        0
+                    ) + 1
                 )
                 st.session_state.summary_text_area = (
                     edited_summary
