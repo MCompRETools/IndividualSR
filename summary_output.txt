@@ -1,6 +1,4 @@
-This document outlines key concepts, models, and practical considerations for integrating individual sustainability and human values into software engineering, particularly for sustainable software design.
 
----
 
 ### A. Core Definitions
 
