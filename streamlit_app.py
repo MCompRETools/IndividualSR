@@ -1295,17 +1295,27 @@ elif selected_page == "Sustainability Knowledge":
                         # UPDATE SESSION
                         # ----------------------------------
 
-                        st.session_state.summary_editor = (
-                            result
-                        )
-                        st.session_state.summary_version = (
+                        new_version = (
                             st.session_state.get(
                                 "summary_version",
                                 0
                             ) + 1
                         )
-                        st.session_state.summary_text_area = (
-                            result
+                        
+                        st.session_state.summary_version = (
+                            new_version
+                        )
+                        
+                        new_key = (
+                            f"summary_text_area_{new_version}"
+                        )
+                        
+                        st.session_state[new_key] = result
+                        st.session_state.summary_version = (
+                            st.session_state.get(
+                                "summary_version",
+                                0
+                            ) + 1
                         )
                         st.session_state.workflow_state[
                             "knowledge"
@@ -1346,13 +1356,30 @@ elif selected_page == "Sustainability Knowledge":
         # --------------------------------------------------
         # TEXT AREA
         # --------------------------------------------------
+        summary_key = (
+            f"summary_text_area_"
+            f"{st.session_state.get('summary_version',0)}"
+        )
+
+        # --------------------------------------------------
+        # INITIALIZE CURRENT WIDGET VALUE
+        # --------------------------------------------------
+        
+        if summary_key not in st.session_state:
+        
+            st.session_state[summary_key] = (
+                st.session_state.summary_editor
+            )
+        
+        # --------------------------------------------------
+        # TEXT AREA
+        # --------------------------------------------------
+        
         edited_summary = st.text_area(
         
             "Edit Sustainability Knowledge Summary",
         
-            value=st.session_state.summary_editor,
-        
-            key=f"summary_text_area_{st.session_state.get('summary_version',0)}",
+            key=summary_key,
         
             height=500
         )
@@ -1401,17 +1428,31 @@ elif selected_page == "Sustainability Knowledge":
                 # ------------------------------------------
                 # UPDATE SESSION
                 # ------------------------------------------
-
+                
                 st.session_state.summary_editor = (
                     edited_summary
                 )
-                st.session_state.summary_version = (
+                
+                # ------------------------------------------
+                # FORCE WIDGET REFRESH
+                # ------------------------------------------
+                
+                new_version = (
                     st.session_state.get(
                         "summary_version",
                         0
                     ) + 1
                 )
-                st.session_state.summary_text_area = (
+                
+                st.session_state.summary_version = (
+                    new_version
+                )
+                
+                new_key = (
+                    f"summary_text_area_{new_version}"
+                )
+                
+                st.session_state[new_key] = (
                     edited_summary
                 )
                 st.success(
