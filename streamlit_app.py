@@ -938,27 +938,29 @@ elif selected_page == "System Scope":
 
 elif selected_page == "Sustainability Knowledge":
 
-    # ------------------------------------------------------
+    # ======================================================
     # INITIALIZE SESSION STATE
-    # ------------------------------------------------------
+    # ======================================================
 
     if "knowledge_text" not in st.session_state:
+
         st.session_state.knowledge_text = ""
 
     if "summary_editor" not in st.session_state:
+
         st.session_state.summary_editor = ""
 
-    # ------------------------------------------------------
+    # ======================================================
     # LOAD KNOWLEDGE SOURCE
-    # ------------------------------------------------------
+    # ======================================================
 
     if st.session_state.knowledge_text == "":
 
         try:
 
-            # ----------------------------------------------
+            # --------------------------------------------------
             # LOAD REVISED FILE
-            # ----------------------------------------------
+            # --------------------------------------------------
 
             if os.path.exists(REVISED_FILE):
 
@@ -972,9 +974,9 @@ elif selected_page == "Sustainability Knowledge":
                         f.read()
                     )
 
-            # ----------------------------------------------
+            # --------------------------------------------------
             # LOAD PDF
-            # ----------------------------------------------
+            # --------------------------------------------------
 
             elif os.path.exists(PDF_FILE):
 
@@ -983,10 +985,6 @@ elif selected_page == "Sustainability Knowledge":
                 )
 
                 st.session_state.knowledge_text = (
-                    loaded_text
-                )
-
-                st.session_state.knowledge_text_area = (
                     loaded_text
                 )
 
@@ -1001,6 +999,24 @@ elif selected_page == "Sustainability Knowledge":
             st.error(
                 f"Error loading knowledge source: {e}"
             )
+
+    # ======================================================
+    # LOAD EXISTING SUMMARY
+    # ======================================================
+
+    if st.session_state.summary_editor == "":
+
+        if os.path.exists(SUMMARY_FILE):
+
+            with open(
+                SUMMARY_FILE,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                st.session_state.summary_editor = (
+                    f.read()
+                )
 
     # ======================================================
     # PAGE TITLE
@@ -1028,34 +1044,17 @@ elif selected_page == "Sustainability Knowledge":
             "## Sustainability Knowledge"
         )
 
-        # --------------------------------------------------
-        # INITIALIZE EDITOR STATE
-        # --------------------------------------------------
-
-        if "knowledge_text_area" not in st.session_state:
-
-            st.session_state[
-                "knowledge_text_area"
-            ] = st.session_state.get(
-                "knowledge_text",
-                ""
-            )
-
-        # --------------------------------------------------
-        # TEXT AREA
-        # --------------------------------------------------
-
         edited_text = st.text_area(
 
             "Edit Sustainability Knowledge",
 
-            key="knowledge_text_area",
+            key="knowledge_text",
 
             height=700
         )
 
         # --------------------------------------------------
-        # SAVE BUTTON
+        # SAVE KNOWLEDGE
         # --------------------------------------------------
 
         if st.button(
@@ -1066,7 +1065,7 @@ elif selected_page == "Sustainability Knowledge":
             try:
 
                 # ------------------------------------------
-                # LOCAL SAVE
+                # SAVE LOCAL FILE
                 # ------------------------------------------
 
                 save_text(
@@ -1075,10 +1074,10 @@ elif selected_page == "Sustainability Knowledge":
                 )
 
                 # ------------------------------------------
-                # GITHUB SAVE
+                # SAVE TO GITHUB
                 # ------------------------------------------
 
-                github_success = save_to_github(
+                save_to_github(
 
                     file_content=edited_text,
 
@@ -1096,12 +1095,8 @@ elif selected_page == "Sustainability Knowledge":
                 )
 
                 # ------------------------------------------
-                # UPDATE SESSION
+                # UPDATE WORKFLOW
                 # ------------------------------------------
-
-                st.session_state[
-                    "knowledge_text"
-                ] = edited_text
 
                 st.session_state.workflow_state[
                     "knowledge"
@@ -1110,6 +1105,8 @@ elif selected_page == "Sustainability Knowledge":
                 st.success(
                     f"Saved to {REVISED_FILE}"
                 )
+
+                st.rerun()
 
             except Exception as e:
 
@@ -1142,7 +1139,7 @@ elif selected_page == "Sustainability Knowledge":
         )
 
         # --------------------------------------------------
-        # MODEL SELECTION
+        # MODEL
         # --------------------------------------------------
 
         if model_provider == "Google":
@@ -1183,25 +1180,7 @@ elif selected_page == "Sustainability Knowledge":
         )
 
         # --------------------------------------------------
-        # LOAD EXISTING SUMMARY
-        # --------------------------------------------------
-
-        if st.session_state.summary_editor == "":
-
-            if os.path.exists(SUMMARY_FILE):
-
-                with open(
-                    SUMMARY_FILE,
-                    "r",
-                    encoding="utf-8"
-                ) as f:
-
-                    st.session_state.summary_editor = (
-                        f.read()
-                    )
-
-        # --------------------------------------------------
-        # GENERATE BUTTON
+        # GENERATE SUMMARY
         # --------------------------------------------------
 
         if st.button(
@@ -1232,7 +1211,7 @@ elif selected_page == "Sustainability Knowledge":
                         )
 
                         # ----------------------------------
-                        # GOOGLE GEMINI
+                        # GEMINI
                         # ----------------------------------
 
                         if model_provider == "Google":
@@ -1262,7 +1241,7 @@ elif selected_page == "Sustainability Knowledge":
                             )
 
                         # ----------------------------------
-                        # SAVE SUMMARY
+                        # SAVE LOCAL
                         # ----------------------------------
 
                         save_text(
@@ -1274,7 +1253,7 @@ elif selected_page == "Sustainability Knowledge":
                         # SAVE TO GITHUB
                         # ----------------------------------
 
-                        github_success = save_to_github(
+                        save_to_github(
 
                             file_content=result,
 
@@ -1295,28 +1274,10 @@ elif selected_page == "Sustainability Knowledge":
                         # UPDATE SESSION
                         # ----------------------------------
 
-                        new_version = (
-                            st.session_state.get(
-                                "summary_version",
-                                0
-                            ) + 1
+                        st.session_state.summary_editor = (
+                            result
                         )
-                        
-                        st.session_state.summary_version = (
-                            new_version
-                        )
-                        
-                        new_key = (
-                            f"summary_text_area_{new_version}"
-                        )
-                        
-                        st.session_state[new_key] = result
-                        st.session_state.summary_version = (
-                            st.session_state.get(
-                                "summary_version",
-                                0
-                            ) + 1
-                        )
+
                         st.session_state.workflow_state[
                             "knowledge"
                         ] = "saved"
@@ -1324,6 +1285,8 @@ elif selected_page == "Sustainability Knowledge":
                         st.success(
                             f"Summary saved to {SUMMARY_FILE}"
                         )
+
+                        st.rerun()
 
                 except Exception as e:
 
@@ -1334,58 +1297,24 @@ elif selected_page == "Sustainability Knowledge":
                     st.error(str(e))
 
         # ==================================================
-        # GENERATED SUMMARY AREA
+        # SUMMARY TEXT AREA
         # ==================================================
 
         st.markdown(
             "## Generated Summary"
         )
 
-        # --------------------------------------------------
-        # SYNC GENERATED SUMMARY TO TEXTBOX
-        # --------------------------------------------------
-
-        #if (
-         #   "summary_text_area" not in st.session_state
-        #):
-        
-         #   st.session_state.summary_text_area = (
-         #       st.session_state.summary_editor
-          #  )
-
-        # --------------------------------------------------
-        # TEXT AREA
-        # --------------------------------------------------
-        summary_key = (
-            f"summary_text_area_"
-            f"{st.session_state.get('summary_version',0)}"
-        )
-
-        # --------------------------------------------------
-        # INITIALIZE CURRENT WIDGET VALUE
-        # --------------------------------------------------
-        
-        if summary_key not in st.session_state:
-        
-            st.session_state[summary_key] = (
-                st.session_state.summary_editor
-            )
-        
-        # --------------------------------------------------
-        # TEXT AREA
-        # --------------------------------------------------
-        
         edited_summary = st.text_area(
-        
+
             "Edit Sustainability Knowledge Summary",
-        
-            key=summary_key,
-        
+
+            key="summary_editor",
+
             height=500
         )
 
         # --------------------------------------------------
-        # SAVE SUMMARY BUTTON
+        # SAVE SUMMARY
         # --------------------------------------------------
 
         if st.button(
@@ -1395,12 +1324,16 @@ elif selected_page == "Sustainability Knowledge":
 
             try:
 
+                updated_summary = (
+                    st.session_state.summary_editor
+                )
+
                 # ------------------------------------------
-                # SAVE LOCALLY
+                # SAVE LOCAL
                 # ------------------------------------------
 
                 save_text(
-                    edited_summary,
+                    updated_summary,
                     SUMMARY_FILE
                 )
 
@@ -1408,9 +1341,9 @@ elif selected_page == "Sustainability Knowledge":
                 # SAVE TO GITHUB
                 # ------------------------------------------
 
-                github_success = save_to_github(
+                save_to_github(
 
-                    file_content=edited_summary,
+                    file_content=updated_summary,
 
                     repo_name="MCompRETools/IndividualSR",
 
@@ -1425,39 +1358,15 @@ elif selected_page == "Sustainability Knowledge":
                     )
                 )
 
-                # ------------------------------------------
-                # UPDATE SESSION
-                # ------------------------------------------
-                
-                st.session_state.summary_editor = (
-                    edited_summary
-                )
-                
-                # ------------------------------------------
-                # FORCE WIDGET REFRESH
-                # ------------------------------------------
-                
-                new_version = (
-                    st.session_state.get(
-                        "summary_version",
-                        0
-                    ) + 1
-                )
-                
-                st.session_state.summary_version = (
-                    new_version
-                )
-                
-                new_key = (
-                    f"summary_text_area_{new_version}"
-                )
-                
-                st.session_state[new_key] = (
-                    edited_summary
-                )
+                st.session_state.workflow_state[
+                    "knowledge"
+                ] = "saved"
+
                 st.success(
-                    f"Summary updated and saved to {SUMMARY_FILE}"
+                    "Summary updated successfully."
                 )
+
+                st.rerun()
 
             except Exception as e:
 
