@@ -1,0 +1,133 @@
+This document outlines key concepts, models, and practical considerations for integrating individual sustainability and human values into software engineering, particularly for sustainable software design.
+
+---
+
+### A. Core Definitions
+
+*   **Individual Sustainability:**
+    *   Refers to the maintenance and enhancement of individual human capital (health, education, skills, knowledge, leadership, access to services).
+    *   Encompasses individual freedom, agency, human dignity, and fulfillment.
+    *   Involves longer-term changes in individuals' attitudes, aptitudes, and/or behavior, achieved by evaluating consumption against personal and economic well-being.
+    *   Relies on reflection and awareness of one's past, present, and future for positive living and psychological well-being.
+    *   Signifies a person's ability to live a healthy lifestyle that includes harmony, interconnections, community, ethical systems, and high awareness of values, thoughts, and behaviors.
+    *   Includes possessing a value system acknowledging the interconnectedness of global biological/social systems and one's place within them.
+*   **Individual Dimension (of Sustainability):** Covers individual freedom, agency (ability to act), human dignity, fulfillment, the ability to thrive, exercise rights, and develop freely.
+*   **Human Values:** Abstract principles representing what individuals consider important, guiding decision-making, justifying actions, making choices, and evaluating self, others, and events. They can be ethical (e.g., trust) or pragmatic (e.g., market reputation).
+*   **Individual Sustainability Requirements (ISR):** System-specific requirements derived from underlying human values and abilities, serving as an operational bridge to translate abstract values into concrete, implementable, and measurable constructs within a software system.
+
+### B. Key Models and Theories
+
+*   **Maio et al. Value System Levels:** Values operate across three interconnected levels:
+    *   **L1 (Value System Level):** Captures patterns and relationships among an individual's held values.
+    *   **L2 (Abstract Interpretation Level):** How individuals interpret a value's meaning in a specific context (e.g., "high-quality software" as achievement).
+    *   **L3 (Behavioral Level):** Instantiation of values through concrete actions and system behaviors (e.g., prioritizing privacy by not logging user queries).
+*   **Unified Characteristics of a Self-Actualized / Fully Functioning Individual (Maslow & Rogers Synthesis):**
+    1.  Realistic and Accurate Perception
+    2.  Acceptance of Self, Others, and Nature
+    3.  Openness to Experience
+    4.  Authenticity and Inner Congruence
+    5.  Spontaneity and Naturalness
+    6.  Problem-Centered Orientation
+    7.  Autonomy and Inner Authority
+    8.  Resistance to Social Conditioning
+    9.  Desire for Privacy and Reflection
+    10. Deep Interpersonal Relationships and Intimacy
+    11. Empathy and Identification with Humanity
+    12. Democratic and Egalitarian Attitude
+    13. Creativity and Expressiveness
+    14. Freshness of Appreciation
+    15. Peak Experiences
+    16. Holistic and Process-Oriented Self
+    17. Value System Transformation (towards intrinsic values)
+    18. Reduced Materialism
+    19. Spiritual or Existential Awareness
+    20. Balanced View of Science and Technology
+    21. Ecological and Nature-Oriented Awareness
+*   **SusAF Framework for Individual Sustainability Dimensions:** A set of categories for assessing individual sustainability impact:
+    *   **Health:** Impact on physical, mental, and emotional health (e.g., feeling valued, respected, independent).
+    *   **Lifelong Learning:** Impact on people's competencies and continuous development.
+    *   **Privacy:** Exposure or protection of identity, whereabouts, or relations.
+    *   **Safety:** Protection from physical harm, risk, or injury, including unintended use.
+    *   **Self-awareness and Free Will:** Empowerment or prevention of individual action/decision-making; user comprehension of implications.
+*   **Context-Dependency and Dynamism of Value Hierarchies:** Value importance is context-dependent and dynamic, shifting across domains even for the same individual. Some values (security, achievement) are stable, while others change or become irrelevant depending on the application context.
+
+### C. Taxonomies / Value Systems
+
+*   **Schwartz Basic Human Values:**
+    1.  **Self-Direction:** Independent thought and action (choosing, creating, exploring).
+    2.  **Stimulation:** Excitement, novelty, challenge.
+    3.  **Hedonism:** Pleasure or sensuous gratification.
+    4.  **Achievement:** Personal success through demonstrating competence.
+    5.  **Power:** Social status, prestige, control/dominance over people and resources.
+    6.  **Security:** Safety, harmony, stability of society or self.
+    7.  **Conformity:** Restraint of actions, inclinations, or impulses.
+    8.  **Tradition:** Respect, commitment, acceptance of customs and ideas.
+    9.  **Benevolence:** Preserving and enhancing the welfare of close others.
+    10. **Universalism:** Understanding, appreciation, tolerance, and protection for the welfare of all people and nature.
+*   **Human Value Themes Mapped to Schwartz’s Model (in Software Context):**
+    *   **Conformity:** System supports adherence to rules, standards, norms. (Maps to Conformity – Rules)
+    *   **Pleasure:** System provides enjoyment, satisfaction, positive emotional experience. (Maps to Hedonism)
+    *   **Dignity:** System ensures users are treated with respect, not exposed to humiliation. (Maps to Face)
+    *   **Inclusiveness:** System accommodates diverse user groups (language, culture, ability). (Maps to Universalism – Concern)
+    *   **Sense of Belonging:** System enables social connection, inclusion, community. (Maps to Security – Personal)
+    *   **Freedom:** System provides choices, control actions, avoids restrictions. (Maps to Self-direction – Action)
+    *   **Independence:** System allows tasks without reliance on external systems/support. (Maps to Self-direction – Action)
+    *   **Wealth:** System reflects/impacts financial considerations (cost savings, benefits, ownership). (Maps to Power – Resources)
+    *   **Privacy:** System protects user data, personal info, identity. (Maps to Self-direction – Action)
+    *   **Security:** System safeguards users from threats, vulnerabilities, risks. (Maps to Security – Personal)
+*   **System Value Themes Mapped to Schwartz’s Model (Interpreted):**
+    *   **Trust:** System perceived as reliable, safe, dependable, fostering confidence. (Interpreted as Conformity – Interpersonal)
+    *   **Correctness:** System produces accurate, expected, logically consistent outputs. (No clear direct mapping)
+    *   **Compatibility:** System operates effectively across devices, platforms, environments. (Interpreted as Power – Resources)
+    *   **Portability:** System allows data/functionality transfer, migration, reuse. (Interpreted as Self-direction – Action / Power – Resources)
+    *   **Reliability:** System maintains stable performance, minimizes failures. (No clear direct mapping)
+    *   **Efficiency:** System enables tasks with minimal time, effort, resource consumption. (Interpreted as Power – Resources)
+    *   **Energy Preservation:** System optimizes energy consumption. (Interpreted as Power – Resources)
+    *   **Usability:** System is easy to learn, understand, operate. (Interpreted as Benevolence – Caring)
+    *   **Accessibility:** System ensures users with varying abilities can interact effectively. (Interpreted as Benevolence – Caring / Universalism – Concern)
+    *   **Longevity:** System remains functional, maintainable, usable over long periods. (Interpreted as Security – Personal)
+
+### D. Operationalization Logic
+
+*   **ISR as a Bridge:** Individual Sustainability Requirements (ISR) bridge the gap between abstract human values and concrete, system-level requirements.
+*   **Process:** Operationalizing human values in software involves:
+    1.  **Identifying Relevant Values:** Recognizing which values are important for a given context and stakeholders.
+    2.  **Translating to Constructs:** Converting abstract values into concrete, implementable, and measurable constructs.
+    3.  **Embedding:** Integrating these constructs into the system architecture.
+    4.  **Validation and Verification:** Ensuring the system adheres to the operationalized values.
+    5.  **Monitoring and Adaptation:** Continuously monitoring adherence and dynamically adapting values across contexts and stakeholders, especially crucial for AI systems.
+*   **Challenges (especially for AI):**
+    *   **Subjective Prioritization:** Different stakeholders (developers, users, regulators, communities) hold divergent or conflicting value priorities (e.g., efficiency vs. transparency, national security vs. privacy).
+    *   **Value Misalignment:** Without addressing these differences, design decisions may not align with expectations, leading to distrust and real-world consequences.
+    *   **AI Autonomy and Opacity:** AI systems' autonomy, opacity, and wide societal impact exacerbate challenges in upholding values like trust, honesty, autonomy, fairness, and accountability.
+    *   **"Soft Ethics" Neglect:** AI often neglects personal preferences and cultural norms.
+    *   **Reactive Regulation:** Current regulatory approaches (e.g., GDPR) are often reactive and insufficient; systems need proactive design for human empowerment.
+
+### E. Actionable Knowledge Units
+
+*   **IF** designing software for individual sustainability,
+    *   **THEN** explicitly consider its impact on user health (physical, mental, emotional), lifelong learning, privacy, safety, and self-awareness/free will, using the SusAF framework as a guide.
+*   **IF** eliciting requirements for human-centric software,
+    *   **THEN** identify and prioritize underlying human values as defined by Schwartz's model (Self-Direction, Security, Benevolence, etc.) and map them to specific software features and behaviors.
+*   **IF** dealing with abstract human values (e.g., "privacy", "freedom") in software design,
+    *   **THEN** translate them into concrete, measurable Individual Sustainability Requirements (ISR) that can be implemented, validated, and verified within the system.
+*   **IF** designing software where values may be interpreted differently by stakeholders (e.g., "high-quality software"),
+    *   **THEN** facilitate dialogue to clarify the abstract interpretation (L2) of those values in the specific context and define concrete behavioral instantiations (L3).
+*   **IF** software needs to align with individual sustainability,
+    *   **THEN** consider how it fosters characteristics of a self-actualized individual, such as autonomy, problem-centered orientation, empathy, creativity, and a balanced view of technology.
+*   **IF** eliciting values for a specific software domain or application,
+    *   **THEN** recognize that value hierarchies are context-dependent and dynamic; perform domain-specific elicitation and operationalization rather than assuming universal value importance.
+*   **IF** designing AI-driven systems with autonomy,
+    *   **THEN** proactively embed human values (e.g., trust, autonomy, fairness, accountability) into the system architecture, rather than relying solely on reactive regulatory compliance.
+*   **IF** facing conflicting value priorities among stakeholders (e.g., efficiency vs. transparency in AI),
+    *   **THEN** explicitly acknowledge, analyze, and attempt to resolve these conflicts during design to avoid undermining trust and causing unintended harms.
+*   **IF** designing socio-technical systems, especially AI,
+    *   **THEN** design systems to actively empower humans during interaction, ensuring they can understand implications, express concerns, and maintain agency, instead of treating them as passive users.
+*   **IF** aiming for long-term individual sustainability in software,
+    *   **THEN** ensure the system supports aspects like "Longevity" (maintainability, usability over time) and "Energy Preservation," reflecting a broader commitment to sustainable practices.
+
+---
+
+### Model Memory Summary
+
+Individual Sustainability (IS) focuses on maintaining human capital, well-being, freedom, agency, and human dignity, driven by reflection and a values-based lifestyle. Software should support IS by addressing dimensions like health, lifelong learning, privacy, safety, and self-awareness/free will (SusAF). Human values (abstract principles guiding decisions, e.g., Schwartz values) are critical for sustainable software design. Individual Sustainability Requirements (ISR) operationalize these values into concrete, measurable system requirements, bridging abstract concepts to system behavior (Maio et al. levels). Value hierarchies are context-dependent and dynamic, necessitating domain-specific elicitation. For AI systems, aligning with human values is a central challenge due to subjective prioritization, opacity, and autonomy, requiring proactive embedding of values in design and continuous monitoring, rather than reactive regulation. Sustainable software design must actively empower users, prevent value misalignment, and foster characteristics of a self-actualized individual.
