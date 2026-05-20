@@ -1633,390 +1633,536 @@ elif selected_page == "Generate Concerns":
     """, unsafe_allow_html=True)
 
     # ======================================================
-    # LOAD REQUIRED FILES
+    # PAGE LAYOUT
     # ======================================================
 
-    summary_text = ""
-
-    scope_text = ""
-
-    if os.path.exists(SUMMARY_FILE):
-
-        with open(
-            SUMMARY_FILE,
-            "r",
-            encoding="utf-8"
-        ) as f:
-
-            summary_text = f.read()
-
-    if os.path.exists("saved_scope.txt"):
-
-        with open(
-            "saved_scope.txt",
-            "r",
-            encoding="utf-8"
-        ) as f:
-
-            scope_text = f.read()
+    left_panel, right_panel = st.columns([1, 1.5])
 
     # ======================================================
-    # PROVIDER
+    # LEFT PANEL — SYSTEM SCOPE
     # ======================================================
 
-    provider = st.selectbox(
+    with left_panel:
 
-        "Select Provider",
+        st.markdown("## System Scope")
 
-        [
-            "Google",
-            "OpenAI"
-        ]
-    )
+        # --------------------------------------------------
+        # LOAD SAVED SCOPE
+        # --------------------------------------------------
 
-    # ======================================================
-    # MODEL
-    # ======================================================
+        if "editable_scope" not in st.session_state:
 
-    if provider == "Google":
+            if os.path.exists("saved_scope.txt"):
 
-        model_name = st.selectbox(
+                with open(
+                    "saved_scope.txt",
+                    "r",
+                    encoding="utf-8"
+                ) as f:
 
-            "Select Gemini Model",
+                    st.session_state.editable_scope = (
+                        f.read()
+                    )
 
-            [
-                "gemini-2.5-flash",
-                "gemini-1.5-pro"
-            ]
+            else:
+
+                st.session_state.editable_scope = ""
+
+        # --------------------------------------------------
+        # EDITABLE SCOPE
+        # --------------------------------------------------
+
+        edited_scope = st.text_area(
+
+            "Uploaded System Scope",
+
+            key="editable_scope",
+
+            height=700
         )
 
-    else:
-
-        model_name = st.selectbox(
-
-            "Select OpenAI Model",
-
-            [
-                "gpt-4o",
-                "gpt-4.1-mini"
-            ]
-        )
-
-    # ======================================================
-    # API KEY
-    # ======================================================
-
-    api_key = st.text_input(
-        "Enter API Key",
-        type="password"
-    )
-
-    # ======================================================
-    # ANALYST FEEDBACK
-    # ======================================================
-
-    analyst_feedback = st.text_area(
-
-        "Analyst Opinion / Feedback",
-
-        placeholder="""
-Example:
-- Focus more on privacy concerns.
-- Consider elderly voters separately.
-- Add concerns related to cognitive overload.
-""",
-
-        height=150
-    )
-
-    # ======================================================
-    # GENERATE BUTTON
-    # ======================================================
-
-    if st.button("Generate Sustainability Concerns"):
-
-        try:
-
-            with st.spinner(
-                "Generating sustainability concerns..."
-            ):
-
-                generated_concerns = (
-                    generate_individual_concerns(
-
-                        summary=summary_text,
-
-                        scope=scope_text,
-
-                        api_key=api_key,
-
-                        provider=provider,
-
-                        model_name=model_name,
-
-                        analyst_opinion=analyst_feedback
-                    )
-                )
-
-                st.session_state.generated_concerns = (
-                    generated_concerns
-                )
-
-                st.session_state.workflow_state[
-                    "concerns"
-                ] = "saved"
-
-                st.success(
-                    "Concerns generated successfully."
-                )
-
-        except Exception as e:
-
-            st.error(str(e))
-
-    # ======================================================
-    # DISPLAY GENERATED CONCERNS
-    # ======================================================
-
-    if "generated_concerns" in st.session_state:
-
-        concerns_data = (
-            st.session_state.generated_concerns
-        )
-
-        sustainability_concerns = (
-            concerns_data["sustainability_concerns"]
-        )
-
-        for category, concerns in (
-            sustainability_concerns.items()
-        ):
-
-            st.markdown(f"""
-            <div class='content-card'>
-                <h3>{category.replace("_", " ").title()}</h3>
-            </div>
-            """, unsafe_allow_html=True)
-
-            for idx, concern_obj in enumerate(concerns):
-
-                unique_id = (
-                    f"{category}_{idx}"
-                )
-
-                with st.expander(
-                    f"Concern {idx+1}"
-                ):
-
-                    # --------------------------------------
-                    # CONCERN TEXT
-                    # --------------------------------------
-
-                    edited_concern = st.text_area(
-
-                        "Concern",
-
-                        value=concern_obj["concern"],
-
-                        key=f"concern_{unique_id}",
-
-                        height=100
-                    )
-
-                    # --------------------------------------
-                    # IMPACT
-                    # --------------------------------------
-
-                    impact = st.selectbox(
-
-                        "Impact",
-
-                        [
-                            "positive",
-                            "negative",
-                            "mixed"
-                        ],
-
-                        index=[
-                            "positive",
-                            "negative",
-                            "mixed"
-                        ].index(
-                            concern_obj["impact"]
-                        ),
-
-                        key=f"impact_{unique_id}"
-                    )
-
-                    # --------------------------------------
-                    # HUMAN VALUES
-                    # --------------------------------------
-
-                    human_values = st.text_area(
-
-                        "Human Values",
-
-                        value="\n".join(
-                            concern_obj[
-                                "Human Values affected (ordered from high to low)"
-                            ]
-                        ),
-
-                        key=f"values_{unique_id}",
-
-                        height=100
-                    )
-
-                    # --------------------------------------
-                    # USER GROUPS
-                    # --------------------------------------
-
-                    user_groups = st.text_area(
-
-                        "User Groups Affected",
-
-                        value=concern_obj[
-                            "User Groups Affected (ordered from high to low)"
-                        ],
-
-                        key=f"users_{unique_id}",
-
-                        height=100
-                    )
-
-                    # --------------------------------------
-                    # BASIS
-                    # --------------------------------------
-
-                    basis = st.text_area(
-
-                        "Basis",
-
-                        value=concern_obj["Basis"],
-
-                        key=f"basis_{unique_id}",
-
-                        height=150
-                    )
-
-                    # --------------------------------------
-                    # ANALYST COMMENT
-                    # --------------------------------------
-
-                    analyst_note = st.text_area(
-
-                        "Analyst Comment",
-
-                        key=f"comment_{unique_id}",
-
-                        height=100
-                    )
-
-                    # --------------------------------------
-                    # ACTION BUTTONS
-                    # --------------------------------------
-
-                    col1, col2, col3 = st.columns(3)
-
-                    with col1:
-
-                        if st.button(
-                            "✅ Accept",
-                            key=f"accept_{unique_id}"
-                        ):
-
-                            concern_obj["status"] = (
-                                "accepted"
-                            )
-
-                            st.success(
-                                "Concern accepted."
-                            )
-
-                    with col2:
-
-                        if st.button(
-                            "❌ Reject",
-                            key=f"reject_{unique_id}"
-                        ):
-
-                            concern_obj["status"] = (
-                                "rejected"
-                            )
-
-                            st.warning(
-                                "Concern rejected."
-                            )
-
-                    with col3:
-
-                        if st.button(
-                            "💾 Save Edit",
-                            key=f"save_{unique_id}"
-                        ):
-
-                            concern_obj["concern"] = (
-                                edited_concern
-                            )
-
-                            concern_obj["impact"] = (
-                                impact
-                            )
-
-                            concern_obj[
-                                "Human Values affected (ordered from high to low)"
-                            ] = [
-                                x.strip()
-                                for x in human_values.split("\n")
-                                if x.strip()
-                            ]
-
-                            concern_obj[
-                                "User Groups Affected (ordered from high to low)"
-                            ] = (
-                                user_groups
-                            )
-
-                            concern_obj["Basis"] = (
-                                basis
-                            )
-
-                            concern_obj[
-                                "Analyst Feedback"
-                            ] = analyst_note
-
-                            st.success(
-                                "Concern updated."
-                            )
-
-        # ==================================================
-        # SAVE ALL
-        # ==================================================
+        # --------------------------------------------------
+        # SAVE SCOPE
+        # --------------------------------------------------
 
         if st.button(
-            "Save All Concerns"
+            "Save Updated Scope",
+            key="save_scope_generate_concerns"
         ):
 
+            try:
+
+                with open(
+                    "saved_scope.txt",
+                    "w",
+                    encoding="utf-8"
+                ) as f:
+
+                    f.write(edited_scope)
+
+                st.success(
+                    "System scope updated locally."
+                )
+
+            except Exception as e:
+
+                st.error(
+                    f"Failed to save scope: {e}"
+                )
+
+    # ======================================================
+    # RIGHT PANEL — CONCERN GENERATION
+    # ======================================================
+
+    with right_panel:
+
+        # ==================================================
+        # LOAD SUMMARY
+        # ==================================================
+
+        summary_text = ""
+
+        if os.path.exists(SUMMARY_FILE):
+
             with open(
-                "generated_concerns.json",
-                "w",
+                SUMMARY_FILE,
+                "r",
                 encoding="utf-8"
             ) as f:
 
-                json.dump(
+                summary_text = f.read()
 
-                    st.session_state.generated_concerns,
+        # ==================================================
+        # PROVIDER
+        # ==================================================
 
-                    f,
+        provider = st.selectbox(
 
-                    indent=4,
+            "Select Provider",
 
-                    ensure_ascii=False
+            [
+                "Google",
+                "OpenAI"
+            ]
+        )
+
+        # ==================================================
+        # MODEL
+        # ==================================================
+
+        if provider == "Google":
+
+            model_name = st.selectbox(
+
+                "Select Gemini Model",
+
+                [
+                    "gemini-2.5-flash",
+                    "gemini-1.5-pro",
+                    "gemini-1.5-flash"
+                ]
+            )
+
+        else:
+
+            model_name = st.selectbox(
+
+                "Select OpenAI Model",
+
+                [
+                    "gpt-4o",
+                    "gpt-4.1-mini",
+                    "gpt-4-turbo"
+                ]
+            )
+
+        # ==================================================
+        # API KEY
+        # ==================================================
+
+        api_key = st.text_input(
+
+            "Enter API Key",
+
+            type="password"
+        )
+
+        # ==================================================
+        # ANALYST FEEDBACK
+        # ==================================================
+
+        analyst_feedback = st.text_area(
+
+            "Analyst Opinion / Feedback",
+
+            placeholder="""
+Example:
+- Focus more on cognitive overload.
+- Include privacy-related concerns.
+- Analyze vulnerable users separately.
+- Add concerns regarding digital literacy.
+""",
+
+            height=150
+        )
+
+        # ==================================================
+        # GENERATE BUTTON
+        # ==================================================
+
+        if st.button(
+            "Generate Sustainability Concerns"
+        ):
+
+            if not api_key:
+
+                st.error(
+                    "Please provide API key."
                 )
 
-            st.success(
-                "All concerns saved."
+            else:
+
+                try:
+
+                    st.session_state.workflow_state[
+                        "concerns"
+                    ] = "active"
+
+                    with st.spinner(
+                        "Generating sustainability concerns..."
+                    ):
+
+                        generated_concerns = (
+                            generate_individual_concerns(
+
+                                summary=summary_text,
+
+                                scope=edited_scope,
+
+                                api_key=api_key,
+
+                                provider=provider,
+
+                                model_name=model_name,
+
+                                analyst_opinion=analyst_feedback
+                            )
+                        )
+
+                        st.session_state.generated_concerns = (
+                            generated_concerns
+                        )
+
+                        st.session_state.workflow_state[
+                            "concerns"
+                        ] = "saved"
+
+                        st.success(
+                            "Concerns generated successfully."
+                        )
+
+                        st.rerun()
+
+                except Exception as e:
+
+                    st.session_state.workflow_state[
+                        "concerns"
+                    ] = "failed"
+
+                    st.error(str(e))
+
+        # ==================================================
+        # DISPLAY GENERATED CONCERNS
+        # ==================================================
+
+        if "generated_concerns" in st.session_state:
+
+            concerns_data = (
+                st.session_state.generated_concerns
             )
+
+            sustainability_concerns = (
+                concerns_data[
+                    "sustainability_concerns"
+                ]
+            )
+
+            st.markdown("---")
+
+            st.markdown(
+                "## Generated Concerns"
+            )
+
+            # --------------------------------------------------
+            # CATEGORY LOOP
+            # --------------------------------------------------
+
+            for category, concerns in (
+                sustainability_concerns.items()
+            ):
+
+                st.markdown(f"""
+                <div class='content-card'>
+                    <h3>
+                        {category.replace("_", " ").title()}
+                    </h3>
+                </div>
+                """, unsafe_allow_html=True)
+
+                # ----------------------------------------------
+                # CONCERN LOOP
+                # ----------------------------------------------
+
+                for idx, concern_obj in enumerate(concerns):
+
+                    unique_id = (
+                        f"{category}_{idx}"
+                    )
+
+                    with st.expander(
+                        f"Concern {idx+1}"
+                    ):
+
+                        # --------------------------------------
+                        # CONCERN
+                        # --------------------------------------
+
+                        edited_concern = st.text_area(
+
+                            "Concern",
+
+                            value=concern_obj[
+                                "concern"
+                            ],
+
+                            key=f"concern_{unique_id}",
+
+                            height=120
+                        )
+
+                        # --------------------------------------
+                        # IMPACT
+                        # --------------------------------------
+
+                        impact = st.selectbox(
+
+                            "Impact",
+
+                            [
+                                "positive",
+                                "negative",
+                                "mixed"
+                            ],
+
+                            index=[
+                                "positive",
+                                "negative",
+                                "mixed"
+                            ].index(
+                                concern_obj[
+                                    "impact"
+                                ]
+                            ),
+
+                            key=f"impact_{unique_id}"
+                        )
+
+                        # --------------------------------------
+                        # HUMAN VALUES
+                        # --------------------------------------
+
+                        human_values = st.text_area(
+
+                            "Human Values",
+
+                            value="\n".join(
+                                concern_obj[
+                                    "Human Values affected (ordered from high to low)"
+                                ]
+                            ),
+
+                            key=f"values_{unique_id}",
+
+                            height=120
+                        )
+
+                        # --------------------------------------
+                        # USER GROUPS
+                        # --------------------------------------
+
+                        user_groups = st.text_area(
+
+                            "User Groups Affected",
+
+                            value=concern_obj[
+                                "User Groups Affected (ordered from high to low)"
+                            ],
+
+                            key=f"users_{unique_id}",
+
+                            height=120
+                        )
+
+                        # --------------------------------------
+                        # BASIS
+                        # --------------------------------------
+
+                        basis = st.text_area(
+
+                            "Basis",
+
+                            value=concern_obj[
+                                "Basis"
+                            ],
+
+                            key=f"basis_{unique_id}",
+
+                            height=180
+                        )
+
+                        # --------------------------------------
+                        # ANALYST COMMENT
+                        # --------------------------------------
+
+                        analyst_note = st.text_area(
+
+                            "Analyst Comment",
+
+                            key=f"comment_{unique_id}",
+
+                            height=100
+                        )
+
+                        # --------------------------------------
+                        # ACTION BUTTONS
+                        # --------------------------------------
+
+                        col1, col2, col3 = st.columns(3)
+
+                        # --------------------------------------
+                        # ACCEPT
+                        # --------------------------------------
+
+                        with col1:
+
+                            if st.button(
+                                "✅ Accept",
+                                key=f"accept_{unique_id}"
+                            ):
+
+                                concern_obj[
+                                    "status"
+                                ] = "accepted"
+
+                                st.success(
+                                    "Concern accepted."
+                                )
+
+                        # --------------------------------------
+                        # REJECT
+                        # --------------------------------------
+
+                        with col2:
+
+                            if st.button(
+                                "❌ Reject",
+                                key=f"reject_{unique_id}"
+                            ):
+
+                                concern_obj[
+                                    "status"
+                                ] = "rejected"
+
+                                st.warning(
+                                    "Concern rejected."
+                                )
+
+                        # --------------------------------------
+                        # SAVE EDIT
+                        # --------------------------------------
+
+                        with col3:
+
+                            if st.button(
+                                "💾 Save Edit",
+                                key=f"save_{unique_id}"
+                            ):
+
+                                concern_obj[
+                                    "concern"
+                                ] = edited_concern
+
+                                concern_obj[
+                                    "impact"
+                                ] = impact
+
+                                concern_obj[
+                                    "Human Values affected (ordered from high to low)"
+                                ] = [
+
+                                    x.strip()
+
+                                    for x in human_values.split("\n")
+
+                                    if x.strip()
+                                ]
+
+                                concern_obj[
+                                    "User Groups Affected (ordered from high to low)"
+                                ] = (
+                                    user_groups
+                                )
+
+                                concern_obj[
+                                    "Basis"
+                                ] = basis
+
+                                concern_obj[
+                                    "Analyst Feedback"
+                                ] = analyst_note
+
+                                st.success(
+                                    "Concern updated."
+                                )
+
+            # ==================================================
+            # SAVE ALL CONCERNS
+            # ==================================================
+
+            st.markdown("---")
+
+            if st.button(
+                "Save All Concerns"
+            ):
+
+                try:
+
+                    with open(
+                        "generated_concerns.json",
+                        "w",
+                        encoding="utf-8"
+                    ) as f:
+
+                        json.dump(
+
+                            st.session_state.generated_concerns,
+
+                            f,
+
+                            indent=4,
+
+                            ensure_ascii=False
+                        )
+
+                    st.success(
+                        "All concerns saved."
+                    )
+
+                except Exception as e:
+
+                    st.error(
+                        f"Failed to save concerns: {e}"
+                    )
 # ==========================================================
 # PRODUCE ISR
 # ==========================================================
