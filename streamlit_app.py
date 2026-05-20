@@ -431,7 +431,7 @@ Your output will be evaluated on:
 - Coverage of relevant human values
 - Relevance to product context
 """
-    return prompt
+return prompt
 def generate_individual_concerns(
     summary,
     scope,
