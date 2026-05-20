@@ -99,7 +99,7 @@ This document outlines key concepts, models, and practical considerations for in
 *   **Challenges (especially for AI):**
     *   **Subjective Prioritization:** Different stakeholders (developers, users, regulators, communities) hold divergent or conflicting value priorities (e.g., efficiency vs. transparency, national security vs. privacy).
     *   **Value Misalignment:** Without addressing these differences, design decisions may not align with expectations, leading to distrust and real-world consequences.
-    *   **AI Autonomy and Opacity:** AI systems' autonomy, opacity, and wide societal impact exacerbate challenges in upholding values like trust, honesty, autonomy, fairness, and accountability.
+    *   **AI Autonomy and Opacity:*AI systems' autonomy, opacity, and wide societal impact exacerbate challenges in upholding values like trust, honesty, autonomy, fairness, and accountability.
     *   **"Soft Ethics" Neglect:** AI often neglects personal preferences and cultural norms.
     *   **Reactive Regulation:** Current regulatory approaches (e.g., GDPR) are often reactive and insufficient; systems need proactive design for human empowerment.
 
