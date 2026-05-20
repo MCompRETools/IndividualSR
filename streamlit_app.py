@@ -1298,7 +1298,9 @@ elif selected_page == "Sustainability Knowledge":
                         st.session_state.summary_editor = (
                             result
                         )
-
+                        st.session_state.summary_text_area = (
+                            result
+                        )
                         st.session_state.workflow_state[
                             "knowledge"
                         ] = "saved"
@@ -1323,14 +1325,28 @@ elif selected_page == "Sustainability Knowledge":
             "## Generated Summary"
         )
 
+        # --------------------------------------------------
+        # SYNC GENERATED SUMMARY TO TEXTBOX
+        # --------------------------------------------------
+
+        if (
+            "summary_text_area" not in st.session_state
+        ):
+        
+            st.session_state.summary_text_area = (
+                st.session_state.summary_editor
+            )
+
+        # --------------------------------------------------
+        # TEXT AREA
+        # --------------------------------------------------
+
         edited_summary = st.text_area(
-
+        
             "Edit Sustainability Knowledge Summary",
-
-            value=st.session_state.summary_editor,
-
+        
             key="summary_text_area",
-
+        
             height=500
         )
 
@@ -1382,7 +1398,9 @@ elif selected_page == "Sustainability Knowledge":
                 st.session_state.summary_editor = (
                     edited_summary
                 )
-
+                st.session_state.summary_text_area = (
+                    edited_summary
+                )
                 st.success(
                     f"Summary updated and saved to {SUMMARY_FILE}"
                 )
