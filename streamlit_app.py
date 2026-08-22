@@ -7,6 +7,10 @@ from pypdf import PdfReader
 import json
 import google.generativeai as genai
 from openai import OpenAI
+import shutil
+from langchain_core.documents import Document
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 # ==========================================================
 # PATHS
 # ==========================================================
@@ -29,7 +33,596 @@ SUMMARY_FILE = os.path.join(
     BASE_DIR,
     "summary_output.txt"
 )
+# ==========================================================
+# RETRIEVAL — SIMILARITY
+# ==========================================================
 
+def retrieve_similarity(
+    vectorstore,
+    query,
+    k=5
+):
+
+    retrieved = (
+        vectorstore.similarity_search(
+            query,
+            k=k
+        )
+    )
+
+    return retrieved
+
+
+# ==========================================================
+# RETRIEVAL — MMR
+# ==========================================================
+
+def retrieve_MMR(
+    vectorstore,
+    query,
+    k=5,
+    lambda_mult=0.5
+):
+
+    retrieved = (
+        vectorstore.max_marginal_relevance_search(
+            query,
+            k=k,
+            lambda_mult=lambda_mult
+        )
+    )
+
+    return retrieved
+def retrieve_prompt_questions(
+    vectorstore,
+    concern,
+    k=5,
+    lambda_mult=0.5
+):
+
+    # ------------------------------------------------------
+    # SIMILARITY SEARCH
+    # ------------------------------------------------------
+
+    similarity_docs = retrieve_similarity(
+        vectorstore,
+        concern,
+        k=k
+    )
+
+    # ------------------------------------------------------
+    # MMR SEARCH
+    # ------------------------------------------------------
+
+    mmr_docs = retrieve_MMR(
+        vectorstore,
+        concern,
+        k=k,
+        lambda_mult=lambda_mult
+    )
+
+    # ------------------------------------------------------
+    # COMBINE WITHOUT DUPLICATES
+    # ------------------------------------------------------
+
+    combined = []
+
+    seen_questions = set()
+
+    for doc in (
+        similarity_docs +
+        mmr_docs
+    ):
+
+        question = doc.metadata.get(
+            "prompt_question",
+            ""
+        )
+
+        if question not in seen_questions:
+
+            seen_questions.add(
+                question
+            )
+
+            combined.append(doc)
+
+    return combined
+PROMPT_RETRIEVAL_PROMPT = """
+You are an expert Requirements Elicitation Agent
+specializing in individual sustainability, human values,
+and software requirements engineering.
+
+Your task is to identify the most relevant elicitation
+questions for a given individual sustainability concern.
+
+==================================================
+CONCERN
+==================================================
+
+{concern}
+
+==================================================
+RETRIEVED PROMPT QUESTIONS
+==================================================
+
+{retrieved_questions}
+
+==================================================
+TASK
+==================================================
+
+STEP 1 — Understand the Concern
+
+Understand the underlying individual sustainability
+concern and identify what the system needs to address.
+
+STEP 2 — Analyze Each Retrieved Question
+
+For every retrieved prompt question:
+
+- Determine the system quality property it addresses.
+- Determine how directly it addresses the concern.
+- Consider the associated SuSAF category.
+- Consider the human abilities.
+- Consider the NFR quality attributes.
+
+STEP 3 — Assign Relevance
+
+Use ONLY these relevance levels:
+
+VERY HIGH
+Directly mitigates the root cause of the concern.
+
+HIGH
+Addresses a key contributing factor.
+
+MEDIUM
+Indirectly or partially addresses the concern.
+
+LOW
+Weak or no meaningful connection.
+
+Do NOT overestimate relevance.
+
+Generic questions should not receive HIGH or VERY HIGH
+unless they have a clear connection to the concern.
+
+STEP 4 — Select Questions
+
+Return the TOP 3 most relevant questions.
+
+==================================================
+OUTPUT
+==================================================
+
+Return ONLY valid JSON.
+
+{{
+    "selected_questions": [
+        {{
+            "question": "...",
+            "system_quality_property": "...",
+            "relevance": "VERY HIGH",
+            "reasoning": "...",
+            "susaf_category": ["..."],
+            "human_abilities": ["..."],
+            "nfr_quality": ["..."]
+        }}
+    ]
+}}
+"""
+
+
+def evaluate_retrieved_questions(
+    concern,
+    retrieved_docs,
+    llm
+):
+
+    question_blocks = []
+
+    for idx, doc in enumerate(
+        retrieved_docs,
+        start=1
+    ):
+
+        question_blocks.append(
+            f"""
+--- Retrieved Question {idx} ---
+
+Prompt Question:
+{doc.metadata.get(
+    "prompt_question",
+    ""
+)}
+
+SuSAF Category:
+{doc.metadata.get(
+    "susaf_category",
+    []
+)}
+
+Human Abilities:
+{doc.metadata.get(
+    "human_abilities",
+    []
+)}
+
+NFR Quality Attributes:
+{doc.metadata.get(
+    "nfr_quality",
+    []
+)}
+
+Sub-Questions:
+{doc.metadata.get(
+    "sub_questions",
+    []
+)}
+
+Example Scenario:
+{doc.metadata.get(
+    "example_scenario",
+    ""
+)}
+
+Full Retrieval Text:
+{doc.page_content}
+"""
+        )
+
+    retrieved_text = "\n".join(
+        question_blocks
+    )
+
+    prompt = PROMPT_RETRIEVAL_PROMPT.format(
+
+        concern=concern,
+
+        retrieved_questions=
+            retrieved_text
+    )
+
+    response = llm.invoke(
+        prompt
+    )
+
+    text = get_text_from_llm_response(
+        response
+    )
+
+    return parse_llm_json(
+        text
+    )
+PROMPT_RETRIEVAL_PROMPT = """
+You are an expert Requirements Elicitation Agent
+specializing in individual sustainability, human values,
+and software requirements engineering.
+
+Your task is to identify the most relevant elicitation
+questions for a given individual sustainability concern.
+
+==================================================
+CONCERN
+==================================================
+
+{concern}
+
+==================================================
+RETRIEVED PROMPT QUESTIONS
+==================================================
+
+{retrieved_questions}
+
+==================================================
+TASK
+==================================================
+
+STEP 1 — Understand the Concern
+
+Understand the underlying individual sustainability
+concern and identify what the system needs to address.
+
+STEP 2 — Analyze Each Retrieved Question
+
+For every retrieved prompt question:
+
+- Determine the system quality property it addresses.
+- Determine how directly it addresses the concern.
+- Consider the associated SuSAF category.
+- Consider the human abilities.
+- Consider the NFR quality attributes.
+
+STEP 3 — Assign Relevance
+
+Use ONLY these relevance levels:
+
+VERY HIGH
+Directly mitigates the root cause of the concern.
+
+HIGH
+Addresses a key contributing factor.
+
+MEDIUM
+Indirectly or partially addresses the concern.
+
+LOW
+Weak or no meaningful connection.
+
+Do NOT overestimate relevance.
+
+Generic questions should not receive HIGH or VERY HIGH
+unless they have a clear connection to the concern.
+
+STEP 4 — Select Questions
+
+Return the TOP 3 most relevant questions.
+
+==================================================
+OUTPUT
+==================================================
+
+Return ONLY valid JSON.
+
+{{
+    "selected_questions": [
+        {{
+            "question": "...",
+            "system_quality_property": "...",
+            "relevance": "VERY HIGH",
+            "reasoning": "...",
+            "susaf_category": ["..."],
+            "human_abilities": ["..."],
+            "nfr_quality": ["..."]
+        }}
+    ]
+}}
+"""
+
+
+def evaluate_retrieved_questions(
+    concern,
+    retrieved_docs,
+    llm
+):
+
+    question_blocks = []
+
+    for idx, doc in enumerate(
+        retrieved_docs,
+        start=1
+    ):
+
+        question_blocks.append(
+            f"""
+--- Retrieved Question {idx} ---
+
+Prompt Question:
+{doc.metadata.get(
+    "prompt_question",
+    ""
+)}
+
+SuSAF Category:
+{doc.metadata.get(
+    "susaf_category",
+    []
+)}
+
+Human Abilities:
+{doc.metadata.get(
+    "human_abilities",
+    []
+)}
+
+NFR Quality Attributes:
+{doc.metadata.get(
+    "nfr_quality",
+    []
+)}
+
+Sub-Questions:
+{doc.metadata.get(
+    "sub_questions",
+    []
+)}
+
+Example Scenario:
+{doc.metadata.get(
+    "example_scenario",
+    ""
+)}
+
+Full Retrieval Text:
+{doc.page_content}
+"""
+        )
+
+    retrieved_text = "\n".join(
+        question_blocks
+    )
+
+    prompt = PROMPT_RETRIEVAL_PROMPT.format(
+
+        concern=concern,
+
+        retrieved_questions=
+            retrieved_text
+    )
+
+    response = llm.invoke(
+        prompt
+    )
+
+    text = get_text_from_llm_response(
+        response
+    )
+
+    return parse_llm_json(
+        text
+    )
+# ==========================================================
+# ISR PROMPT QUESTION VECTOR DATABASE
+# ==========================================================
+
+QUESTIONNAIRE_FILE = os.path.join(
+    BASE_DIR,
+    "Questionnaire.json"
+)
+
+ISR_VECTORSTORE_DIR = os.path.join(
+    BASE_DIR,
+    "chroma2_isr"
+)
+
+
+def create_prompt_question_text(entry):
+
+    question = entry["Prompt_question"]
+    metadata = entry["metadata"]
+
+    categories = ", ".join(
+        metadata["susaf_category"]
+    )
+
+    abilities = ", ".join(
+        metadata["human_abilities"]
+    )
+
+    nfrs = ", ".join(
+        metadata["nfr_quality"]
+    )
+
+    sub_questions = "; ".join(
+        metadata["sub_questions"]
+    )
+
+    example_scenario = metadata[
+        "example_scenario"
+    ]
+
+    text = (
+        f"Prompt: {question}\n\n"
+        f"This relates to {categories}.\n"
+        f"It considers human abilities such as {abilities}.\n"
+        f"Relevant quality attributes include {nfrs}.\n\n"
+        f"Some sub prompting questions: "
+        f"{sub_questions}\n\n"
+        f"An example scenario: "
+        f"{example_scenario}"
+    )
+
+    return text
+
+
+def build_isr_vectorstore():
+
+    if not os.path.exists(
+        QUESTIONNAIRE_FILE
+    ):
+
+        raise FileNotFoundError(
+            f"Questionnaire file not found: "
+            f"{QUESTIONNAIRE_FILE}"
+        )
+
+    # ------------------------------------------------------
+    # LOAD QUESTIONNAIRE
+    # ------------------------------------------------------
+
+    with open(
+        QUESTIONNAIRE_FILE,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        data = json.load(f)
+
+    documents = []
+
+    # ------------------------------------------------------
+    # CREATE DOCUMENTS
+    # ------------------------------------------------------
+
+    for entry in data:
+
+        text = create_prompt_question_text(
+            entry
+        )
+
+        metadata = entry["metadata"]
+
+        doc = Document(
+
+            page_content=text,
+
+            metadata={
+                "prompt_question":
+                    entry["Prompt_question"],
+
+                "susaf_category":
+                    metadata["susaf_category"],
+
+                "human_abilities":
+                    metadata["human_abilities"],
+
+                "nfr_quality":
+                    metadata["nfr_quality"],
+
+                "sub_questions":
+                    metadata["sub_questions"],
+
+                "example_scenario":
+                    metadata["example_scenario"],
+
+                "type":
+                    "elicitation_prompt"
+            }
+        )
+
+        documents.append(doc)
+
+    # ------------------------------------------------------
+    # EMBEDDING MODEL
+    # ------------------------------------------------------
+
+    embeddings = HuggingFaceEmbeddings(
+
+        model_name=
+            "BAAI/bge-large-en",
+
+        encode_kwargs={
+            "prompt":
+                "Represent the query for retrieval "
+                "of prompting questions based on "
+                "a given concern: "
+        }
+    )
+
+    # ------------------------------------------------------
+    # BUILD / REBUILD CHROMA
+    # ------------------------------------------------------
+
+    if os.path.exists(
+        ISR_VECTORSTORE_DIR
+    ):
+
+        shutil.rmtree(
+            ISR_VECTORSTORE_DIR
+        )
+
+    vectorstore = Chroma.from_documents(
+
+        documents=documents,
+
+        embedding=embeddings,
+
+        persist_directory=
+            ISR_VECTORSTORE_DIR
+    )
+
+    return vectorstore
 # ==========================================================
 # PDF LOADER
 # ==========================================================
@@ -2219,33 +2812,710 @@ Example:
 
 elif selected_page == "Produce ISR":
 
+    # ==========================================================
+# PRODUCE ISR
+# ==========================================================
+
+elif selected_page == "Produce ISR":
+
     st.markdown("""
     <div class='content-card'>
-        <h2>Produce ISR</h2>
+        <h2>Produce Individual Sustainability Requirements</h2>
+        <p>
+        Retrieve relevant elicitation questions, generate
+        Individual Sustainability Requirements, and decompose
+        them into Functional and Non-Functional Requirements.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Generate ISR"):
+    # ======================================================
+    # INITIALIZE ISR SESSION STATE
+    # ======================================================
 
-        st.session_state.workflow_state[
-            "isr"
-        ] = "saved"
+    if "generated_isrs" not in st.session_state:
 
-        st.success(
-            "ISRs generated successfully."
+        st.session_state.generated_isrs = []
+
+    if "isr_decompositions" not in st.session_state:
+
+        st.session_state.isr_decompositions = []
+
+    if "isr_prompt_results" not in st.session_state:
+
+        st.session_state.isr_prompt_results = []
+
+    # ======================================================
+    # LOAD SYSTEM SCOPE
+    # ======================================================
+
+    system_scope = ""
+
+    if os.path.exists("saved_scope.txt"):
+
+        with open(
+            "saved_scope.txt",
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            system_scope = f.read()
+
+    elif "editable_scope" in st.session_state:
+
+        system_scope = (
+            st.session_state.editable_scope
         )
 
-        st.markdown("""
-        <div class='content-card'>
+    # ======================================================
+    # LOAD SUSTAINABILITY KNOWLEDGE
+    # ======================================================
 
-            <h3>ISR-1</h3>
+    sustainability_knowledge = ""
 
-            <p>
-            The system shall provide adaptive
-            interfaces that minimize cognitive
-            overload for healthcare professionals
-            during high-pressure workflows.
-            </p>
+    if os.path.exists(SUMMARY_FILE):
 
-        </div>
-        """, unsafe_allow_html=True)
+        with open(
+            SUMMARY_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            sustainability_knowledge = f.read()
+
+    # ======================================================
+    # LOAD ACCEPTED CONCERNS
+    # ======================================================
+
+    accepted_concerns = []
+
+    # ------------------------------------------------------
+    # First preference: session state
+    # ------------------------------------------------------
+
+    if (
+        "accepted_concerns"
+        in st.session_state
+        and st.session_state.accepted_concerns
+    ):
+
+        accepted_concerns = (
+            st.session_state.accepted_concerns
+        )
+
+    # ------------------------------------------------------
+    # Otherwise load concern.txt
+    # ------------------------------------------------------
+
+    elif os.path.exists("concern.txt"):
+
+        try:
+
+            with open(
+                "concern.txt",
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                concern_data = json.load(f)
+
+            accepted_concerns = concern_data.get(
+                "accepted_concerns",
+                []
+            )
+
+        except Exception as e:
+
+            st.error(
+                f"Unable to load concern.txt: {e}"
+            )
+
+    # ======================================================
+    # INPUT VALIDATION
+    # ======================================================
+
+    if not system_scope.strip():
+
+        st.warning(
+            "System scope is not available. "
+            "Please upload and save the system scope first."
+        )
+
+    if not sustainability_knowledge.strip():
+
+        st.warning(
+            "Sustainability knowledge summary is not available. "
+            "Please generate or save the knowledge summary first."
+        )
+
+    if not accepted_concerns:
+
+        st.warning(
+            "No accepted sustainability concerns were found. "
+            "Please accept concerns before producing ISRs."
+        )
+
+    # ======================================================
+    # API / MODEL CONFIGURATION
+    # ======================================================
+
+    st.markdown("## LLM Configuration")
+
+    config_col1, config_col2 = st.columns(2)
+
+    with config_col1:
+
+        isr_provider = st.selectbox(
+            "Select Provider",
+            [
+                "Google",
+                "OpenAI"
+            ],
+            key="isr_provider"
+        )
+
+    with config_col2:
+
+        if isr_provider == "Google":
+
+            isr_model = st.selectbox(
+                "Select Gemini Model",
+                [
+                    "gemini-3.5-flash",
+                    "gemini-2.5-flash",
+                    "gemini-1.5-pro",
+                    "gemini-1.5-flash"
+                ],
+                key="isr_google_model"
+            )
+
+        else:
+
+            isr_model = st.selectbox(
+                "Select OpenAI Model",
+                [
+                    "gpt-4o",
+                    "gpt-4.1-mini",
+                    "gpt-4-turbo"
+                ],
+                key="isr_openai_model"
+            )
+
+    isr_api_key = st.text_input(
+        "Enter API Key",
+        type="password",
+        key="isr_api_key"
+    )
+
+    # ======================================================
+    # NUMBER OF RETRIEVED QUESTIONS
+    # ======================================================
+
+    retrieval_col1, retrieval_col2 = st.columns(2)
+
+    with retrieval_col1:
+
+        retrieved_k = st.number_input(
+            "Number of prompt questions to retrieve",
+            min_value=3,
+            max_value=10,
+            value=5,
+            step=1
+        )
+
+    with retrieval_col2:
+
+        st.info(
+            "The LLM will evaluate the retrieved questions "
+            "and retain the top 3 relevant questions for "
+            "ISR generation."
+        )
+
+    # ======================================================
+    # GENERATE BUTTON
+    # ======================================================
+
+    st.markdown("---")
+
+    generate_col1, generate_col2 = st.columns(
+        [1, 4]
+    )
+
+    with generate_col1:
+
+        generate_isr_clicked = st.button(
+            "⚙️ Generate ISR",
+            key="generate_isr_button",
+            use_container_width=True
+        )
+
+    # ======================================================
+    # GENERATION PIPELINE
+    # ======================================================
+
+    if generate_isr_clicked:
+
+        if not isr_api_key:
+
+            st.error(
+                "Please provide an API key."
+            )
+
+        elif not system_scope.strip():
+
+            st.error(
+                "System scope is missing."
+            )
+
+        elif not sustainability_knowledge.strip():
+
+            st.error(
+                "Sustainability knowledge summary is missing."
+            )
+
+        elif not accepted_concerns:
+
+            st.error(
+                "No accepted concerns are available."
+            )
+
+        else:
+
+            try:
+
+                st.session_state.workflow_state[
+                    "isr"
+                ] = "active"
+
+                # --------------------------------------------------
+                # CREATE LLM
+                # --------------------------------------------------
+
+                with st.spinner(
+                    "Initializing selected LLM..."
+                ):
+
+                    if isr_provider == "Google":
+
+                        llm = ChatGoogleGenerativeAI(
+                            model=isr_model,
+                            google_api_key=isr_api_key,
+                            temperature=0
+                        )
+
+                    else:
+
+                        llm = ChatOpenAI(
+                            model=isr_model,
+                            api_key=isr_api_key,
+                            temperature=0
+                        )
+
+                # --------------------------------------------------
+                # RUN PIPELINE
+                # --------------------------------------------------
+
+                with st.spinner(
+                    "Retrieving prompt questions, "
+                    "generating ISRs and decomposing them..."
+                ):
+
+                    (
+                        generated_isrs,
+                        decompositions,
+                        prompt_results
+                    ) = produce_isr_pipeline(
+
+                        system_scope=
+                            system_scope,
+
+                        sustainability_knowledge=
+                            sustainability_knowledge,
+
+                        accepted_concerns=
+                            accepted_concerns,
+
+                        llm=
+                            llm,
+
+                        k=
+                            retrieved_k,
+
+                        lambda_mult=
+                            0.5
+                )
+                # --------------------------------------------------
+                # STORE RESULTS
+                # --------------------------------------------------
+
+               st.session_state.generated_isrs = (
+                generated_isrs
+                )
+
+                st.session_state.isr_decompositions = (
+                decompositions
+                )
+
+                st.session_state.isr_prompt_results = (
+                prompt_results
+                )
+
+                st.session_state.workflow_state[
+                    "isr"
+                ] = "saved"
+
+                # --------------------------------------------------
+                # SAVE LOCAL JSON
+                # --------------------------------------------------
+
+                with open(
+                    "generated_isrs.json",
+                    "w",
+                    encoding="utf-8"
+                ) as f:
+
+                    json.dump(
+                        generated_isrs,
+                        f,
+                        indent=4,
+                        ensure_ascii=False
+                    )
+
+                with open(
+                    "isr_decomposition.json",
+                    "w",
+                    encoding="utf-8"
+                ) as f:
+
+                    json.dump(
+                        decompositions,
+                        f,
+                        indent=4,
+                        ensure_ascii=False
+                    )
+
+                st.success(
+                    f"Generated {len(generated_isrs)} ISR(s) "
+                    f"and decomposed {len(decompositions)} ISR(s)."
+                )
+
+                st.rerun()
+
+            except Exception as e:
+
+                st.session_state.workflow_state[
+                    "isr"
+                ] = "failed"
+
+                st.error(
+                    f"ISR generation failed: {e}"
+                )
+
+    # ======================================================
+    # DISPLAY GENERATED ISR LIST
+    # ======================================================
+
+    if st.session_state.generated_isrs:
+
+        st.markdown("---")
+
+        st.markdown(
+            "## Generated Individual Sustainability Requirements"
+        )
+
+        st.caption(
+            "These requirements were generated from the "
+            "accepted concern–prompt-question pairs."
+        )
+
+        for idx, isr_record in enumerate(
+            st.session_state.generated_isrs,
+            start=1
+        ):
+
+            with st.expander(
+                f"ISR-{idx}: "
+                f"{isr_record.get('isr', '')[:100]}..."
+            ):
+
+                st.markdown(
+                    f"### ISR-{idx}"
+                )
+
+                st.markdown(
+                    f"**Requirement**  \n"
+                    f"{isr_record.get('isr', '')}"
+                )
+
+                st.markdown(
+                    "**Concern**"
+                )
+
+                st.info(
+                    isr_record.get(
+                        "concern",
+                        ""
+                    )
+                )
+
+                st.markdown(
+                    "**Prompt Question**"
+                )
+
+                st.write(
+                    isr_record.get(
+                        "prompt_question",
+                        ""
+                    )
+                )
+
+                st.markdown(
+                    "**Prompt Relevance**"
+                )
+
+                st.write(
+                    isr_record.get(
+                        "prompt_relevance",
+                        ""
+                    )
+                )
+
+                st.markdown(
+                    "**Targeted Individuals**"
+                )
+
+                st.write(
+                    isr_record.get(
+                        "targeted_individuals",
+                        ""
+                    )
+                )
+
+                st.markdown(
+                    "**Supported NFR Properties**"
+                )
+
+                supported_nfrs = isr_record.get(
+                    "supported_nfrs",
+                    []
+                )
+
+                if isinstance(
+                    supported_nfrs,
+                    list
+                ):
+
+                    for nfr in supported_nfrs:
+
+                        st.write(
+                            f"• {nfr}"
+                        )
+
+                else:
+
+                    st.write(
+                        supported_nfrs
+                    )
+
+                st.markdown(
+                    "**How the ISR mitigates the concern**"
+                )
+
+                st.write(
+                    isr_record.get(
+                        "mitigation",
+                        ""
+                    )
+                )
+
+                st.markdown(
+                    "**Existing System Scope Assessment**"
+                )
+
+                st.write(
+                    isr_record.get(
+                        "existing_scope_score",
+                        ""
+                    )
+                )
+
+                st.markdown(
+                    "**Requirement Type**"
+                )
+
+                st.write(
+                    isr_record.get(
+                        "requirement_type",
+                        ""
+                    )
+
+    # ======================================================
+    # DISPLAY FR / NFR DECOMPOSITION
+    # ======================================================
+
+    if st.session_state.isr_decompositions:
+
+        st.markdown("---")
+
+        st.markdown(
+            "## ISR Decomposition: FR and NFR"
+        )
+
+        st.caption(
+            "Each generated ISR is decomposed into "
+            "Functional Requirements (FRs) and "
+            "Non-Functional Requirements (NFRs)."
+        )
+
+        for idx, decomposition in enumerate(
+            st.session_state.isr_decompositions,
+            start=1
+        ):
+
+            with st.expander(
+                f"ISR-{idx} — FR / NFR Decomposition"
+            ):
+
+                st.markdown(
+                    "### Individual Sustainability Requirement"
+                )
+
+                st.info(
+                    decomposition.get(
+                        "isr",
+                        ""
+                    )
+                )
+
+                col_fr, col_nfr = st.columns(2)
+
+                # --------------------------------------------------
+                # FR
+                # --------------------------------------------------
+
+                with col_fr:
+
+                    st.markdown(
+                        "### Functional Requirements"
+                    )
+
+                    frs = decomposition.get(
+                        "functional_requirements",
+                        []
+                    )
+
+                    if frs:
+
+                        for fr_idx, fr in enumerate(
+                            frs,
+                            start=1
+                        ):
+
+                            st.markdown(
+                                f"**FR-{idx}.{fr_idx}**"
+                            )
+
+                            st.success(
+                                fr
+                            )
+
+                    else:
+
+                        st.write(
+                            "No functional requirement identified."
+                        )
+
+                # --------------------------------------------------
+                # NFR
+                # --------------------------------------------------
+
+                with col_nfr:
+
+                    st.markdown(
+                        "### Non-Functional Requirements"
+                    )
+
+                    nfrs = decomposition.get(
+                        "non_functional_requirements",
+                        []
+                    )
+
+                    if nfrs:
+
+                        for nfr_idx, nfr in enumerate(
+                            nfrs,
+                            start=1
+                        ):
+
+                            st.markdown(
+                                f"**NFR-{idx}.{nfr_idx}**"
+                            )
+
+                            st.warning(
+                                nfr
+                            )
+
+                    else:
+
+                        st.write(
+                            "No non-functional requirement identified."
+                        )
+
+    # ======================================================
+    # SAVE ISR OUTPUT TO GITHUB
+    # ======================================================
+
+    if (
+        st.session_state.generated_isrs
+        and st.session_state.isr_decompositions
+    ):
+
+        st.markdown("---")
+
+        if st.button(
+            "💾 Save ISR Results to GitHub",
+            key="save_isr_results"
+        ):
+
+            try:
+
+                isr_content = json.dumps(
+                    {
+                        "generated_isrs":
+                            st.session_state.generated_isrs,
+
+                        "decompositions":
+                            st.session_state.isr_decompositions
+                    },
+                    indent=4,
+                    ensure_ascii=False
+                )
+
+                save_to_github(
+
+                    file_content=isr_content,
+
+                    repo_name=
+                        "MCompRETools/IndividualSR",
+
+                    file_path=
+                        "generated_isrs.json",
+
+                    github_token=
+                        st.secrets[
+                            "GITHUB_TOKEN"
+                        ],
+
+                    commit_message=
+                        "Update generated ISRs"
+                )
+
+                st.success(
+                    "ISR results saved to GitHub."
+                )
+
+            except Exception as e:
+
+                st.error(
+                    f"Failed to save ISR results: {e}"
+                )
