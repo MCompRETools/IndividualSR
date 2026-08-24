@@ -6,3 +6,4 @@ pypdf
 openai 
 google-generativeai
 PyGithub
+langchain-core
