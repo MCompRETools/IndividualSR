@@ -216,15 +216,10 @@ def get_text_from_llm_response(response):
 
 def parse_llm_json(text):
 
-    if text is None:
-
+    if not text:
         raise ValueError(
             "LLM returned an empty response."
         )
-
-    # ------------------------------------------------------
-    # Convert to string
-    # ------------------------------------------------------
 
     text = str(text).strip()
 
@@ -232,77 +227,19 @@ def parse_llm_json(text):
     # Remove markdown fences
     # ------------------------------------------------------
 
-    if "```json" in text:
+    if text.startswith("```json"):
+        text = text[7:]
 
-        text = text.replace(
-            "```json",
-            ""
-        )
+    elif text.startswith("```"):
+        text = text[3:]
 
-    if "```" in text:
-
-        text = text.replace(
-            "```",
-            ""
-        )
+    if text.endswith("```"):
+        text = text[:-3]
 
     text = text.strip()
 
     # ------------------------------------------------------
-    # HANDLE WRAPPER:
-    #
-    # {'type': 'text', 'text': '...'}
-    # ------------------------------------------------------
-
-    if (
-        text.startswith("{'type'")
-        and "'text'" in text
-    ):
-
-        try:
-
-            # Extract everything after "'text':"
-            text_marker = "'text':"
-
-            start = text.find(
-                text_marker
-            )
-
-            if start != -1:
-
-                extracted = text[
-                    start + len(text_marker):
-                ].strip()
-
-                # Remove the outer wrapper's final }
-                if extracted.endswith("}"):
-
-                    extracted = extracted[:-1]
-
-                # Remove surrounding quotes if present
-                if (
-                    len(extracted) >= 2
-                    and extracted[0] == "'"
-                    and extracted[-1] == "'"
-                ):
-
-                    extracted = extracted[1:-1]
-
-                # Convert escaped characters
-                extracted = (
-                    extracted
-                    .replace("\\n", "\n")
-                    .replace("\\\"", "\"")
-                    .replace("\\'", "'")
-                )
-
-                text = extracted.strip()
-
-        except Exception:
-            pass
-
-    # ------------------------------------------------------
-    # FIND JSON OBJECT
+    # Extract JSON object
     # ------------------------------------------------------
 
     start = text.find("{")
@@ -311,17 +248,14 @@ def parse_llm_json(text):
     if start == -1 or end == -1:
 
         raise ValueError(
-            "LLM response does not contain "
-            "a JSON object.\n\n"
-            f"Raw response:\n{text}"
+            "No JSON object found in LLM response.\n\n"
+            f"Response:\n{text}"
         )
 
-    json_text = text[
-        start:end + 1
-    ].strip()
+    json_text = text[start:end + 1]
 
     # ------------------------------------------------------
-    # FIRST JSON PARSE ATTEMPT
+    # Parse
     # ------------------------------------------------------
 
     try:
@@ -332,41 +266,29 @@ def parse_llm_json(text):
 
     except json.JSONDecodeError as e:
 
-        error_position = e.pos
-
-        context_start = max(
+        error_start = max(
             0,
-            error_position - 500
+            e.pos - 500
         )
 
-        context_end = min(
+        error_end = min(
             len(json_text),
-            error_position + 500
+            e.pos + 500
         )
 
-        problematic_section = (
-            json_text[
-                context_start:context_end
-            ]
-        )
+        context = json_text[
+            error_start:error_end
+        ]
 
         raise ValueError(
-
             "\n\n"
             "LLM returned malformed JSON.\n\n"
-
-            f"JSON error: {e}\n\n"
-
-            f"Error position: "
-            f"{error_position}\n\n"
-
+            f"JSON error: {e}\n"
+            f"Error position: {e.pos}\n\n"
             "Problematic section:\n"
-            "----------------------------------------\n"
-
-            f"{problematic_section}\n"
-
-            "----------------------------------------"
-
+            "--------------------------------\n"
+            f"{context}\n"
+            "--------------------------------"
         ) from e
     
 PROMPT_RETRIEVAL_PROMPT = """
