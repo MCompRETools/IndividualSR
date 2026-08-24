@@ -129,173 +129,26 @@ def retrieve_prompt_questions(
             combined.append(doc)
 
     return combined
-PROMPT_RETRIEVAL_PROMPT = """
-You are an expert Requirements Elicitation Agent
-specializing in individual sustainability, human values,
-and software requirements engineering.
+def get_text_from_llm_response(response):
+    if hasattr(response, "content"):
+        return response.content
 
-Your task is to identify the most relevant elicitation
-questions for a given individual sustainability concern.
+    if hasattr(response, "text"):
+        return response.text
 
-==================================================
-CONCERN
-==================================================
-
-{concern}
-
-==================================================
-RETRIEVED PROMPT QUESTIONS
-==================================================
-
-{retrieved_questions}
-
-==================================================
-TASK
-==================================================
-
-STEP 1 — Understand the Concern
-
-Understand the underlying individual sustainability
-concern and identify what the system needs to address.
-
-STEP 2 — Analyze Each Retrieved Question
-
-For every retrieved prompt question:
-
-- Determine the system quality property it addresses.
-- Determine how directly it addresses the concern.
-- Consider the associated SuSAF category.
-- Consider the human abilities.
-- Consider the NFR quality attributes.
-
-STEP 3 — Assign Relevance
-
-Use ONLY these relevance levels:
-
-VERY HIGH
-Directly mitigates the root cause of the concern.
-
-HIGH
-Addresses a key contributing factor.
-
-MEDIUM
-Indirectly or partially addresses the concern.
-
-LOW
-Weak or no meaningful connection.
-
-Do NOT overestimate relevance.
-
-Generic questions should not receive HIGH or VERY HIGH
-unless they have a clear connection to the concern.
-
-STEP 4 — Select Questions
-
-Return the TOP 3 most relevant questions.
-
-==================================================
-OUTPUT
-==================================================
-
-Return ONLY valid JSON.
-
-{{
-    "selected_questions": [
-        {{
-            "question": "...",
-            "system_quality_property": "...",
-            "relevance": "VERY HIGH",
-            "reasoning": "...",
-            "susaf_category": ["..."],
-            "human_abilities": ["..."],
-            "nfr_quality": ["..."]
-        }}
-    ]
-}}
-"""
+    return str(response)
 
 
-def evaluate_retrieved_questions(
-    concern,
-    retrieved_docs,
-    llm
-):
+def parse_llm_json(text):
+    text = text.strip()
 
-    question_blocks = []
+    if text.startswith("```"):
+        text = text.replace("```json", "")
+        text = text.replace("```", "")
+        text = text.strip()
 
-    for idx, doc in enumerate(
-        retrieved_docs,
-        start=1
-    ):
-
-        question_blocks.append(
-            f"""
---- Retrieved Question {idx} ---
-
-Prompt Question:
-{doc.metadata.get(
-    "prompt_question",
-    ""
-)}
-
-SuSAF Category:
-{doc.metadata.get(
-    "susaf_category",
-    []
-)}
-
-Human Abilities:
-{doc.metadata.get(
-    "human_abilities",
-    []
-)}
-
-NFR Quality Attributes:
-{doc.metadata.get(
-    "nfr_quality",
-    []
-)}
-
-Sub-Questions:
-{doc.metadata.get(
-    "sub_questions",
-    []
-)}
-
-Example Scenario:
-{doc.metadata.get(
-    "example_scenario",
-    ""
-)}
-
-Full Retrieval Text:
-{doc.page_content}
-"""
-        )
-
-    retrieved_text = "\n".join(
-        question_blocks
-    )
-
-    prompt = PROMPT_RETRIEVAL_PROMPT.format(
-
-        concern=concern,
-
-        retrieved_questions=
-            retrieved_text
-    )
-
-    response = llm.invoke(
-        prompt
-    )
-
-    text = get_text_from_llm_response(
-        response
-    )
-
-    return parse_llm_json(
-        text
-    )
+    return json.loads(text)
+    
 PROMPT_RETRIEVAL_PROMPT = """
 You are an expert Requirements Elicitation Agent
 specializing in individual sustainability, human values,
