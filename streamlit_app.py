@@ -4231,8 +4231,7 @@ elif selected_page == "Produce ISR":
                         llm = ChatGoogleGenerativeAI(
                             model=isr_model,
                             google_api_key=isr_api_key,
-                            temperature=0,
-                            response_mime_type="application/json"
+                            temperature=0
                         )
 
                     else:
