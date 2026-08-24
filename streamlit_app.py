@@ -5,8 +5,8 @@ from github import Github
 import base64
 from pypdf import PdfReader
 import json
-import google.generativeai as genai
-from openai import OpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 import shutil
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
