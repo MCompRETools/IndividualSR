@@ -1,0 +1,299 @@
+[
+{
+  "Prompt_question": "Does the AI system's training data and output generation actively avoid reinforcing stereotypes that may disproportionately disadvantage users across ability dimensions?",
+   "metadata": {
+    "susaf_category": ["Safety", "Lifelong Learning", "Health"],
+    "sub_questions": [
+      "Does the system audit its training data for age-related stereotypes such as assumptions that elderly users are technologically incompetent, resistant to change, or incapable of complex decision-making that may be embedded in historical interaction data and perpetuated through AI output generation in ways that reduce the quality or dignity of responses provided to older users?",
+	"Does the training data used to develop the system's language model reflect the full spectrum of literacy levels present in the intended user population ensuring that the AI does not generate outputs calibrated exclusively to high-literacy communication norms that systematically disadvantage low-literacy users through inaccessible language, assumed vocabulary, or implicit literacy expectations?",
+	"Does the system implement mechanisms to prevent feedback loops in which cognitively vulnerable users whose interaction patterns generate lower engagement metrics?"
+    ],
+    "example_scenario": "An elderly user joins a social media platform to stay connected with family. Their interaction pattern is characteristically low- engagement by platform metrics The algorithm responds to the low-engagement profile by progressively deprioritizing the elderly user's feed quality reducing the visibility of family posts in favor of algorithmically promoted content designed to drive higher engagement from low-activity users.",
+    "human_abilities": ["Digital Literacy", "Physical Ability", "Cognitive Ability"],
+    "nfr_quality": ["User Experience", "Safety"]
+  }
+},
+
+{
+  "Prompt_question": "Does systems AI decision making module prevents projecting false confidence on user?",
+  "metadata": {
+    "susaf_category": ["Safety", "Self-Awareness & Free Will", "Health"],
+    "sub_questions": [
+      "Does the system treat high-stakes AI decision such as health recommendations, financial determinations, and eligibility assessments as requiring mandatory human review pathways rather than treating automated outputs as final in contexts where errors could cause irreversible individual harm?",
+	"Does the system recognize that social norms around technology interaction vary significantly across cognitive ability profiles, age groups, literacy levels, and cultural backgrounds?",
+	"Does the system provide explanations in concrete, real-world terms that connect AI behavior to outcomes the elderly of low-literacy user actually cares about such as -we suggested this because of your previous choices- rather than this recommendation was generated based on collaborative filtering of your interaction history?",
+	"Does the system communicate the consequences of user actions on future AI behavior in plain, ability appropriate language ensuring that users across all digital literacy profiles understand how their interactions shape the AI's future recommendations?"
+    ],
+    "example_scenario": "An elderly user living alone uses Netflix primarily to watch nature documentaries and classic films. One evening, their visiting grandchildren use the same profile to watch several action movies and superhero films. The following week, the elderly user opens Netflix to find their carefully curated recommendation feed built over months of personal viewing has been entirely replaced with action and superhero content the algorithm has learned to associate with their profile.",
+    "human_abilities": ["Digital Literacy", "Cognitive Ability"],
+    "nfr_quality": ["Ease of Use", "Transparency", "Fairness", "Safety"]
+  }
+},
+{
+  "Prompt_question": "Does system provides blackbox automation to user, while creating a sense of dependence?",
+   "metadata": {
+    "susaf_category": ["Safety", "Health"],
+    "sub_questions": [
+      "Does the system obtain genuine informed consent from cognitively vulnerable users before activating automated features that will make decisions on their behalf?",
+	"Does the system encourage users to seek external opinions (e.g., clinicians, caregivers) rather than relying solely on automated decisions?",
+	"Does the system create an implicit sense that automated recommendations are always correct or superior to human judgment?",
+	"Are cognitively vulnerable users able to recognize when the system is making automated decisions on their behalf?"
+    ],
+    "example_scenario": "A low-literacy user relies on a news aggregation app as their primary source of information about local community events, public health announcements, and government services. The platform's recommendation algorithm operating invisibly progressively narrows the user's content feed based on their interaction history, filtering out categories they have not previously engaged with including public health news and government service announcements.",
+    "human_abilities": ["Social", "Cognitive Ability"],
+    "nfr_quality": ["Privacy", "Transparency", "Fairness", "Safety"]
+  }
+},
+{
+  "Prompt_question": "When I make a mistake, does the system help me fix it- while constantly making me feel bad about using technology?",
+   "metadata": {
+    "susaf_category": ["Health"],
+    "sub_questions": [
+      "Does the system avoid logging, displaying, or communicating user errors in ways that are visible to other users, or administrators without the primary user's explicit consent?"
+    ],
+    "example_scenario": "An elderly user uses a supermarket self-checkout machine for the first time. Unfamiliar with the process, they make several errors — scanning items incorrectly, placing items in the wrong area, and accidentally triggering an age verification alert for a purchase they did not intend to make. Each error triggers a loud audible alert and illuminates an overhead flashing light above their checkout station a system designed to notify staff of assistance needs but functioning in practice as a public announcement of the user's errors to surrounding shoppers and staff.",
+    "human_abilities": ["Digital Literacy"],
+    "nfr_quality": ["Privacy"]
+  }
+},
+{
+  "Prompt_question": "Can my user override system decision in places where dignity needs to be preserved?",
+   "metadata": {
+    "susaf_category": ["Self-Awareness & Free will", "Lifelong Learning"],
+    "sub_questions": [
+      "Does the system ensure that its design decisions do not disadvantage users based on their cognitive, sensory, or physical abilities?",
+	"Does the system empower users to question and challenge system decisions that may feel intrusive or disrespectful?",
+	"Is the override functionality easy to locate and use for users with varying levels of technical expertise?"
+    ],
+    "example_scenario": "Major platforms including banking apps, government portals, and healthcare systems impose password complexity requirements — mandating combinations of uppercase letters, lowercase letters, numbers, and special characters with minimum length requirements and periodic forced resets. For elderly users with memory difficulties or mild cognitive impairment, these requirements create a recurring and escalating barrier to system access",
+    "human_abilities": ["Digital Literacy", "Cognitive Ability", "Physical Ability", "Sensory Ability"],
+    "nfr_quality": ["Fairness", "Ease of Use"]
+  }
+},
+{
+  "Prompt_question": "Does your system enforces behavioral conformity at the cost of causing discomfort?",
+   "metadata": {
+    "susaf_category": ["Health"],
+    "sub_questions": [
+      "Does the system impose predefined interaction patterns (e.g., response speed, communication style) that users must follow to complete tasks?",
+	"Does the system treat normal user mistakes (e.g., incorrect input or repeated attempts) as violations and respond with restrictive actions like lockouts or session termination?"
+    ],
+    "example_scenario": "An elderly user attempts to withdraw cash from an ATM, where the system enforces a strict sequence of actions with limited time at each step (e.g., entering PIN, selecting transaction type, confirming amount). If the user takes too long to read or understand the options, the session times out and resets, requiring the process to start again. Additionally, the interface expects precise inputs (e.g., exact button selections without hesitation), offering no flexibility for mistakes or slower decision-making. As a result, users with slower cognitive processing or limited familiarity with ATMs may feel pressured, make errors, or fail to complete the transaction, as the system imposes rigid interaction patterns that do not accommodate natural variations in user ability.",
+    "human_abilities": ["Digital Literacy"],
+    "nfr_quality": ["Ease of Use"]
+  }
+},
+{
+  "Prompt_question": "Does the user have control over how technology operates?",
+   "metadata": {
+    "susaf_category": ["Self-Awareness and Free Will"],
+    "sub_questions": [
+      "Are configuration interfaces designed with progressive disclosure, offering simple defaults for novice users while allowing advanced control for more digitally experienced users?",
+	"Does the system accommodate users whose ability to exercise agency may vary over time due to chronic or episodic health conditions, offering flexible interaction pacing, reminders, or assisted control options?"
+    ],
+    "example_scenario": "A novice user of a cloud storage service may unknowingly lose control over file sharing settings due to default configurations they do not understand how to change.",
+    "human_abilities": ["Health Conditions", "Digital Literacy"],
+    "nfr_quality": ["Ease of Use", "Resilence"]
+  }
+},
+{
+  "Prompt_question": "Can hardware design constrain user control?",
+   "metadata": {
+    "susaf_category": ["Lifelong Learning"],
+    "sub_questions": [
+      "Are there hardware design elements - such as button placement, screen size, or input modality, that create barriers to control for users with specific ability constraints?",
+	"Are hardware input mechanisms intuitive enough for users with varying digital experience?"
+    ],
+    "example_scenario": "A smartphone with a large edge-to-edge screen may make it physically impossible for users with limited hand mobility or tremors.",
+    "human_abilities": ["Physical Mobility", "Digital Literacy"],
+    "nfr_quality": ["Ease of Use", "Accessibility"]
+  }
+},
+{
+  "Prompt_question": "Does my user autonomy distinguish and understand different types of end-users?",
+   "metadata": {
+    "susaf_category": ["Self-Awareness and Free Will"],
+    "sub_questions": [
+      "Does the system differentiate between novice and experienced digital users, ensuring that autonomy mechanisms do not inadvertently favor technically proficient users while leaving low-skill users unable to meaningfully exercise control or make informed decisions?",
+	"Does the system account for users whose cognitive or physical capacity to exercise autonomy may fluctuate due to health conditions, providing persistent, resumable, and paced autonomy interactions that do not penalize intermittent or variable engagement?"
+    ],
+    "example_scenario": "A website presents a cookie consent dialog with a large, prominent ”Accept All” button and a small, grey ”Manage Preferences” link in fine print. An experienced user recognizes the dark pattern, clicks Manage Preferences, and selectively disables tracking cookies. A low-skill user, unfamiliar with what cookies are or why they matter, clicks ”Accept All” simply to dismiss the banner and proceed to the content.",
+    "human_abilities": ["Health Conditions", "Digital Literacy", "Cognitive Ability"],
+    "nfr_quality": ["Accessibility", "Fairness"]
+  }
+},
+{
+  "Prompt_question": "Are my features assuming some level of computational ability from the end-users",
+   "metadata": {
+    "susaf_category": ["Lifelong Learning"],
+    "sub_questions": [
+      "Do time-sensitive or cognitively demanding features such as session timeouts, CAPTCHA challenges, or rapid-response prompts implicitly assume a level of cognitive and physical responsiveness ?"
+    ],
+    "example_scenario": "A user with severe anxiety disorder and depression attempts to log into their healthcare patient portal to access therapy appointment details. The portal uses SMS-based two-factor authentication, sending a one-time password (OTP) that expires in 60 seconds.",
+    "human_abilities": ["Health Conditions"],
+    "nfr_quality": ["Reliability"]
+  }
+},
+{
+  "Prompt_question": "Can my system cater to changing system goals over time?",
+   "metadata": {
+    "susaf_category": ["Health"],
+    "sub_questions": [
+      "Can the system evolve to support changing social dynamics in a user's life- such as a user transitioning from independent use to caregiver-assisted use allowing relational configurations and shared access models?"
+    ],
+    "example_scenario": "An elderly user who previously managed their bank account independently develops early-stage dementia. Their adult child needs to be added as an authorized co-manager.",
+    "human_abilities": ["Relational Ability"],
+    "nfr_quality": ["Adaptability"]
+  }
+},
+{
+  "Prompt_question": "Does the system provide safeguards in cases where - wrong data is generated or AI may be wrong?",
+   "metadata": {
+    "susaf_category": ["Safety"],
+    "sub_questions": [
+      "Does the system provide contextual examples or analogies to help users understand when and why they should distrust or verify an AI-generated result?"
+    ],
+    "example_scenario": "An elderly patient uses an AI symptom checker that confidently recommends- No immediate medical attention needed, for symptoms that are actually early signs of a serious event.",
+    "human_abilities": ["Digital Literacy"],
+    "nfr_quality": ["Reliability"]
+  }
+},
+{
+  "Prompt_question": "Does your system prioritizing efficiency over fairness?",
+   "metadata": {
+    "susaf_category": ["Health"],
+    "sub_questions": [
+      "Does the system's efficiency in automating health-related recommendations or decisions- such as insurance eligibility, care plan generation, or medication scheduling neglect the individual contextual fairness needed to account for the complex and variable health circumstances of each user?",
+	"Does the system's automated processing of user inputs prioritize speed of output over accuracy of interpretation?"
+    ],
+    "example_scenario": "A digital pharmacy platform automatically schedules medication refill reminders and dosage times based on standard prescription guidelines. A user managing chronic kidney disease requires significantly adjusted dosing intervals compared to standard recommendations due to impaired drug clearance.",
+    "human_abilities": ["Health Conditions", "Digital Literacy"],
+    "nfr_quality": ["Fairness", "Efficiency"]
+  }
+},
+{
+  "Prompt_question": "Does the system create a sense of dependence (or addiction) among its users?",
+   "metadata": {
+    "susaf_category": ["Health", "Safety"],
+    "sub_questions": [
+      "Does the system use loyalty mechanics- such as points, badges, or progress history that cannot be transferred or exported, making it unnecessarily difficult for users to leave without losing their accumulated data?",
+	"Does the system replace rather than supplement real-world social interaction for users with limited social ability- such as isolated elderly users or those with social anxiety?",
+	"Does the system fail to monitor or respond to usage patterns that indicate compulsive or harmful dependence in users with addiction vulnerabilities such as excessive session lengths, middle-of-night usage spikes, or repeated return?"
+    ],
+    "example_scenario": "A socially anxious teenager finds belonging and identity within an online gaming community, gradually substituting in-game friendships for school-based relationships. The platform’s engagement mechanics- guild membership, daily login rewards, collaborative missions, reward continuous presence in the virtual social environment while offering no guidance to balance online interaction with offline socialization.",
+    "human_abilities": ["Relational Ability"],
+    "nfr_quality": ["Safety"]
+  }
+},
+{
+  "Prompt_question": "How competent a user may feel in using a particular feature?",
+   "metadata": {
+    "susaf_category": ["Lifelong Learning"],
+    "sub_questions": [
+      "Is the system easy to understand (such as through plain language, clear visual cues, and forgiving error recovery mechanisms) and fix if they make a mistake, so users don't have to keep asking for help?",
+	"Does the interface help beginners actually learn how it works, rather than just keeping them overwhelmed by too many options at once?"
+    ],
+    "example_scenario": "The UK government's Universal Credit benefits system was migrated to an exclusively online platform with a complex multi-step application process. Elderly and low-literacy claimants reported feeling deeply incompetent and distressed when confronted with the portal's dense form structure, technical terminology, and absence of plain-language guidance.",
+    "human_abilities": ["Cognitive Ability", "Digital Literacy"],
+    "nfr_quality": ["Ease of Use", "Performance", "Accessibility"]
+  }
+},
+{
+  "Prompt_question": "Can user understand the context behind doing certain operations?",
+   "metadata": {
+    "susaf_category": ["Safety"],
+    "sub_questions": [
+      "Does the system explain things like permissions or terms in plain language, so users understand the real-life consequences instead of just clicking Agree because they have to?",
+	"When a user changes a setting or shares access, does the system explain what that means?"
+    ],
+    "example_scenario": "Following the Cambridge Analytica scandal in 2018, Facebook updated its terms and data policies, which included complex language and extensive documentation that totaled over 4,000 words. Many users found the sheer volume of information, combined with other privacy updates in the same period, overwhelming, with some feeling the changes did not adequately protect them.",
+    "human_abilities": ["Relational Ability", "Digital Literacy"],
+    "nfr_quality": ["Privacy"]
+  }
+},
+{
+  "Prompt_question": "Does the system encourage users to question or verify its outputs?",
+   "metadata": {
+    "susaf_category": ["Lifelong Learning"],
+    "sub_questions": [
+    ],
+    "example_scenario": "A sustained state of overreliance on AI for decision making can compromise autonomous competency building, diminishing users’ capacity to act on their own (Sutton et al. 2018) and eroding their sense of ownership over the decisions they make. As automation increasingly handles key tasks, opportunities to practice, refine or retain relevant skills decline. This can accelerate mass deskilling, increasing vulnerability to AI failures. At a collective level, such dynamics reflect a disregard for interpersonal duties, our shared responsibility to support one another’s development as capable agents.",
+    "nfr_quality": ["Transparency", "Fairness"]
+  }
+},
+{
+  "Prompt_question": "Has the risk that the system exerts an implicit or explicit influence on the perception of self‑value and identity been accounted for?",
+   "metadata": {
+    "susaf_category": ["Safety"],
+    "sub_questions": [
+    ],
+    "example_scenario": "A sustained state of overreliance on AI for decision making can compromise autonomous competency building, diminishing users’ capacity to act on their own (Sutton et al. 2018) and eroding their sense of ownership over the decisions they make. As automation increasingly handles key tasks, opportunities to practice, refine or retain relevant skills decline. This can accelerate mass deskilling, increasing vulnerability to AI failures. At a collective level, such dynamics reflect a disregard for interpersonal duties, our shared responsibility to support one another’s development as capable agents.",
+    "nfr_quality": ["Transparency", "Fairness"]
+  }
+},
+[
+  {
+    "Prompt_question": "Has the system's intended target population been clearly defined?",
+    "metadata": {
+      "susaf_category": ["Self-Awareness and Free Will"],
+      "sub_questions": [
+        "Do the data sufficiently represent all individuals who belong to the intended target population?",
+        "Does the interface account for the range of cognitive or physical abilities within the intended target population?",
+        "Is the system's intended target population effectively communicated?"
+      ],
+      "example_scenario": "An AI-powered mental health triage tool is deployed in a general hospital. The system was designed and trained primarily on data from adult patients aged 18–65, but is being used in an emergency department that also serves elderly patients and adolescents. Because the intended target population was never formally documented or communicated to clinical staff, clinicians unknowingly apply the tool to patients outside its validated scope, leading to unreliable risk assessments for those groups.",
+      "nfr_quality": ["Reliability", "Transparency", "Fairness"]
+    }
+  },
+  {
+    "Prompt_question": "Is the system's complexity proportional to the ability of the intended target population to engage with it?",
+    "metadata": {
+      "susaf_category": ["Self-Awareness and Free Will"],
+      "sub_questions": [
+        "Is the system's intended use clearly communicated to its intended target population?"
+      ],
+      "example_scenario": "A government benefits eligibility tool is rolled out for low-income citizens to self-assess their entitlements. The interface presents multi-step conditional logic, legal terminology, and requires users to interpret probability scores to understand their results. Many users in the target population have low digital literacy or limited formal education, causing them to misinterpret outputs, abandon the process, or make incorrect benefit claims — effectively excluding the most vulnerable users the system was designed to help.",
+      "nfr_quality": ["Reliability", "Transparency", "Fairness"]
+    }
+  },
+  {
+    "Prompt_question": "Are the system's outputs sufficiently diverse?",
+    "metadata": {
+      "susaf_category": ["Lifelong Learning"],
+      "sub_questions": [
+        "Does the system enable discovery of new outcomes?",
+        "Does the system provide information on the predictive uncertainty of its outputs?",
+        "Does the system support the estimation of predictive uncertainty?",
+        "Are system's outputs tailored to individual users?"
+      ],
+      "example_scenario": "A personalised news recommendation system consistently surfaces articles that align with a user's previously clicked content, never exposing them to alternative viewpoints or topics outside their established reading patterns. The system provides no confidence indicators or uncertainty estimates alongside recommendations. Over time, users are confined to a narrow information bubble, their exposure to diverse perspectives diminishes, and the system offers no mechanism for users to discover content outside its learned model of their preferences.",
+      "nfr_quality": ["Reliability", "Accuracy"]
+    }
+  },
+  {
+    "Prompt_question": "Does the system prevent others from accessing the data or decisions generated through user interactions?",
+    "metadata": {
+      "susaf_category": ["Self-Awareness and Free Will"],
+      "sub_questions": [
+        "Is this access effectively communicated to the user?",
+        "Have preventive measures been taken to potential privacy breaches?",
+        "Does the system enable users to control who accesses the data and decisions generated through their interactions with the system?",
+        "Does the system's interface facilitate user control over who accesses the information they generate?"
+      ],
+      "example_scenario": "An AI career coaching platform logs all user responses, CV uploads, and personality assessment results. This data is silently shared with partner recruitment agencies without clear disclosure to users at the point of interaction. The platform's privacy settings are buried within account management pages and default to broad data-sharing permissions. Users are unaware that their self-disclosed career anxieties and skill gaps are accessible to third-party employers, constituting a significant privacy breach with potential professional consequences.",
+      "nfr_quality": ["Reliability", "Accuracy", "Privacy"]
+    }
+  },
+  {
+    "Prompt_question": "Are there protocols in place for users to opt-out from the system?",
+    "metadata": {
+      "susaf_category": ["Self-Awareness and Free Will"],
+      "sub_questions": [
+        "Does the system's interface allow users to request opt-out from the system?",
+        "Are there mechanisms to effectively remove users from the system?"
+      ],
+      "example_scenario": "A workplace productivity monitoring system automatically enrolls all employees and tracks keystroke patterns, application usage, and communication frequency to generate performance scores. When an employee raises concerns and requests removal from the system, HR is unable to action the request because no formal opt-out protocol exists — neither in the system interface nor in organisational policy. The employee's data continues to be collected and factored into performance reviews, undermining their autonomy and exposing the organisation to data protection liability.",
+      "nfr_quality": ["Reliability", "Accuracy", "Privacy"]
+    }
+  }
+]
