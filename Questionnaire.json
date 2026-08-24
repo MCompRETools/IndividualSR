@@ -215,7 +215,7 @@
   "Prompt_question": "Does the system encourage users to question or verify its outputs?",
    "metadata": {
     "susaf_category": ["Lifelong Learning"],
-    "sub_questions": [
+    "sub_questions": ["Does the system encourage users to question or verify its outputs?"
     ],
     "example_scenario": "A sustained state of overreliance on AI for decision making can compromise autonomous competency building, diminishing users’ capacity to act on their own (Sutton et al. 2018) and eroding their sense of ownership over the decisions they make. As automation increasingly handles key tasks, opportunities to practice, refine or retain relevant skills decline. This can accelerate mass deskilling, increasing vulnerability to AI failures. At a collective level, such dynamics reflect a disregard for interpersonal duties, our shared responsibility to support one another’s development as capable agents.",
   "human_abilities": ["Digital Literacy", "Physical Ability", "Cognitive Ability"],
@@ -226,7 +226,7 @@
   "Prompt_question": "Has the risk that the system exerts an implicit or explicit influence on the perception of self‑value and identity been accounted for?",
    "metadata": {
     "susaf_category": ["Safety"],
-    "sub_questions": [
+    "sub_questions": ["Has the risk that the system exerts an implicit or explicit influence on the perception of self‑value and identity been accounted for?"
     ],
     "example_scenario": "A sustained state of overreliance on AI for decision making can compromise autonomous competency building, diminishing users’ capacity to act on their own (Sutton et al. 2018) and eroding their sense of ownership over the decisions they make. As automation increasingly handles key tasks, opportunities to practice, refine or retain relevant skills decline. This can accelerate mass deskilling, increasing vulnerability to AI failures. At a collective level, such dynamics reflect a disregard for interpersonal duties, our shared responsibility to support one another’s development as capable agents.",
   "human_abilities": ["Digital Literacy", "Physical Ability"],
