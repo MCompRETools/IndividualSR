@@ -4236,7 +4236,7 @@ elif selected_page == "Produce ISR":
                         "requirement_type",
                         ""
                     )
-
+                )
     # ======================================================
     # DISPLAY FR / NFR DECOMPOSITION
     # ======================================================
