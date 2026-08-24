@@ -8,3 +8,4 @@ google-generativeai
 PyGithub
 langchain-core
 langchain-huggingface
+langchain-community
