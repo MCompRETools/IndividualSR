@@ -218,6 +218,7 @@
     "sub_questions": [
     ],
     "example_scenario": "A sustained state of overreliance on AI for decision making can compromise autonomous competency building, diminishing users’ capacity to act on their own (Sutton et al. 2018) and eroding their sense of ownership over the decisions they make. As automation increasingly handles key tasks, opportunities to practice, refine or retain relevant skills decline. This can accelerate mass deskilling, increasing vulnerability to AI failures. At a collective level, such dynamics reflect a disregard for interpersonal duties, our shared responsibility to support one another’s development as capable agents.",
+  "human_abilities": ["Digital Literacy", "Physical Ability", "Cognitive Ability"],
     "nfr_quality": ["Transparency", "Fairness"]
   }
 },
@@ -228,6 +229,7 @@
     "sub_questions": [
     ],
     "example_scenario": "A sustained state of overreliance on AI for decision making can compromise autonomous competency building, diminishing users’ capacity to act on their own (Sutton et al. 2018) and eroding their sense of ownership over the decisions they make. As automation increasingly handles key tasks, opportunities to practice, refine or retain relevant skills decline. This can accelerate mass deskilling, increasing vulnerability to AI failures. At a collective level, such dynamics reflect a disregard for interpersonal duties, our shared responsibility to support one another’s development as capable agents.",
+  "human_abilities": ["Digital Literacy", "Physical Ability"],
     "nfr_quality": ["Transparency", "Fairness"]
   }
 },
@@ -241,6 +243,7 @@
         "Is the system's intended target population effectively communicated?"
       ],
       "example_scenario": "An AI-powered mental health triage tool is deployed in a general hospital. The system was designed and trained primarily on data from adult patients aged 18–65, but is being used in an emergency department that also serves elderly patients and adolescents. Because the intended target population was never formally documented or communicated to clinical staff, clinicians unknowingly apply the tool to patients outside its validated scope, leading to unreliable risk assessments for those groups.",
+  "human_abilities": ["Digital Literacy", "Cognitive Ability"],
       "nfr_quality": ["Reliability", "Transparency", "Fairness"]
     }
   },
@@ -252,6 +255,7 @@
         "Is the system's intended use clearly communicated to its intended target population?"
       ],
       "example_scenario": "A government benefits eligibility tool is rolled out for low-income citizens to self-assess their entitlements. The interface presents multi-step conditional logic, legal terminology, and requires users to interpret probability scores to understand their results. Many users in the target population have low digital literacy or limited formal education, causing them to misinterpret outputs, abandon the process, or make incorrect benefit claims — effectively excluding the most vulnerable users the system was designed to help.",
+  "human_abilities": ["Digital Literacy"],
       "nfr_quality": ["Reliability", "Transparency", "Fairness"]
     }
   },
@@ -266,6 +270,7 @@
         "Are system's outputs tailored to individual users?"
       ],
       "example_scenario": "A personalised news recommendation system consistently surfaces articles that align with a user's previously clicked content, never exposing them to alternative viewpoints or topics outside their established reading patterns. The system provides no confidence indicators or uncertainty estimates alongside recommendations. Over time, users are confined to a narrow information bubble, their exposure to diverse perspectives diminishes, and the system offers no mechanism for users to discover content outside its learned model of their preferences.",
+  "human_abilities": ["Digital Literacy"],
       "nfr_quality": ["Reliability", "Accuracy"]
     }
   },
@@ -280,6 +285,7 @@
         "Does the system's interface facilitate user control over who accesses the information they generate?"
       ],
       "example_scenario": "An AI career coaching platform logs all user responses, CV uploads, and personality assessment results. This data is silently shared with partner recruitment agencies without clear disclosure to users at the point of interaction. The platform's privacy settings are buried within account management pages and default to broad data-sharing permissions. Users are unaware that their self-disclosed career anxieties and skill gaps are accessible to third-party employers, constituting a significant privacy breach with potential professional consequences.",
+  "human_abilities": ["Digital Literacy"],
       "nfr_quality": ["Reliability", "Accuracy", "Privacy"]
     }
   },
@@ -292,6 +298,7 @@
         "Are there mechanisms to effectively remove users from the system?"
       ],
       "example_scenario": "A workplace productivity monitoring system automatically enrolls all employees and tracks keystroke patterns, application usage, and communication frequency to generate performance scores. When an employee raises concerns and requests removal from the system, HR is unable to action the request because no formal opt-out protocol exists — neither in the system interface nor in organisational policy. The employee's data continues to be collected and factored into performance reviews, undermining their autonomy and exposing the organisation to data protection liability.",
+  "human_abilities": ["Digital Literacy", "Cognitive Ability"],
       "nfr_quality": ["Reliability", "Accuracy", "Privacy"]
     }
   }
