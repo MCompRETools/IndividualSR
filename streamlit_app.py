@@ -401,11 +401,14 @@ QUESTIONNAIRE_FILE = os.path.join(
     "Questionnaire.json"
 )
 
+# Chroma must be stored in a writable runtime directory.
+# Do NOT store the SQLite/Chroma database inside the GitHub
+# application directory.
+
 ISR_VECTORSTORE_DIR = os.path.join(
-    BASE_DIR,
+    "/tmp",
     "chroma2_isr"
 )
-
 
 def create_prompt_question_text(entry):
 
@@ -451,15 +454,14 @@ def build_isr_vectorstore():
     if not os.path.exists(
         QUESTIONNAIRE_FILE
     ):
-
         raise FileNotFoundError(
             f"Questionnaire file not found: "
             f"{QUESTIONNAIRE_FILE}"
         )
 
-    # ------------------------------------------------------
+    # ======================================================
     # LOAD QUESTIONNAIRE
-    # ------------------------------------------------------
+    # ======================================================
 
     with open(
         QUESTIONNAIRE_FILE,
@@ -471,17 +473,104 @@ def build_isr_vectorstore():
 
     documents = []
 
-    # ------------------------------------------------------
+    # ======================================================
     # CREATE DOCUMENTS
-    # ------------------------------------------------------
+    # ======================================================
 
     for entry in data:
 
-        text = create_prompt_question_text(
-            entry
+        metadata = entry.get(
+            "metadata",
+            {}
         )
 
-        metadata = entry["metadata"]
+        question = entry.get(
+            "Prompt_question",
+            ""
+        )
+
+        susaf_category = metadata.get(
+            "susaf_category",
+            []
+        )
+
+        human_abilities = metadata.get(
+            "human_abilities",
+            []
+        )
+
+        nfr_quality = metadata.get(
+            "nfr_quality",
+            []
+        )
+
+        sub_questions = metadata.get(
+            "sub_questions",
+            []
+        )
+
+        example_scenario = metadata.get(
+            "example_scenario",
+            ""
+        )
+
+        # --------------------------------------------------
+        # NORMALIZE METADATA
+        # --------------------------------------------------
+
+        if isinstance(
+            susaf_category,
+            str
+        ):
+            susaf_category = [
+                susaf_category
+            ]
+
+        if isinstance(
+            human_abilities,
+            str
+        ):
+            human_abilities = [
+                human_abilities
+            ]
+
+        if isinstance(
+            nfr_quality,
+            str
+        ):
+            nfr_quality = [
+                nfr_quality
+            ]
+
+        if isinstance(
+            sub_questions,
+            str
+        ):
+            sub_questions = [
+                sub_questions
+            ]
+
+        # --------------------------------------------------
+        # CREATE RETRIEVAL TEXT
+        # --------------------------------------------------
+
+        text = (
+            f"Prompt: {question}\n\n"
+            f"This relates to "
+            f"{', '.join(susaf_category)}.\n"
+            f"It considers human abilities such as "
+            f"{', '.join(human_abilities)}.\n"
+            f"Relevant quality attributes include "
+            f"{', '.join(nfr_quality)}.\n\n"
+            f"Some sub prompting questions: "
+            f"{'; '.join(sub_questions)}\n\n"
+            f"An example scenario: "
+            f"{example_scenario}"
+        )
+
+        # --------------------------------------------------
+        # CREATE DOCUMENT
+        # --------------------------------------------------
 
         doc = Document(
 
@@ -489,22 +578,22 @@ def build_isr_vectorstore():
 
             metadata={
                 "prompt_question":
-                    entry["Prompt_question"],
+                    question,
 
                 "susaf_category":
-                    metadata["susaf_category"],
+                    susaf_category,
 
                 "human_abilities":
-                    metadata["human_abilities"],
+                    human_abilities,
 
                 "nfr_quality":
-                    metadata["nfr_quality"],
+                    nfr_quality,
 
                 "sub_questions":
-                    metadata["sub_questions"],
+                    sub_questions,
 
                 "example_scenario":
-                    metadata["example_scenario"],
+                    example_scenario,
 
                 "type":
                     "elicitation_prompt"
@@ -513,14 +602,12 @@ def build_isr_vectorstore():
 
         documents.append(doc)
 
-    # ------------------------------------------------------
+    # ======================================================
     # EMBEDDING MODEL
-    # ------------------------------------------------------
+    # ======================================================
 
     embeddings = HuggingFaceEmbeddings(
-
-        model_name=
-            "BAAI/bge-large-en",
+        model_name="BAAI/bge-large-en",
 
         encode_kwargs={
             "prompt":
@@ -530,17 +617,33 @@ def build_isr_vectorstore():
         }
     )
 
-    # ------------------------------------------------------
-    # BUILD / REBUILD CHROMA
-    # ------------------------------------------------------
+    # ======================================================
+    # CREATE FRESH RUNTIME CHROMA DATABASE
+    # ======================================================
+
+    # Remove any previous runtime copy.
+    # This is safe because /tmp is writable and temporary.
 
     if os.path.exists(
         ISR_VECTORSTORE_DIR
     ):
 
-        shutil.rmtree(
-            ISR_VECTORSTORE_DIR
-        )
+        try:
+
+            shutil.rmtree(
+                ISR_VECTORSTORE_DIR
+            )
+
+        except Exception as e:
+
+            st.warning(
+                f"Could not remove old Chroma "
+                f"database: {e}"
+            )
+
+    # ======================================================
+    # CREATE CHROMA
+    # ======================================================
 
     vectorstore = Chroma.from_documents(
 
@@ -553,6 +656,10 @@ def build_isr_vectorstore():
     )
 
     return vectorstore
+@st.cache_resource(show_spinner=False)
+def get_isr_vectorstore():
+
+    return build_isr_vectorstore()
 # ==========================================================
 # PDF LOADER
 # ==========================================================
@@ -1174,7 +1281,7 @@ def produce_isr_pipeline(
     # BUILD / LOAD VECTOR DATABASE
     # ======================================================
 
-    vectorstore = build_isr_vectorstore()
+    vectorstore = get_isr_vectorstore()
 
     # ======================================================
     # STEP 2
