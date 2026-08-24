@@ -9,3 +9,4 @@ PyGithub
 langchain-core
 langchain-huggingface
 langchain-community
+langchain-google-genai
