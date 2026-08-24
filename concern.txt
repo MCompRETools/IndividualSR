@@ -1,75 +1,111 @@
 {
     "accepted_concerns": [
         {
-            "concern": "Cognitive overload and mental fatigue experienced by healthcare professionals due to dense clinical information retrieval and complex CRUD operations under high-pressure medical environments.",
+            "concern": "Psychological stress and burnout for healthcare professionals caused by potential data synchronization conflicts or failures during offline CRUD operations.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
                 "Security",
-                "Dignity",
+                "Achievement",
                 "Pleasure"
             ],
-            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCP)",
-            "Basis": "(i) Scope excerpt: 'Provide full access to the International Patient Summary (IPS)... Support CRUD operations on IPS records: Add new medical entries, Update existing records, Remove outdated or incorrect data.' (ii) Reasoning: Constantly processing and modifying exhaustive medical records under time constraints can lead to high mental stress and burnout, negatively impacting practitioners' emotional and mental health.",
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals",
+            "Basis": "Excerpt: 'Support CRUD operations on IPS records... Synchronize updated records back to the S-EHR system... Limited or no internet connectivity handled via Bluetooth-based D2D.' Reasoning: Managing medical data updates in offline environments via Bluetooth creates technical friction. If sync conflicts arise upon reconnecting, it can generate significant anxiety and administrative burden for HCPs, negatively impacting their mental well-being.",
             "status": "accepted"
         },
         {
-            "concern": "Potential risk of patient physical harm resulting from misinterpreted health summaries or translation errors across multilingual clinical contexts.",
+            "concern": "Improvement in patient physical health outcomes due to accelerated, accurate clinical decision-making enabled by real-time, translated access to comprehensive histories.",
+            "impact": "positive",
+            "Human Values affected (ordered from high to low)": [
+                "Benevolence",
+                "Security",
+                "Achievement"
+            ],
+            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals",
+            "Basis": "Excerpt: 'Provide translation functionality across IPS sections... support clinical decision-making through comprehensive patient history visibility.' Reasoning: Providing immediate access to a patient's medical history (allergies, medications) across language barriers directly enhances the practitioner's ability to provide timely and effective care, positively impacting the patient's physical health.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Shift in digital competency requirements as healthcare professionals must learn to navigate standardized FHIR structures, offline D2D constraints, and modular IPS data.",
             "impact": "mixed",
             "Human Values affected (ordered from high to low)": [
-                "Security",
-                "Inclusiveness",
-                "Trust"
-            ],
-            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCP), Patients",
-            "Basis": "(i) Scope excerpt: 'Provide translation functionality across IPS sections to enhance usability in multilingual contexts.' (ii) Reasoning: Inaccurate translations of critical medical information (such as allergies or medication summaries) could impair clinical decision-making, posing indirect safety and health risks to patients and moral distress to practitioners.",
-            "status": "accepted"
-        },
-        {
-            "concern": "Skill atrophy or reliance on standardized digital templates that may hinder a practitioner's ability to critically reason through non-standard clinical presentations.",
-            "impact": "negative",
-            "Human Values affected (ordered from high to low)": [
+                "Self-Direction",
                 "Achievement",
-                "Independence",
                 "Conformity"
             ],
-            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCP)",
-            "Basis": "(i) Scope excerpt: 'Support clinical decision-making through comprehensive patient history visibility... Reliance on standardized IPS data structures defined by FHIR.' (ii) Reasoning: Over-reliance on structured digital data models and automated suggestions may gradually reduce practitioners' motivation or sharpness for autonomous, experience-based clinical diagnosis and lifelong learning.",
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals",
+            "Basis": "Excerpt: 'Adoption of HL7 FHIR for structured health data exchange... IPS sections presented in modular format.' Reasoning: While this system provides an opportunity for HCPs to continuously develop their digital literacy and align with modern interoperability standards, older or less tech-savvy professionals may face a steep learning curve, temporarily frustrating their sense of professional competence.",
             "status": "accepted"
         },
         {
-            "concern": "Exposure or unauthorized secondary leakage of sensitive patient health data during offline Device-to-Device (D2D) Bluetooth exchanges and synchronization phases.",
+            "concern": "Severe vulnerability of sensitive medical data and patient identity due to the use of deprecated cryptographic hashing algorithms (SHA-1).",
+            "impact": "negative",
+            "Human Values affected (ordered from high to low)": [
+                "Privacy",
+                "Security",
+                "Dignity"
+            ],
+            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals",
+            "Basis": "Excerpt: 'Consent and data protection implemented using: RSA for encryption/signatures, SHA-1 for data integrity.' Reasoning: SHA-1 is a cryptographically broken standard vulnerable to collision attacks. Relying on it for the integrity of highly sensitive medical records and consent logs exposes patients to severe risks of data tampering, identity exposure, and privacy breaches.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Risk of unauthorized interception of patient health records during offline Device-to-Device (D2D) Bluetooth exchanges.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
                 "Privacy",
                 "Security",
                 "Trust"
             ],
-            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals (HCP)",
-            "Basis": "(i) Scope excerpt: 'Use of Device-to-Device (D2D) communication: Based on Bluetooth connectivity... Synchronization of updated records back to the S-EHR system.' (ii) Reasoning: Bluetooth-based offline data transfers inherently carry interception or proximity risks, requiring robust cryptographic enforcement (RSA, SHA-1) to ensure patient privacy is not compromised during peer-to-peer data sharing.",
+            "User Groups Affected (ordered from high to low)": "Patients",
+            "Basis": "Excerpt: 'Use of Device-to-Device (D2D) communication: Based on Bluetooth connectivity... Enables offline data exchange.' Reasoning: Bluetooth protocols can be susceptible to eavesdropping, spoofing, or unauthorized pairing (e.g., Man-in-the-Middle attacks) in crowded healthcare settings. If the D2D library's key management is flawed, a patient's whereabouts, identity, and medical history could be exposed.",
             "status": "accepted"
         },
         {
-            "concern": "Compromised clinical safety and treatment errors caused by synchronization conflicts or outdated records when data is modified offline and later synced back.",
+            "concern": "Physical harm to patients resulting from asynchronous offline updates (CRUD) that inadvertently overwrite more recent or critical medical data upon synchronization.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
                 "Security",
-                "Trust",
-                "Reliability"
+                "Correctness",
+                "Trust"
             ],
-            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals (HCP)",
-            "Basis": "(i) Scope excerpt: 'Support CRUD operations on IPS records: Add new medical entries, Update existing records, Remove outdated or incorrect data... Limited or no internet connectivity handled via Bluetooth-based D2D.' (ii) Reasoning: Managing patient records in offline modes and syncing later creates the risk of data collision, race conditions, or missing critical updates, directly endangering patient safety.",
+            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals",
+            "Basis": "Excerpt: 'Support CRUD operations on IPS records... Synchronize updated records back to the S-EHR system.' Reasoning: If an HCP updates an offline record via D2D and syncs it later, it might overwrite newer data entered into the EMR by another physician in the meantime. This versioning conflict can lead to missing allergy or medication data, resulting in fatal medical errors.",
             "status": "accepted"
         },
         {
-            "concern": "Erosion of professional autonomy and clinical judgment due to rigid system workflows and automated consent-fetching mechanisms that leave little room for manual clinical discretion.",
+            "concern": "Misinterpretation of critical medical data due to contextual or semantic errors in the cross-IPS translation functionality.",
             "impact": "negative",
+            "Human Values affected (ordered from high to low)": [
+                "Security",
+                "Correctness",
+                "Benevolence"
+            ],
+            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals",
+            "Basis": "Excerpt: 'Provide translation functionality across IPS sections to enhance usability in multilingual contexts.' Reasoning: Medical terminology is highly complex and context-dependent. Automated translation of diagnostic results or problem lists may introduce subtle semantic errors, exposing the patient to incorrect treatments or physical harm if the HCP relies blindly on the translated text.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Erosion of holistic clinical oversight if selective data retrieval encourages practitioners to ignore crucial medical contexts (e.g., social history) to save time.",
+            "impact": "negative",
+            "Human Values affected (ordered from high to low)": [
+                "Self-Direction",
+                "Correctness",
+                "Independence"
+            ],
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals, Patients",
+            "Basis": "Excerpt: 'Allow practitioners to select specific IPS sections to download from the S-EHR Mobile application.' Reasoning: While selective download empowers HCPs with flexibility (especially under Bluetooth bandwidth constraints), it risks creating a habit of fragmented data retrieval. An HCP might skip downloading 'Pregnancy and Social History' to save time, compromising their capacity to make fully informed, autonomous clinical decisions.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Empowerment of patient autonomy and agency through explicit, granular QR-code based consent mechanisms prior to data access.",
+            "impact": "positive",
             "Human Values affected (ordered from high to low)": [
                 "Freedom",
                 "Independence",
-                "Conformity"
+                "Trust"
             ],
-            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCP)",
-            "Basis": "(i) Scope excerpt: 'Automatically retrieve patient consent after QR code-based interaction... Support clinical decision-making through comprehensive patient history visibility.' (ii) Reasoning: If system workflows or automated consent validations are overly rigid or opaque, they can coerce practitioners into workflow paths that restrict their professional agency and contextual decision-making.",
+            "User Groups Affected (ordered from high to low)": "Patients",
+            "Basis": "Excerpt: 'Automatically retrieve patient consent after QR code-based interaction... Display consent status within the application.' Reasoning: By requiring a physical QR-code scan from the patient's device, the system actively involves the patient in the data-sharing process. This guarantees that they understand when and by whom their data is being accessed, preserving their free will and avoiding coercive data extraction.",
             "status": "accepted"
         }
     ]
