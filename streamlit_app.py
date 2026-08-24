@@ -3706,12 +3706,6 @@ Example:
 
 elif selected_page == "Produce ISR":
 
-    # ==========================================================
-# PRODUCE ISR
-# ==========================================================
-
-elif selected_page == "Produce ISR":
-
     st.markdown("""
     <div class='content-card'>
         <h2>Produce Individual Sustainability Requirements</h2>
