@@ -725,6 +725,900 @@ def save_to_github(
 
         return False
 # ==========================================================
+# ISR GENERATION
+# ==========================================================
+
+ISR_GENERATION_PROMPT = """
+You are an expert Sustainability Requirements Engineer
+specializing in Individual Sustainability and Software
+Requirements Engineering.
+
+Your task is to derive Individual Sustainability
+Requirements (ISRs) from an individual sustainability
+concern and a relevant prompting question.
+
+==========================================================
+SYSTEM SCOPE
+==========================================================
+
+{system_scope}
+
+==========================================================
+SUSTAINABILITY KNOWLEDGE
+==========================================================
+
+{sustainability_knowledge}
+
+==========================================================
+INDIVIDUAL SUSTAINABILITY CONCERN
+==========================================================
+
+{concern}
+
+==========================================================
+SuSAF CATEGORY
+==========================================================
+
+{susaf_category}
+
+==========================================================
+TARGETED INDIVIDUALS / USER GROUPS
+==========================================================
+
+{targeted_individuals}
+
+==========================================================
+HUMAN VALUES
+==========================================================
+
+{human_values}
+
+==========================================================
+PROMPTING QUESTION
+==========================================================
+
+{prompt_question}
+
+==========================================================
+HUMAN ABILITIES
+==========================================================
+
+{human_abilities}
+
+==========================================================
+NFR QUALITY ATTRIBUTES
+==========================================================
+
+{nfr_quality}
+
+==========================================================
+TASK
+==========================================================
+
+Analyze the supplied information carefully.
+
+The Individual Sustainability Concern represents a potential
+negative impact, unmet need, or risk affecting individuals.
+
+The Prompting Question represents a question intended to
+elicit requirements that address that concern.
+
+The Sustainability Knowledge provides the conceptual
+knowledge that should ground the requirement.
+
+The System Scope describes what the existing system does.
+
+Based on these inputs:
+
+1. Determine whether the current system scope already
+   addresses the concern and prompting question.
+
+2. Identify the gap between the existing system and the
+   expected condition.
+
+3. Derive one or more Individual Sustainability Requirements
+   that address the identified gap.
+
+4. Each ISR must:
+
+   - Start with "The system shall..."
+   - Be specific.
+   - Be actionable.
+   - Be testable or verifiable.
+   - Be measurable where appropriate.
+   - Address the individual sustainability concern.
+   - Be relevant to the targeted individuals.
+   - Preserve the relevant human value.
+   - Be grounded in the supplied sustainability knowledge.
+   - Be consistent with the system scope.
+   - Consider the supplied NFR quality attributes.
+
+5. Do not introduce functionality that has no relationship
+   to the concern or prompting question.
+
+6. Do not invent facts about the system that are not present
+   in the supplied system scope.
+
+7. If the existing system already satisfies the concern,
+   explicitly identify this rather than unnecessarily
+   generating a new requirement.
+
+==========================================================
+REQUIREMENT TYPE
+==========================================================
+
+For each requirement classify it as one of:
+
+- "new"
+- "already_satisfied"
+- "partial"
+
+==========================================================
+OUTPUT
+==========================================================
+
+Return ONLY valid JSON.
+
+{
+    "requirements": [
+        {
+            "requirement_id": "ISR-1",
+
+            "requirement":
+                "The system shall ...",
+
+            "requirement_type":
+                "new",
+
+            "human_values":
+                ["..."],
+
+            "nfr_quality_attributes":
+                ["..."],
+
+            "targeted_individuals":
+                ["..."],
+
+            "concern_addressed":
+                "...",
+
+            "prompting_question":
+                "...",
+
+            "system_scope_assessment":
+                "...",
+
+            "gap_identified":
+                "...",
+
+            "rationale":
+                "...",
+
+            "how_concern_is_mitigated":
+                "..."
+        }
+    ]
+}
+"""
+
+
+def generate_isrs_for_question(
+    system_scope,
+    sustainability_knowledge,
+    concern,
+    susaf_category,
+    targeted_individuals,
+    human_values,
+    prompt_question,
+    human_abilities,
+    nfr_quality,
+    llm
+):
+
+    prompt = ISR_GENERATION_PROMPT.format(
+
+        system_scope=system_scope,
+
+        sustainability_knowledge=
+            sustainability_knowledge,
+
+        concern=concern,
+
+        susaf_category=
+            susaf_category,
+
+        targeted_individuals=
+            targeted_individuals,
+
+        human_values=
+            human_values,
+
+        prompt_question=
+            prompt_question,
+
+        human_abilities=
+            human_abilities,
+
+        nfr_quality=
+            nfr_quality
+    )
+
+    response = llm.invoke(prompt)
+
+    response_text = get_text_from_llm_response(
+        response
+    )
+
+    result = parse_llm_json(
+        response_text
+    )
+
+    return result
+# ==========================================================
+# ISR → FUNCTIONAL / NON-FUNCTIONAL REQUIREMENT
+# DECOMPOSITION
+# ==========================================================
+
+ISR_DECOMPOSITION_PROMPT = """
+You are an expert Software Requirements Engineer.
+
+You are given an Individual Sustainability Requirement
+(ISR).
+
+Your task is to decompose the ISR into:
+
+1. Functional Requirement(s) — FR
+2. Non-Functional Requirement(s) — NFR
+
+==========================================================
+INDIVIDUAL SUSTAINABILITY REQUIREMENT
+==========================================================
+
+{isr}
+
+==========================================================
+ISR RATIONALE
+==========================================================
+
+{rationale}
+
+==========================================================
+TASK
+==========================================================
+
+Analyze the ISR carefully.
+
+A Functional Requirement specifies WHAT the system should
+do, provide, allow, prevent, calculate, display, store,
+communicate, or otherwise perform.
+
+A Non-Functional Requirement specifies a QUALITY, CONSTRAINT,
+or CONDITION under which the functionality must operate.
+
+Examples of NFR qualities include:
+
+- Usability
+- Accessibility
+- Security
+- Privacy
+- Reliability
+- Performance
+- Transparency
+- Explainability
+- Safety
+- Maintainability
+- Availability
+- Controllability
+
+Rules:
+
+1. Do not invent requirements that are not implied by the ISR.
+
+2. Preserve the original meaning of the ISR.
+
+3. An ISR may produce:
+   - one FR and one NFR,
+   - multiple FRs,
+   - multiple NFRs,
+   - or only an FR / only an NFR.
+
+4. Do not force a requirement into both categories if it
+   does not belong there.
+
+5. Keep the FR and NFR independently understandable.
+
+6. If a quality attribute is embedded within a functional
+   statement, separate the functionality from the quality
+   constraint where possible.
+
+==========================================================
+EXAMPLE
+==========================================================
+
+ISR:
+
+"The system shall allow users to override automated
+recommendations and shall provide a clear explanation
+of each recommendation."
+
+Functional Requirements:
+
+- The system shall allow users to override automated
+  recommendations.
+
+Non-Functional Requirements:
+
+- The system shall provide clear explanations for automated
+  recommendations.
+
+==========================================================
+OUTPUT
+==========================================================
+
+Return ONLY valid JSON.
+
+{
+    "functional_requirements": [
+        {
+            "id": "FR-1",
+            "requirement": "...",
+            "source_isr": "..."
+        }
+    ],
+
+    "non_functional_requirements": [
+        {
+            "id": "NFR-1",
+            "requirement": "...",
+            "quality_attribute": "...",
+            "source_isr": "..."
+        }
+    ]
+}
+"""
+
+
+def decompose_isr(
+    isr,
+    rationale,
+    llm
+):
+
+    prompt = ISR_DECOMPOSITION_PROMPT.format(
+
+        isr=isr,
+
+        rationale=rationale
+    )
+
+    response = llm.invoke(
+        prompt
+    )
+
+    response_text = get_text_from_llm_response(
+        response
+    )
+
+    result = parse_llm_json(
+        response_text
+    )
+
+    return result
+# ==========================================================
+# COMPLETE ISR PIPELINE
+# ==========================================================
+
+def produce_isr_pipeline(
+    system_scope,
+    sustainability_knowledge,
+    accepted_concerns,
+    llm,
+    k=5,
+    lambda_mult=0.5
+):
+
+    all_generated_isrs = []
+
+    all_decompositions = []
+
+    all_prompt_results = []
+
+    # ======================================================
+    # STEP 1
+    # BUILD / LOAD VECTOR DATABASE
+    # ======================================================
+
+    vectorstore = build_isr_vectorstore()
+
+    # ======================================================
+    # STEP 2
+    # PROCESS EACH ACCEPTED CONCERN
+    # ======================================================
+
+    for concern_index, concern_obj in enumerate(
+        accepted_concerns,
+        start=1
+    ):
+
+        # --------------------------------------------------
+        # READ CONCERN DATA
+        # --------------------------------------------------
+
+        concern = concern_obj.get(
+            "concern",
+            ""
+        )
+
+        susaf_category = concern_obj.get(
+            "category",
+            []
+        )
+
+        targeted_individuals = concern_obj.get(
+            "User Groups Affected (ordered from high to low)",
+            []
+        )
+
+        human_values = concern_obj.get(
+            "Human Values affected (ordered from high to low)",
+            []
+        )
+
+        basis = concern_obj.get(
+            "Basis",
+            ""
+        )
+
+        # --------------------------------------------------
+        # NORMALIZE VALUES
+        # --------------------------------------------------
+
+        if isinstance(
+            susaf_category,
+            str
+        ):
+
+            susaf_category_text = (
+                susaf_category
+            )
+
+        else:
+
+            susaf_category_text = ", ".join(
+                susaf_category
+            )
+
+        if isinstance(
+            targeted_individuals,
+            str
+        ):
+
+            targeted_individuals_text = (
+                targeted_individuals
+            )
+
+        else:
+
+            targeted_individuals_text = ", ".join(
+                targeted_individuals
+            )
+
+        if isinstance(
+            human_values,
+            str
+        ):
+
+            human_values_text = (
+                human_values
+            )
+
+        else:
+
+            human_values_text = ", ".join(
+                human_values
+            )
+
+        # ==================================================
+        # STEP 3
+        # VECTOR RETRIEVAL
+        # ==================================================
+
+        retrieved_docs = retrieve_prompt_questions(
+
+            vectorstore=
+                vectorstore,
+
+            concern=
+                concern,
+
+            k=
+                k,
+
+            lambda_mult=
+                lambda_mult
+        )
+
+        if not retrieved_docs:
+
+            continue
+
+        # ==================================================
+        # STEP 4
+        # LLM EVALUATES RETRIEVED QUESTIONS
+        # ==================================================
+
+        evaluated = (
+            evaluate_retrieved_questions(
+
+                concern=
+                    concern,
+
+                retrieved_docs=
+                    retrieved_docs,
+
+                llm=
+                    llm
+            )
+        )
+
+        selected_questions = (
+            evaluated.get(
+                "selected_questions",
+                []
+            )
+        )
+
+        # Keep only maximum 3
+        selected_questions = (
+            selected_questions[:3]
+        )
+
+        # --------------------------------------------------
+        # SAVE RETRIEVAL RESULTS
+        # --------------------------------------------------
+
+        all_prompt_results.append({
+
+            "concern_id":
+                concern_index,
+
+            "concern":
+                concern,
+
+            "retrieved_questions":
+                [
+                    doc.metadata.get(
+                        "prompt_question",
+                        ""
+                    )
+                    for doc in retrieved_docs
+                ],
+
+            "selected_questions":
+                selected_questions
+        })
+
+        # ==================================================
+        # STEP 5
+        # GENERATE ISR FOR SELECTED QUESTIONS
+        # ==================================================
+
+        for selected_index, selected in enumerate(
+            selected_questions,
+            start=1
+        ):
+
+            prompt_question = selected.get(
+                "question",
+                ""
+            )
+
+            if not prompt_question.strip():
+                continue
+
+            # --------------------------------------------------
+            # FIND METADATA FOR SELECTED QUESTION
+            # --------------------------------------------------
+
+            matching_doc = None
+
+            for doc in retrieved_docs:
+
+                stored_question = doc.metadata.get(
+                    "prompt_question",
+                    ""
+                )
+
+                if (
+                    stored_question.strip()
+                    ==
+                    prompt_question.strip()
+                ):
+
+                    matching_doc = doc
+
+                    break
+
+            # --------------------------------------------------
+            # QUESTION METADATA
+            # --------------------------------------------------
+
+            if matching_doc:
+
+                metadata = (
+                    matching_doc.metadata
+                )
+
+            else:
+
+                metadata = {}
+
+            human_abilities = metadata.get(
+                "human_abilities",
+                []
+            )
+
+            nfr_quality = metadata.get(
+                "nfr_quality",
+                []
+            )
+
+            if isinstance(
+                human_abilities,
+                list
+            ):
+
+                human_abilities_text = (
+                    ", ".join(
+                        human_abilities
+                    )
+                )
+
+            else:
+
+                human_abilities_text = (
+                    str(human_abilities)
+                )
+
+            if isinstance(
+                nfr_quality,
+                list
+            ):
+
+                nfr_quality_text = (
+                    ", ".join(
+                        nfr_quality
+                    )
+                )
+
+            else:
+
+                nfr_quality_text = (
+                    str(nfr_quality)
+                )
+
+            # ==================================================
+            # GENERATE ISR
+            # ==================================================
+
+            isr_result = (
+                generate_isrs_for_question(
+
+                    system_scope=
+                        system_scope,
+
+                    sustainability_knowledge=
+                        sustainability_knowledge,
+
+                    concern=
+                        concern,
+
+                    susaf_category=
+                        susaf_category_text,
+
+                    targeted_individuals=
+                        targeted_individuals_text,
+
+                    human_values=
+                        human_values_text,
+
+                    prompt_question=
+                        prompt_question,
+
+                    human_abilities=
+                        human_abilities_text,
+
+                    nfr_quality=
+                        nfr_quality_text,
+
+                    llm=
+                        llm
+                )
+            )
+
+            generated_requirements = (
+                isr_result.get(
+                    "requirements",
+                    []
+                )
+            )
+
+            # ==================================================
+            # STEP 6
+            # DECOMPOSE EACH ISR
+            # ==================================================
+
+            for requirement_index, requirement in enumerate(
+                generated_requirements,
+                start=1
+            ):
+
+                isr_text = requirement.get(
+                    "requirement",
+                    ""
+                )
+
+                if not isr_text.strip():
+                    continue
+
+                # ----------------------------------------------
+                # CREATE UNIQUE ISR ID
+                # ----------------------------------------------
+
+                isr_id = (
+                    f"ISR-{concern_index}-"
+                    f"{selected_index}-"
+                    f"{requirement_index}"
+                )
+
+                # ----------------------------------------------
+                # DECOMPOSITION
+                # ----------------------------------------------
+
+                decomposition = (
+                    decompose_isr(
+
+                        isr=
+                            isr_text,
+
+                        rationale=
+                            requirement.get(
+                                "rationale",
+                                ""
+                            ),
+
+                        llm=
+                            llm
+                    )
+                )
+
+                # ==================================================
+                # STORE ISR
+                # ==================================================
+
+                isr_record = {
+
+                    "requirement_id":
+                        isr_id,
+
+                    "concern_id":
+                        concern_index,
+
+                    "concern":
+                        concern,
+
+                    "susaf_category":
+                        susaf_category,
+
+                    "targeted_individuals":
+                        targeted_individuals,
+
+                    "human_values":
+                        human_values,
+
+                    "human_abilities":
+                        human_abilities,
+
+                    "prompt_question":
+                        prompt_question,
+
+                    "prompt_relevance":
+                        selected.get(
+                            "relevance",
+                            ""
+                        ),
+
+                    "prompt_reasoning":
+                        selected.get(
+                            "reasoning",
+                            ""
+                        ),
+
+                    "nfr_quality":
+                        nfr_quality,
+
+                    "basis":
+                        basis,
+
+                    "isr":
+                        isr_text,
+
+                    "requirement_type":
+                        requirement.get(
+                            "requirement_type",
+                            ""
+                        ),
+
+                    "concern_addressed":
+                        requirement.get(
+                            "concern_addressed",
+                            ""
+                        ),
+
+                    "system_scope_assessment":
+                        requirement.get(
+                            "system_scope_assessment",
+                            ""
+                        ),
+
+                    "gap_identified":
+                        requirement.get(
+                            "gap_identified",
+                            ""
+                        ),
+
+                    "rationale":
+                        requirement.get(
+                            "rationale",
+                            ""
+                        ),
+
+                    "how_concern_is_mitigated":
+                        requirement.get(
+                            "how_concern_is_mitigated",
+                            ""
+                        )
+                }
+
+                all_generated_isrs.append(
+                    isr_record
+                )
+
+                # ==================================================
+                # STORE DECOMPOSITION
+                # ==================================================
+
+                all_decompositions.append({
+
+                    "requirement_id":
+                        isr_id,
+
+                    "isr":
+                        isr_text,
+
+                    "functional_requirements":
+                        decomposition.get(
+                            "functional_requirements",
+                            []
+                        ),
+
+                    "non_functional_requirements":
+                        decomposition.get(
+                            "non_functional_requirements",
+                            []
+                        )
+                })
+
+    # ======================================================
+    # RETURN ALL RESULTS
+    # ======================================================
+
+    return (
+        all_generated_isrs,
+        all_decompositions,
+        all_prompt_results
+    )
+# ==========================================================
 # BUILD PROMPT
 # ==========================================================
 
