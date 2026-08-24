@@ -1,63 +1,105 @@
 {
     "accepted_concerns": [
         {
-            "concern": "High cognitive load and psychological stress for practitioners if offline device-to-device (D2D) synchronization fails or delays during urgent clinical scenarios.",
+            "concern": "Psychological stress and cognitive burden for Healthcare Professionals caused by uncertainty over data synchronization status after offline CRUD operations.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
-                "Security (Safety and Stability)",
-                "Pleasure (Emotional Well-being)",
-                "Achievement"
+                "Security (Safety, harmony, stability)",
+                "Achievement (Personal success)"
             ],
-            "User Groups Affected (ordered from high to low)": "Healthcare Professionals, Patients",
-            "Basis": "Excerpt: 'Limited or no internet connectivity handled via Bluetooth-based D2D.' Reasoning: In high-pressure medical situations, unstable Bluetooth connections preventing access to crucial patient data can cause severe anxiety and frustration for healthcare professionals, negatively impacting their mental well-being and diagnostic confidence.",
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCPs)",
+            "Basis": "(i) Excerpt: \"Support CRUD operations on IPS records... Synchronize updated records back to the S-EHR system\" and \"Limited or no internet connectivity handled via Bluetooth-based D2D.\" (ii) Reasoning: Operating in offline, critical care environments and modifying patient records without real-time synchronization feedback can create chronic anxiety for HCPs who fear making or passing on clinical errors due to data discrepancies.",
             "status": "accepted"
         },
         {
-            "concern": "Potential erosion of traditional diagnostic interviewing skills and reliance on standardized taxonomy, alongside continuous forced upskilling to operate specialized FHIR-based digital systems.",
-            "impact": "mixed",
+            "concern": "Positive enhancement of HCP mental well-being and reduction of cognitive load during multilingual or complex medical encounters.",
+            "impact": "positive",
             "Human Values affected (ordered from high to low)": [
-                "Self-Direction (Independent Thought)",
-                "Achievement (Competence)",
-                "Independence"
+                "Security (Safety)",
+                "Pleasure (Enjoyment, satisfaction)"
             ],
-            "User Groups Affected (ordered from high to low)": "Healthcare Professionals",
-            "Basis": "Excerpt: 'Adoption of HL7 FHIR for structured health data exchange... Support CRUD operations on IPS records.' Reasoning: While the app standardizes and organizes knowledge (positive), HCPs might become overly reliant on predefined digital forms and structured data (FHIR), potentially letting their organic, conversational patient-history gathering skills atrophy over time.",
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCPs), Patients",
+            "Basis": "(i) Excerpt: \"Provide translation functionality across IPS sections to enhance usability in multilingual contexts.\" (ii) Reasoning: By lowering language barriers seamlessly within the app, the system reduces the stress and emotional toll of miscommunication in critical healthcare settings.",
             "status": "accepted"
         },
         {
-            "concern": "Severe vulnerability of highly sensitive medical and social history due to the use of deprecated cryptographic hashing (SHA-1) and localized offline data storage on mobile devices.",
+            "concern": "Atrophy of direct patient communication and diagnostic inquiry skills due to over-reliance on automated data retrieval.",
+            "impact": "negative",
+            "Human Values affected (ordered from high to low)": [
+                "Self-Direction (Independent thought/action)",
+                "Benevolence (Welfare of in-group)"
+            ],
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCPs)",
+            "Basis": "(i) Excerpt: \"Provide full access to the International Patient Summary... automatically retrieve patient consent after QR code-based interaction.\" (ii) Reasoning: As HCPs become accustomed to instant, comprehensive digital summaries, they may become permanently dependent on the system, losing the conversational medical history-taking skills necessary to uncover nuanced or unrecorded patient issues.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Exposure of highly sensitive patient medical and social history due to the use of vulnerable cryptographic standards and localized wireless protocols.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
                 "Privacy",
                 "Security",
                 "Dignity"
             ],
-            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals",
-            "Basis": "Excerpt: 'Security and Cryptography... SHA-1 for data integrity' and 'Allow practitioners to select specific IPS sections to download'. Reasoning: SHA-1 is cryptographically broken and vulnerable to collision attacks. Using it to protect sensitive data transferred over Bluetooth and stored locally offline exposes patients to significant risks of data interception, leakage, and identity compromise.",
+            "User Groups Affected (ordered from high to low)": "Patients",
+            "Basis": "(i) Excerpt: \"Use of Device-to-Device (D2D) communication: Based on Bluetooth\" and \"SHA-1 for data integrity.\" (ii) Reasoning: SHA-1 is a deprecated cryptographic hash function vulnerable to collision attacks, and Bluetooth is susceptible to interception. Relying on these for transmitting sensitive files (like pregnancy and social history) poses a severe risk to patient privacy and confidentiality.",
             "status": "accepted"
         },
         {
-            "concern": "Risk of physical harm to patients caused by clinical decisions being made based on outdated, conflicting, or unsynchronized offline medical records.",
+            "concern": "Tension between the HCP's need for comprehensive medical visibility and the patient's right to granular privacy control.",
+            "impact": "mixed",
+            "Human Values affected (ordered from high to low)": [
+                "Privacy",
+                "Security",
+                "Freedom"
+            ],
+            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals (HCPs)",
+            "Basis": "(i) Excerpt: \"Provide full access to the International Patient Summary (IPS)... Pregnancy and Social History\" and \"Allow practitioners to select specific IPS sections to download.\" (ii) Reasoning: While the HCP has the power to select sections to download, the system design may inadvertently expose sensitive social/pregnancy history that the patient did not wish to disclose for a routine or unrelated medical encounter.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Physical harm to patients resulting from adverse clinical decisions based on unsynchronized, conflicting, or accidentally deleted medical entries during offline use.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
-                "Security (Personal Safety)",
-                "Trust",
+                "Security (Safety)",
                 "Benevolence"
             ],
-            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals",
-            "Basis": "Excerpt: 'Enables offline data exchange using device-to-device (D2D)... Synchronize updated records back to the S-EHR system.' Reasoning: If an HCP views an outdated offline cache (e.g., missing a recently diagnosed severe allergy) before synchronization completes, it could lead to incorrect medical treatments, directly threatening the patient's physical safety.",
+            "User Groups Affected (ordered from high to low)": "Patients, Healthcare Professionals (HCPs)",
+            "Basis": "(i) Excerpt: \"Support CRUD operations on IPS records: Add new medical entries, Update existing records, Remove outdated or incorrect data\" and \"Limited or no internet connectivity.\" (ii) Reasoning: Allowing data deletion (e.g., removing an allergy) during offline D2D communication risks creating asynchronous patient records. If a critical allergy is 'removed' offline but not synced, subsequent care providers might administer fatal medications.",
             "status": "accepted"
         },
         {
-            "concern": "Erosion of patient autonomy and informed consent due to opaque QR-code interactions that mask exactly which granular data sections are being downloaded by the practitioner.",
+            "concern": "Enhanced physical safety of patients during emergencies via uninterrupted access to vital medical histories independent of internet infrastructure.",
+            "impact": "positive",
+            "Human Values affected (ordered from high to low)": [
+                "Security (Safety)",
+                "Benevolence"
+            ],
+            "User Groups Affected (ordered from high to low)": "Patients",
+            "Basis": "(i) Excerpt: \"To facilitate offline data sharing using device-to-device (D2D) communication\" and \"Allergies and Intolerances.\" (ii) Reasoning: By removing the reliance on continuous internet connectivity, the system ensures that critical, life-saving information is always available to decision-makers, directly protecting the patient from harm.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Loss of patient autonomy and informed consent due to opaque, 'all-or-nothing' automated QR code interactions.",
             "impact": "negative",
             "Human Values affected (ordered from high to low)": [
-                "Freedom (Self-direction - Action)",
-                "Independence",
+                "Freedom",
+                "Self-Direction",
                 "Dignity"
             ],
             "User Groups Affected (ordered from high to low)": "Patients",
-            "Basis": "Excerpt: 'Automatically retrieve patient consent after QR code-based interaction' and 'Allow practitioners to select specific IPS sections to download'. Reasoning: A simple QR scan may not adequately inform the patient about *which* specific data categories (like sensitive pregnancy or social history) the HCP is selectively downloading and storing on their device, thereby undermining the patient's capacity for true informed free will and data sovereignty.",
+            "Basis": "(i) Excerpt: \"Automatically retrieve patient consent after QR code-based interaction\" and \"Display consent status within the application.\" (ii) Reasoning: An automatic, QR-triggered consent gateway might bypass meaningful patient comprehension. It prevents patients from exercising free will to understand the implications of the data transfer or to restrict specific sensitive sections from being shared.",
+            "status": "accepted"
+        },
+        {
+            "concern": "Empowerment of HCP clinical decision-making autonomy through comprehensive, structured patient data visibility.",
+            "impact": "positive",
+            "Human Values affected (ordered from high to low)": [
+                "Independence",
+                "Self-Direction"
+            ],
+            "User Groups Affected (ordered from high to low)": "Healthcare Professionals (HCPs)",
+            "Basis": "(i) Excerpt: \"To support clinical decision-making through comprehensive patient history visibility\" and \"Modular format.\" (ii) Reasoning: By providing a modular, easily digestible view of full medical histories (IPS), the system empowers HCPs to make independent, well-informed diagnostic choices rather than relying on fragmented data or third-party intermediaries.",
             "status": "accepted"
         }
     ]
