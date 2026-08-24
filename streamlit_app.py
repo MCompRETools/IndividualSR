@@ -130,11 +130,86 @@ def retrieve_prompt_questions(
 
     return combined
 def get_text_from_llm_response(response):
+
+    # ======================================================
+    # CASE 1: LangChain response
+    # ======================================================
+
     if hasattr(response, "content"):
-        return response.content
+
+        content = response.content
+
+        # Gemini/LangChain can sometimes return content
+        # as a list of dictionaries.
+        if isinstance(content, list):
+
+            text_parts = []
+
+            for item in content:
+
+                if isinstance(item, str):
+
+                    text_parts.append(item)
+
+                elif isinstance(item, dict):
+
+                    if "text" in item:
+
+                        text_parts.append(
+                            str(item["text"])
+                        )
+
+            if text_parts:
+
+                return "\n".join(
+                    text_parts
+                )
+
+        if isinstance(content, str):
+
+            return content
+
+
+    # ======================================================
+    # CASE 2: object has .text
+    # ======================================================
 
     if hasattr(response, "text"):
-        return response.text
+
+        text = response.text
+
+        if isinstance(text, str):
+
+            return text
+
+
+    # ======================================================
+    # CASE 3: response itself is a dictionary
+    # ======================================================
+
+    if isinstance(response, dict):
+
+        if "text" in response:
+
+            return str(
+                response["text"]
+            )
+
+        if "content" in response:
+
+            content = response["content"]
+
+            if isinstance(
+                content,
+                str
+            ):
+
+                return content
+
+
+    # ======================================================
+    # CASE 4: fallback
+    # ======================================================
 
     return str(response)
 
@@ -142,29 +217,89 @@ def get_text_from_llm_response(response):
 def parse_llm_json(text):
 
     if text is None:
+
         raise ValueError(
             "LLM returned an empty response."
         )
 
+    # ------------------------------------------------------
+    # Convert to string
+    # ------------------------------------------------------
+
     text = str(text).strip()
 
     # ------------------------------------------------------
-    # REMOVE MARKDOWN CODE FENCES
+    # Remove markdown fences
     # ------------------------------------------------------
 
     if "```json" in text:
+
         text = text.replace(
             "```json",
             ""
         )
 
     if "```" in text:
+
         text = text.replace(
             "```",
             ""
         )
 
     text = text.strip()
+
+    # ------------------------------------------------------
+    # HANDLE WRAPPER:
+    #
+    # {'type': 'text', 'text': '...'}
+    # ------------------------------------------------------
+
+    if (
+        text.startswith("{'type'")
+        and "'text'" in text
+    ):
+
+        try:
+
+            # Extract everything after "'text':"
+            text_marker = "'text':"
+
+            start = text.find(
+                text_marker
+            )
+
+            if start != -1:
+
+                extracted = text[
+                    start + len(text_marker):
+                ].strip()
+
+                # Remove the outer wrapper's final }
+                if extracted.endswith("}"):
+
+                    extracted = extracted[:-1]
+
+                # Remove surrounding quotes if present
+                if (
+                    len(extracted) >= 2
+                    and extracted[0] == "'"
+                    and extracted[-1] == "'"
+                ):
+
+                    extracted = extracted[1:-1]
+
+                # Convert escaped characters
+                extracted = (
+                    extracted
+                    .replace("\\n", "\n")
+                    .replace("\\\"", "\"")
+                    .replace("\\'", "'")
+                )
+
+                text = extracted.strip()
+
+        except Exception:
+            pass
 
     # ------------------------------------------------------
     # FIND JSON OBJECT
@@ -176,16 +311,17 @@ def parse_llm_json(text):
     if start == -1 or end == -1:
 
         raise ValueError(
-            "LLM response does not contain a JSON object.\n\n"
+            "LLM response does not contain "
+            "a JSON object.\n\n"
             f"Raw response:\n{text}"
         )
 
     json_text = text[
         start:end + 1
-    ]
+    ].strip()
 
     # ------------------------------------------------------
-    # PARSE JSON
+    # FIRST JSON PARSE ATTEMPT
     # ------------------------------------------------------
 
     try:
@@ -215,14 +351,22 @@ def parse_llm_json(text):
         )
 
         raise ValueError(
+
             "\n\n"
             "LLM returned malformed JSON.\n\n"
+
             f"JSON error: {e}\n\n"
-            f"Error position: {error_position}\n\n"
+
+            f"Error position: "
+            f"{error_position}\n\n"
+
             "Problematic section:\n"
             "----------------------------------------\n"
+
             f"{problematic_section}\n"
+
             "----------------------------------------"
+
         ) from e
     
 PROMPT_RETRIEVAL_PROMPT = """
@@ -386,8 +530,18 @@ Full Retrieval Text:
     )
 
     text = get_text_from_llm_response(
-        response
+    response
     )
+
+# ------------------------------------------------------
+# DEBUG
+# ------------------------------------------------------
+
+    if not text or not str(text).strip():
+
+        raise ValueError(
+        "Retrieval LLM returned an empty response."
+        )
 
     return parse_llm_json(
         text
