@@ -1002,8 +1002,6 @@ STRICT JSON REQUIREMENTS:
 - Do not use single quotes.
 - Do not add trailing commas.
 - Escape any quotation marks occurring inside a string.
-- Ensure every opening { has a corresponding }.
-- Ensure every opening [ has a corresponding ].
 - Ensure every key-value pair is separated by a comma.
 - The response must be directly parseable by Python json.loads().
 """
