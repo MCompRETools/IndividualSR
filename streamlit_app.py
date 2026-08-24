@@ -140,13 +140,11 @@ def get_text_from_llm_response(response):
 
 
 def parse_llm_json(text):
-    """
-    Robustly extract and parse JSON returned by an LLM.
-    Handles markdown fences and extra text surrounding JSON.
-    """
 
     if text is None:
-        raise ValueError("LLM returned an empty response.")
+        raise ValueError(
+            "LLM returned an empty response."
+        )
 
     text = str(text).strip()
 
@@ -155,10 +153,16 @@ def parse_llm_json(text):
     # ------------------------------------------------------
 
     if "```json" in text:
-        text = text.replace("```json", "")
+        text = text.replace(
+            "```json",
+            ""
+        )
 
     if "```" in text:
-        text = text.replace("```", "")
+        text = text.replace(
+            "```",
+            ""
+        )
 
     text = text.strip()
 
@@ -170,47 +174,55 @@ def parse_llm_json(text):
     end = text.rfind("}")
 
     if start == -1 or end == -1:
+
         raise ValueError(
-            "LLM response does not contain a valid JSON object.\n\n"
-            f"LLM response:\n{text}"
+            "LLM response does not contain a JSON object.\n\n"
+            f"Raw response:\n{text}"
         )
 
-    json_text = text[start:end + 1]
+    json_text = text[
+        start:end + 1
+    ]
 
     # ------------------------------------------------------
-    # FIRST ATTEMPT
+    # PARSE JSON
     # ------------------------------------------------------
 
     try:
-        return json.loads(json_text)
+
+        return json.loads(
+            json_text
+        )
 
     except json.JSONDecodeError as e:
 
-        # --------------------------------------------------
-        # SHOW THE EXACT PROBLEMATIC LOCATION
-        # --------------------------------------------------
-
         error_position = e.pos
 
-        start_context = max(
+        context_start = max(
             0,
-            error_position - 300
+            error_position - 500
         )
 
-        end_context = min(
+        context_end = min(
             len(json_text),
-            error_position + 300
+            error_position + 500
         )
 
-        problematic_text = json_text[
-            start_context:end_context
-        ]
+        problematic_section = (
+            json_text[
+                context_start:context_end
+            ]
+        )
 
         raise ValueError(
+            "\n\n"
             "LLM returned malformed JSON.\n\n"
             f"JSON error: {e}\n\n"
-            f"Problematic section:\n"
-            f"{problematic_text}"
+            f"Error position: {error_position}\n\n"
+            "Problematic section:\n"
+            "----------------------------------------\n"
+            f"{problematic_section}\n"
+            "----------------------------------------"
         ) from e
     
 PROMPT_RETRIEVAL_PROMPT = """
@@ -777,46 +789,40 @@ OUTPUT
 
 Return ONLY valid JSON.
 
-{
+{{
     "requirements": [
-        {
+        {{
             "requirement_id": "ISR-1",
-
-            "requirement":
-                "The system shall ...",
-
-            "requirement_type":
-                "new",
-
-            "human_values":
-                ["..."],
-
-            "nfr_quality_attributes":
-                ["..."],
-
-            "targeted_individuals":
-                ["..."],
-
-            "concern_addressed":
-                "...",
-
-            "prompting_question":
-                "...",
-
-            "system_scope_assessment":
-                "...",
-
-            "gap_identified":
-                "...",
-
-            "rationale":
-                "...",
-
-            "how_concern_is_mitigated":
-                "..."
-        }
+            "requirement": "The system shall ...",
+            "requirement_type": "new",
+            "human_values": ["..."],
+            "nfr_quality_attributes": ["..."],
+            "targeted_individuals": ["..."],
+            "concern_addressed": "...",
+            "prompting_question": "...",
+            "system_scope_assessment": "...",
+            "gap_identified": "...",
+            "rationale": "...",
+            "how_concern_is_mitigated": "..."
+        }}
     ]
-}
+}}
+
+STRICT JSON REQUIREMENTS:
+
+- Return JSON only.
+- Do not use markdown.
+- Do not use ```json.
+- Do not add explanations before or after the JSON.
+- Use double quotes for JSON keys.
+- Use double quotes for string values.
+- Do not use single quotes.
+- Do not add trailing commas.
+- Escape any quotation marks occurring inside a string.
+- Ensure every opening { has a corresponding }.
+- Ensure every opening [ has a corresponding ].
+- Ensure every key-value pair is separated by a comma.
+- The response must be directly parseable by Python json.loads().
 """
 
 
@@ -861,15 +867,77 @@ def generate_isrs_for_question(
             nfr_quality
     )
 
-    response = llm.invoke(prompt)
+    # ------------------------------------------------------
+    # CALL LLM
+    # ------------------------------------------------------
 
-    response_text = get_text_from_llm_response(
-        response
+    response = llm.invoke(
+        prompt
     )
 
-    result = parse_llm_json(
-        response_text
+    response_text = (
+        get_text_from_llm_response(
+            response
+        )
     )
+
+    # ------------------------------------------------------
+    # PARSE JSON
+    # ------------------------------------------------------
+
+    try:
+
+        result = parse_llm_json(
+            response_text
+        )
+
+    except Exception as e:
+
+        st.error(
+            "ISR LLM returned invalid JSON."
+        )
+
+        with st.expander(
+            "Show raw ISR LLM response"
+        ):
+
+            st.code(
+                response_text,
+                language="text"
+            )
+
+        raise ValueError(
+            f"ISR JSON parsing failed: {e}"
+        ) from e
+
+    # ------------------------------------------------------
+    # VALIDATE STRUCTURE
+    # ------------------------------------------------------
+
+    if not isinstance(
+        result,
+        dict
+    ):
+
+        raise ValueError(
+            "ISR response must be a JSON object."
+        )
+
+    if "requirements" not in result:
+
+        raise ValueError(
+            "ISR response does not contain "
+            "'requirements'."
+        )
+
+    if not isinstance(
+        result["requirements"],
+        list
+    ):
+
+        raise ValueError(
+            "'requirements' must be a JSON array."
+        )
 
     return result
 # ==========================================================
@@ -975,24 +1043,36 @@ OUTPUT
 
 Return ONLY valid JSON.
 
-{
+{{
     "functional_requirements": [
-        {
+        {{
             "id": "FR-1",
             "requirement": "...",
             "source_isr": "..."
-        }
+        }}
     ],
 
     "non_functional_requirements": [
-        {
+        {{
             "id": "NFR-1",
             "requirement": "...",
             "quality_attribute": "...",
             "source_isr": "..."
-        }
+        }}
     ]
-}
+}}
+
+STRICT JSON REQUIREMENTS:
+
+- Return JSON only.
+- No markdown.
+- No ```json.
+- No explanation outside JSON.
+- Use double quotes.
+- Escape quotation marks inside strings.
+- No trailing commas.
+- Do not use Python-style dictionaries.
+- Ensure the JSON can be parsed directly using json.loads().
 """
 
 
@@ -1013,13 +1093,61 @@ def decompose_isr(
         prompt
     )
 
-    response_text = get_text_from_llm_response(
-        response
+    response_text = (
+        get_text_from_llm_response(
+            response
+        )
     )
 
-    result = parse_llm_json(
-        response_text
-    )
+    try:
+
+        result = parse_llm_json(
+            response_text
+        )
+
+    except Exception as e:
+
+        st.error(
+            "ISR decomposition LLM returned invalid JSON."
+        )
+
+        with st.expander(
+            "Show raw decomposition response"
+        ):
+
+            st.code(
+                response_text,
+                language="text"
+            )
+
+        raise ValueError(
+            f"ISR decomposition JSON parsing failed: {e}"
+        ) from e
+
+    # ------------------------------------------------------
+    # VALIDATE OUTPUT
+    # ------------------------------------------------------
+
+    if not isinstance(
+        result,
+        dict
+    ):
+
+        raise ValueError(
+            "ISR decomposition must return a JSON object."
+        )
+
+    if "functional_requirements" not in result:
+
+        result[
+            "functional_requirements"
+        ] = []
+
+    if "non_functional_requirements" not in result:
+
+        result[
+            "non_functional_requirements"
+        ] = []
 
     return result
 # ==========================================================
@@ -1855,19 +1983,22 @@ def generate_individual_concerns(
     # ADD ANALYST FEEDBACK
     # ------------------------------------------------------
 
-    if analyst_opinion.strip():
+    if analyst_opinion and analyst_opinion.strip():
 
         prompt += f"""
 
-        ------------------------------------------------------
+------------------------------------------------------
+ANALYST OPINION / FEEDBACK
+------------------------------------------------------
 
-        Analyst Opinion / Feedback:
-        {analyst_opinion}
-        Incorporate this feedback carefully while deriving sustainability concerns.
-        """
+{analyst_opinion}
+
+Incorporate this feedback carefully while deriving
+sustainability concerns.
+"""
 
     # ------------------------------------------------------
-    # GOOGLE
+    # CALL LLM
     # ------------------------------------------------------
 
     if provider == "Google":
@@ -1878,10 +2009,6 @@ def generate_individual_concerns(
             model_name
         )
 
-    # ------------------------------------------------------
-    # OPENAI
-    # ------------------------------------------------------
-
     else:
 
         result = run_openai(
@@ -1891,17 +2018,34 @@ def generate_individual_concerns(
         )
 
     # ------------------------------------------------------
-    # CLEAN JSON
+    # PARSE USING THE SAME ROBUST JSON PARSER
     # ------------------------------------------------------
 
-    cleaned = (
-        result
-        .replace("```json", "")
-        .replace("```", "")
-        .strip()
-    )
+    try:
 
-    return json.loads(cleaned)
+        return parse_llm_json(
+            result
+        )
+
+    except Exception as e:
+
+        st.error(
+            "The LLM returned invalid JSON while generating "
+            "sustainability concerns."
+        )
+
+        with st.expander(
+            "Show raw LLM response"
+        ):
+
+            st.code(
+                result,
+                language="text"
+            )
+
+        raise ValueError(
+            f"Concern JSON parsing failed: {e}"
+        ) from e
 # ==========================================================
 # PAGE CONFIG
 # ==========================================================
