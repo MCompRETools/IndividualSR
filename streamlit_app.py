@@ -4036,7 +4036,7 @@ elif selected_page == "Produce ISR":
                 # STORE RESULTS
                 # --------------------------------------------------
 
-               st.session_state.generated_isrs = (
+                st.session_state.generated_isrs = (
                 generated_isrs
                 )
 
