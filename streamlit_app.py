@@ -140,14 +140,78 @@ def get_text_from_llm_response(response):
 
 
 def parse_llm_json(text):
+    """
+    Robustly extract and parse JSON returned by an LLM.
+    Handles markdown fences and extra text surrounding JSON.
+    """
+
+    if text is None:
+        raise ValueError("LLM returned an empty response.")
+
+    text = str(text).strip()
+
+    # ------------------------------------------------------
+    # REMOVE MARKDOWN CODE FENCES
+    # ------------------------------------------------------
+
+    if "```json" in text:
+        text = text.replace("```json", "")
+
+    if "```" in text:
+        text = text.replace("```", "")
+
     text = text.strip()
 
-    if text.startswith("```"):
-        text = text.replace("```json", "")
-        text = text.replace("```", "")
-        text = text.strip()
+    # ------------------------------------------------------
+    # FIND JSON OBJECT
+    # ------------------------------------------------------
 
-    return json.loads(text)
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start == -1 or end == -1:
+        raise ValueError(
+            "LLM response does not contain a valid JSON object.\n\n"
+            f"LLM response:\n{text}"
+        )
+
+    json_text = text[start:end + 1]
+
+    # ------------------------------------------------------
+    # FIRST ATTEMPT
+    # ------------------------------------------------------
+
+    try:
+        return json.loads(json_text)
+
+    except json.JSONDecodeError as e:
+
+        # --------------------------------------------------
+        # SHOW THE EXACT PROBLEMATIC LOCATION
+        # --------------------------------------------------
+
+        error_position = e.pos
+
+        start_context = max(
+            0,
+            error_position - 300
+        )
+
+        end_context = min(
+            len(json_text),
+            error_position + 300
+        )
+
+        problematic_text = json_text[
+            start_context:end_context
+        ]
+
+        raise ValueError(
+            "LLM returned malformed JSON.\n\n"
+            f"JSON error: {e}\n\n"
+            f"Problematic section:\n"
+            f"{problematic_text}"
+        ) from e
     
 PROMPT_RETRIEVAL_PROMPT = """
 You are an expert Requirements Elicitation Agent
