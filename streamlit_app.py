@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import os
+import google.generativeai as genai
 from github import Github
 import base64
 from pypdf import PdfReader
